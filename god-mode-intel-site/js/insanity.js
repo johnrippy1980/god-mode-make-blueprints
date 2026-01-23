@@ -199,6 +199,15 @@
         `;
         document.documentElement.appendChild(gameOverScreen);
 
+        // Punch/Kick overlay for Fight Back
+        const punchOverlay = document.createElement('div');
+        punchOverlay.id = 'punch-overlay';
+        punchOverlay.innerHTML = `
+            <img src="/images/sprites/RHANA0.png" alt="Punch" class="punch-sprite" id="punch-sprite-left">
+            <img src="/images/sprites/RHANB0.png" alt="Kick" class="punch-sprite" id="punch-sprite-right">
+        `;
+        document.documentElement.appendChild(punchOverlay);
+
         // Add styles
         const style = document.createElement('style');
         style.textContent = `
@@ -653,6 +662,74 @@
                 .game-over-title { font-size: 2.5rem; }
                 .game-over-image { width: 150px; }
             }
+
+            /* Punch/Kick Overlay */
+            #punch-overlay {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 40vh;
+                pointer-events: none;
+                z-index: 999998;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                padding: 0 5vw;
+                opacity: 0;
+                visibility: hidden;
+            }
+            #punch-overlay.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+            .punch-sprite {
+                width: auto;
+                height: 35vh;
+                max-height: 300px;
+                image-rendering: pixelated;
+                transform: translateY(100%);
+                transition: transform 0.15s ease-out;
+                filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.8));
+            }
+            #punch-sprite-left {
+                transform-origin: bottom left;
+            }
+            #punch-sprite-right {
+                transform-origin: bottom right;
+                transform: translateY(100%) scaleX(-1);
+            }
+            .punch-sprite.punch-left {
+                transform: translateY(0) rotate(-15deg) scale(1.1);
+                filter: drop-shadow(0 0 30px rgba(255, 50, 0, 1)) brightness(1.2);
+            }
+            .punch-sprite.punch-right {
+                transform: translateY(0) scaleX(-1) rotate(15deg) scale(1.1);
+                filter: drop-shadow(0 0 30px rgba(255, 50, 0, 1)) brightness(1.2);
+            }
+            .punch-sprite.kick-left {
+                transform: translateY(-20%) rotate(-25deg) scale(1.2);
+                filter: drop-shadow(0 0 40px rgba(255, 0, 0, 1)) brightness(1.3);
+            }
+            .punch-sprite.kick-right {
+                transform: translateY(-20%) scaleX(-1) rotate(25deg) scale(1.2);
+                filter: drop-shadow(0 0 40px rgba(255, 0, 0, 1)) brightness(1.3);
+            }
+
+            @keyframes punchImpact {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.3); }
+                100% { transform: scale(1); }
+            }
+
+            @keyframes screenShake {
+                0% { transform: translate(0, 0); }
+                20% { transform: translate(-8px, 4px); }
+                40% { transform: translate(8px, -4px); }
+                60% { transform: translate(-6px, 2px); }
+                80% { transform: translate(4px, -2px); }
+                100% { transform: translate(0, 0); }
+            }
         `;
         document.head.appendChild(style);
 
@@ -690,9 +767,12 @@
             fightBackClicks++;
             updateFightProgress();
 
-            // Visual feedback
+            // Visual feedback on button
             this.style.transform = 'scale(0.95)';
             setTimeout(() => this.style.transform = '', 100);
+
+            // Show punch/kick animation
+            triggerPunchAnimation(fightBackClicks);
 
             // Reduce insanity per click
             insanity = Math.max(0, insanity - CONFIG.fightBackDecrease);
@@ -710,6 +790,7 @@
                 updateScoreDisplay();
                 updateFightProgress();
                 hideEscapePrompt();
+                hidePunchOverlay();
             }
         });
 
@@ -780,6 +861,48 @@
         gain2.connect(audioContext.destination);
         osc2.start(now);
         osc2.stop(now + 0.15);
+    }
+
+    // Punch/Kick animation for Fight Back
+    function triggerPunchAnimation(clickNum) {
+        const overlay = document.getElementById('punch-overlay');
+        const leftSprite = document.getElementById('punch-sprite-left');
+        const rightSprite = document.getElementById('punch-sprite-right');
+
+        if (!overlay || !leftSprite || !rightSprite) return;
+
+        // Show overlay
+        overlay.classList.add('visible');
+
+        // Alternate between left and right punches, with kicks on 3rd and 5th
+        const isKick = clickNum === 3 || clickNum === 5;
+        const isLeft = clickNum % 2 === 1;
+
+        // Clear previous classes
+        leftSprite.classList.remove('punch-left', 'punch-right', 'kick-left', 'kick-right');
+        rightSprite.classList.remove('punch-left', 'punch-right', 'kick-left', 'kick-right');
+
+        if (isLeft) {
+            leftSprite.classList.add(isKick ? 'kick-left' : 'punch-left');
+        } else {
+            rightSprite.classList.add(isKick ? 'kick-right' : 'punch-right');
+        }
+
+        // Add screen shake effect
+        document.body.style.animation = 'none';
+        document.body.offsetHeight; // Trigger reflow
+        document.body.style.animation = 'screenShake 0.15s ease-out';
+
+        // Reset after animation
+        setTimeout(() => {
+            leftSprite.classList.remove('punch-left', 'kick-left');
+            rightSprite.classList.remove('punch-right', 'kick-right');
+        }, 200);
+    }
+
+    function hidePunchOverlay() {
+        const overlay = document.getElementById('punch-overlay');
+        if (overlay) overlay.classList.remove('visible');
     }
 
     let bloodPoolLevel = 0; // Track blood pool height
@@ -908,13 +1031,18 @@
 
     function showEscapePrompt() {
         const prompt = document.getElementById('escape-prompt');
+        const punchOverlay = document.getElementById('punch-overlay');
         if (prompt) {
             prompt.classList.add('visible');
+        }
+        if (punchOverlay) {
+            punchOverlay.classList.add('visible');
         }
     }
 
     function hideEscapePrompt() {
         const prompt = document.getElementById('escape-prompt');
+        hidePunchOverlay();
         if (prompt) prompt.classList.remove('visible');
         fightBackClicks = 0;
         updateFightProgress();
