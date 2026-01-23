@@ -1,0 +1,191 @@
+{
+  "actorSpecification": 1,
+  "name": "nextdoor-scraper",
+  "title": "Nextdoor Local Business & Recommendations Scraper",
+  "description": "Scrape Nextdoor local business recommendations, neighborhood posts, and community data. Extract verified neighbor endorsements, vote counts, and business mentions. Essential for hyper-local market research and lead generation. Built by John Rippy (https://www.linkedin.com/in/johnrippy/ | https://johnrippy.link/).",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "readme": "./README.md",
+  "input": "./input_schema.json",
+  "seoTitle": "Nextdoor Scraper - Local Business Recommendations & Neighborhood Data",
+  "seoDescription": "Scrape Nextdoor for local business recommendations, neighbor endorsements, and community posts. Hyper-local market research tool.",
+  "categories": [
+    "MARKETING",
+    "BUSINESS"
+  ],
+  "useCases": [
+    "Lead generation",
+    "Competitor research",
+    "Market research",
+    "Reputation monitoring",
+    "Local SEO"
+  ],
+  "exampleRunInput": {
+    "demoMode": true
+  },
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "title": "Nextdoor Local Data",
+      "views": {
+        "recommendations": {
+          "title": "Business Recommendations",
+          "transformation": {
+            "fields": [
+              "businessName",
+              "category",
+              "recommendationCount",
+              "neighborhoods",
+              "phone",
+              "website"
+            ]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "businessName": {
+                "label": "Business",
+                "format": "text"
+              },
+              "category": {
+                "label": "Category",
+                "format": "text"
+              },
+              "recommendationCount": {
+                "label": "Recommendations",
+                "format": "number"
+              },
+              "neighborhoods": {
+                "label": "Neighborhoods",
+                "format": "text"
+              },
+              "phone": {
+                "label": "Phone",
+                "format": "text"
+              },
+              "website": {
+                "label": "Website",
+                "format": "text"
+              }
+            }
+          }
+        },
+        "posts": {
+          "title": "Neighborhood Posts",
+          "transformation": {
+            "fields": [
+              "postType",
+              "title",
+              "content",
+              "author",
+              "neighborhood",
+              "date",
+              "upvotes",
+              "commentCount"
+            ]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "postType": {
+                "label": "Type",
+                "format": "text"
+              },
+              "title": {
+                "label": "Title",
+                "format": "text"
+              },
+              "content": {
+                "label": "Content",
+                "format": "text"
+              },
+              "author": {
+                "label": "Author",
+                "format": "text"
+              },
+              "neighborhood": {
+                "label": "Neighborhood",
+                "format": "text"
+              },
+              "date": {
+                "label": "Date",
+                "format": "text"
+              },
+              "upvotes": {
+                "label": "Upvotes",
+                "format": "number"
+              },
+              "commentCount": {
+                "label": "Comments",
+                "format": "number"
+              }
+            }
+          }
+        },
+        "mentions": {
+          "title": "Business Mentions",
+          "transformation": {
+            "fields": [
+              "businessName",
+              "postType",
+              "text",
+              "author",
+              "neighborhood",
+              "date",
+              "upvotes"
+            ]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "businessName": {
+                "label": "Business",
+                "format": "text"
+              },
+              "postType": {
+                "label": "Type",
+                "format": "text"
+              },
+              "text": {
+                "label": "Mention",
+                "format": "text"
+              },
+              "author": {
+                "label": "Author",
+                "format": "text"
+              },
+              "neighborhood": {
+                "label": "Neighborhood",
+                "format": "text"
+              },
+              "date": {
+                "label": "Date",
+                "format": "text"
+              },
+              "upvotes": {
+                "label": "Upvotes",
+                "format": "number"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultRunOptions": {
+    "memoryMbytes": 2048
+  },
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingInfo": {
+    "pricingModel": "PAY_PER_EVENT",
+    "events": [
+      {
+        "eventName": "business_scraped",
+        "eventTitle": "Business Scraped",
+        "eventDescription": "Each Nextdoor business listing scraped",
+        "eventPriceUsd": 0.02
+      }
+    ]
+  }
+}

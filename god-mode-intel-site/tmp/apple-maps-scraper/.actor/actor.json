@@ -1,0 +1,75 @@
+{
+  "actorSpecification": 1,
+  "name": "apple-maps-business-listings-scraper",
+  "title": "Apple Maps Scraper",
+  "description": "Scrape business listings from Apple Maps. Extract business names, categories, ratings (Apple's % rating + Yelp/Tripadvisor aggregated), hours, and more.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "input": "./input_schema.json",
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "title": "Apple Maps Business Listings",
+      "views": {
+        "overview": {
+          "title": "Overview",
+          "transformation": {
+            "fields": [
+              "name",
+              "category",
+              "appleRating",
+              "hours",
+              "address",
+              "searchQuery"
+            ]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "name": {
+                "label": "Business Name",
+                "format": "text"
+              },
+              "category": {
+                "label": "Category",
+                "format": "text"
+              },
+              "appleRating": {
+                "label": "Apple Rating",
+                "format": "text"
+              },
+              "hours": {
+                "label": "Hours",
+                "format": "text"
+              },
+              "address": {
+                "label": "Address",
+                "format": "text"
+              },
+              "searchQuery": {
+                "label": "Search Query",
+                "format": "text"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultRunOptions": {
+    "memoryMbytes": 2048
+  },
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingInfo": {
+    "pricingModel": "PAY_PER_EVENT",
+    "events": [
+      {
+        "eventName": "business_scraped",
+        "eventTitle": "Business Scraped",
+        "eventDescription": "Each Apple Maps business listing scraped",
+        "eventPriceUsd": 0.01
+      }
+    ]
+  }
+}

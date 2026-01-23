@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARSENAL | GOD MODE INTEL - 48 B2B Intelligence Tools Documentation</title>
+    <meta name="description" content="Full documentation for GOD MODE INTEL's 48 B2B intelligence tools. Lead discovery, enrichment, LinkedIn scraping, competitive intel, and 7 standalone tools that work without API keys.">
+    <meta name="keywords" content="MCP server documentation, API reference, B2B tools, lead generation tools, Make.com MCP, Apify actors">
+    <meta name="author" content="John Rippy - Zapier Zappy 2025 Automation Hero of the Year">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://god-mode-intel-site.vercel.app/arsenal">
+    <link rel="icon" type="image/png" href="/images/sprites/STFGOD0.png">
+
+    <!-- Schema.org ItemList for Tools -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "GOD MODE INTEL Tool Arsenal",
+        "description": "48 B2B intelligence tools for lead generation, enrichment, competitive intel, and AI-powered outreach",
+        "numberOfItems": 48,
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Lead Discovery Tools", "description": "5 tools for finding prospects"},
+            {"@type": "ListItem", "position": 2, "name": "Lead Enrichment Tools", "description": "3 tools for enriching lead data"},
+            {"@type": "ListItem", "position": 3, "name": "LinkedIn Intelligence", "description": "3 tools for LinkedIn scraping and analysis"},
+            {"@type": "ListItem", "position": 4, "name": "Company Research", "description": "6 tools for comprehensive company intel"},
+            {"@type": "ListItem", "position": 5, "name": "Review Intelligence", "description": "4 tools for review aggregation"},
+            {"@type": "ListItem", "position": 6, "name": "Competitive Intel", "description": "5 tools for monitoring competitors"},
+            {"@type": "ListItem", "position": 7, "name": "Local Business", "description": "4 tools for local SEO and GBP"},
+            {"@type": "ListItem", "position": 8, "name": "Social Listening", "description": "3 tools for social monitoring"},
+            {"@type": "ListItem", "position": 9, "name": "AI-Powered Actions", "description": "5 tools using AI for sales"},
+            {"@type": "ListItem", "position": 10, "name": "Full Pipelines", "description": "3 end-to-end workflow tools"},
+            {"@type": "ListItem", "position": 11, "name": "Standalone Tools", "description": "7 tools requiring no API keys"}
+        ]
+    }
+    </script>
+
+    <!-- BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://god-mode-intel-site.vercel.app/"},
+            {"@type": "ListItem", "position": 2, "name": "Arsenal", "item": "https://god-mode-intel-site.vercel.app/arsenal"}
+        ]
+    }
+    </script>
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://god-mode-intel-site.vercel.app/arsenal.html">
+    <meta property="og:title" content="ARSENAL | GOD MODE INTEL - 48 Tools Documentation">
+    <meta property="og:description" content="Full documentation for 48 B2B intelligence tools. 7 standalone tools work without any API keys.">
+    <meta property="og:image" content="https://god-mode-intel-site.vercel.app/images/og-arsenal.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ARSENAL | GOD MODE INTEL - 48 Tools">
+    <meta name="twitter:description" content="48 B2B intelligence tools. 7 standalone. Full documentation.">
+    <meta name="twitter:image" content="https://god-mode-intel-site.vercel.app/images/og-arsenal.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0505;
+            --bg-card: #1a0a0a;
+            --bg-card-hover: #2a0f0f;
+            --blood-red: #8B0000;
+            --blood-bright: #cc0000;
+            --blood-drip: #ff0000;
+            --bone-white: #e8e0d0;
+            --terror-green: #00ff66;
+            --ghost-blue: #4488ff;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border: #331111;
+            --gold: #ffd700;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        /* ===== CRT SCANLINES ===== */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.3;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(180deg, rgba(139, 0, 0, 0.4) 0%, transparent 100%);
+            padding: 1rem 2rem;
+            border-bottom: 2px solid var(--blood-red);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .logo-text {
+            font-family: 'Creepster', cursive;
+            font-size: 1.8rem;
+            color: var(--blood-bright);
+            text-shadow: 2px 2px 0 #000, 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--bone-white);
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--terror-green);
+            border-color: var(--terror-green);
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-title {
+            font-family: 'Creepster', cursive;
+            font-size: 4rem;
+            color: var(--blood-bright);
+            text-shadow: 4px 4px 0 #000, 0 0 30px rgba(204, 0, 0, 0.6);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: var(--terror-green);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== TABLE OF CONTENTS ===== */
+        .toc {
+            background: var(--bg-card);
+            border: 2px solid var(--blood-red);
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .toc-title {
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+            color: var(--blood-bright);
+            margin-bottom: 1rem;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .toc a {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--bone-white);
+            text-decoration: none;
+            padding: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .toc a:hover {
+            color: var(--terror-green);
+            background: rgba(0, 255, 102, 0.1);
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            margin-bottom: 4rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            padding: 2rem;
+        }
+
+        section:target {
+            border-color: var(--terror-green);
+            box-shadow: 0 0 30px rgba(0, 255, 102, 0.2);
+        }
+
+        .section-title {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: var(--blood-bright);
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title-icon {
+            font-size: 2rem;
+        }
+
+        .section-sprite {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+            vertical-align: middle;
+        }
+
+        .section-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ===== TOOL CARDS ===== */
+        .tool-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .tool-card {
+            background: rgba(26, 10, 10, 0.5);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .tool-card:hover {
+            border-color: var(--blood-red);
+            background: var(--bg-card-hover);
+        }
+
+        .tool-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--terror-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .tool-usecase {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--ghost-blue);
+            padding: 0.5rem;
+            background: rgba(68, 136, 255, 0.1);
+            border-left: 3px solid var(--ghost-blue);
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        .code-block {
+            background: #0a0505;
+            border: 1px solid var(--blood-red);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'EXECUTE';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--blood-bright);
+            background: var(--bg-dark);
+            padding: 0 0.5rem;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--terror-green);
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code-block code {
+            color: var(--terror-green);
+        }
+
+        .code-comment {
+            color: var(--text-secondary);
+        }
+
+        /* ===== TABLES ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--blood-bright);
+            text-align: left;
+            padding: 1rem;
+            background: rgba(139, 0, 0, 0.3);
+            border-bottom: 2px solid var(--blood-red);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        td code {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--terror-green);
+            background: rgba(0, 255, 102, 0.1);
+            padding: 0.2rem 0.4rem;
+        }
+
+        /* ===== HIGHLIGHT BOX ===== */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(26, 10, 10, 0.8) 100%);
+            border: 2px solid var(--blood-red);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .highlight-title {
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+            color: var(--terror-green);
+            margin-bottom: 1rem;
+        }
+
+        .highlight-list {
+            list-style: none;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .highlight-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .highlight-list li::before {
+            content: '✓';
+            color: var(--terror-green);
+            font-weight: bold;
+        }
+
+        /* ===== BADGE ===== */
+        .badge {
+            display: inline-block;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            padding: 0.3rem 0.6rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-standalone {
+            background: var(--terror-green);
+            color: #000;
+        }
+
+        .badge-apify {
+            background: var(--ghost-blue);
+            color: #fff;
+        }
+
+        .badge-ai {
+            background: var(--gold);
+            color: #000;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: linear-gradient(180deg, transparent 0%, rgba(139, 0, 0, 0.4) 100%);
+            padding: 3rem 2rem;
+            border-top: 2px solid var(--blood-red);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--bone-white);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--terror-green);
+        }
+
+        .footer-credit {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        @keyframes bloodPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(204, 0, 0, 0.8)); }
+            50% { transform: scale(1.02); filter: drop-shadow(0 0 40px rgba(204, 0, 0, 1)); }
+        }
+
+        @media (max-width: 768px) {
+            .page-title { font-size: 2.5rem; }
+            nav { display: none; }
+            .toc-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div id="header-placeholder"></div>
+
+    <main>
+        <h1 class="page-title">WEAPON ARSENAL</h1>
+        <p class="page-subtitle">48 TOOLS OF DESTRUCTION - FULL DOCUMENTATION</p>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2 class="toc-title">Quick Navigation</h2>
+            <div class="toc-grid">
+                <a href="#discovery">Lead Discovery (5)</a>
+                <a href="#enrichment">Lead Enrichment (3)</a>
+                <a href="#linkedin">LinkedIn Intel (3)</a>
+                <a href="#company">Company Research (6)</a>
+                <a href="#reviews">Review Intelligence (4)</a>
+                <a href="#competitive">Competitive Intel (5)</a>
+                <a href="#local">Local Business (4)</a>
+                <a href="#social">Social Listening (3)</a>
+                <a href="#ai">AI-Powered (5)</a>
+                <a href="#pipelines">Full Pipelines (3)</a>
+                <a href="#standalone">Standalone (7)</a>
+                <a href="#api">API Reference</a>
+            </div>
+        </div>
+
+        <!-- Standalone Tools Highlight -->
+        <div class="highlight-box" id="standalone">
+            <h2 class="highlight-title"><img src="/images/sprites/XSKIA0.png" class="section-sprite" alt=""> STANDALONE TOOLS - NO API KEYS REQUIRED!</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">These 7 tools work independently without ANY external APIs or services. Perfect for testing and instant results!</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-standalone">STANDALONE</span>
+                    <div class="tool-name">validate_email</div>
+                    <div class="tool-description">Validate email format + check MX records for deliverability</div>
+                    <div class="tool-usecase">"Is this email deliverable?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-standalone">STANDALONE</span>
+                    <div class="tool-name">validate_domain</div>
+                    <div class="tool-description">Check domain DNS A/MX records to verify it exists</div>
+                    <div class="tool-usecase">"Does this company domain exist?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-standalone">STANDALONE</span>
+                    <div class="tool-name">extract_url_metadata</div>
+                    <div class="tool-description">Scrape title, description, OG tags, and detect tech stack</div>
+                    <div class="tool-usecase">"What's on this webpage?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-standalone">STANDALONE</span>
+                    <div class="tool-name">calculate_lead_score</div>
+                    <div class="tool-description">AI-powered lead scoring based on ICP (Ideal Customer Profile)</div>
+                    <div class="tool-usecase">"Score this lead A/B/C/D"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-standalone">STANDALONE</span>
+                    <div class="tool-name">parse_business_card</div>
+                    <div class="tool-description">Extract structured contact data from raw text</div>
+                    <div class="tool-usecase">"Parse this business card text"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-standalone">STANDALONE</span>
+                    <div class="tool-name">clean_lead_data</div>
+                    <div class="tool-description">Normalize phones, capitalize names, validate emails</div>
+                    <div class="tool-usecase">"Clean up my lead list"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-standalone">STANDALONE</span>
+                    <div class="tool-name">generate_icp_questions</div>
+                    <div class="tool-description">Generate discovery and qualification questions</div>
+                    <div class="tool-usecase">"What should I ask this prospect?"</div>
+                </div>
+            </div>
+
+            <ul class="highlight-list" style="margin-top: 1.5rem;">
+                <li>No API keys required - start using immediately</li>
+                <li>No usage costs - unlimited executions</li>
+                <li>Instant results - no external service calls</li>
+                <li>Perfect for testing Make.com scenarios</li>
+            </ul>
+        </div>
+
+        <!-- Lead Discovery -->
+        <section id="discovery">
+            <h2 class="section-title"><img src="/images/sprites/MSBDA0.png" class="section-sprite" alt=""> Lead Discovery & Prospecting</h2>
+            <p class="section-description">5 tools to find your ideal prospects from Google Maps, business databases, and the web.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">find_prospects</div>
+                    <div class="tool-description">Search Google Maps for local businesses matching your criteria</div>
+                    <div class="tool-usecase">"Find all dentists in Austin, TX"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">find_lookalikes</div>
+                    <div class="tool-description">Find companies similar to your best customers using AI</div>
+                    <div class="tool-usecase">"Find 50 companies like Stripe"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_local_leads</div>
+                    <div class="tool-description">Bulk extract local business data from multiple locations</div>
+                    <div class="tool-usecase">"Get all restaurants in 5 cities"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">discover_companies</div>
+                    <div class="tool-description">AI-powered company discovery from any URL or content</div>
+                    <div class="tool-usecase">"Find SaaS companies on TechCrunch"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">enrich_from_url</div>
+                    <div class="tool-description">Extract company data from any webpage (About pages, etc.)</div>
+                    <div class="tool-usecase">"Pull company info from this About page"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lead Enrichment -->
+        <section id="enrichment">
+            <h2 class="section-title"><img src="/images/sprites/GUTSA0.png" class="section-sprite" alt=""> Lead Enrichment</h2>
+            <p class="section-description">3 tools to add emails, phone numbers, company data, and social profiles to your leads.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">enrich_lead</div>
+                    <div class="tool-description">Full enrichment: email, company, social profiles, tech stack</div>
+                    <div class="tool-usecase">"Enrich john@acme.com"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">enrich_leads_batch</div>
+                    <div class="tool-description">Enrich up to 100 leads at once for maximum efficiency</div>
+                    <div class="tool-usecase">"Enrich my CSV of 100 leads"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">enrich_company_contacts</div>
+                    <div class="tool-description">Find decision-makers and key contacts at a company</div>
+                    <div class="tool-usecase">"Find VPs at Salesforce"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LinkedIn Intelligence -->
+        <section id="linkedin">
+            <h2 class="section-title"><img src="/images/sprites/BSBDA0.png" class="section-sprite" alt=""> LinkedIn Intelligence</h2>
+            <p class="section-description">3 tools to scrape LinkedIn profiles, posts, and analyze writing styles.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_linkedin_profile</div>
+                    <div class="tool-description">Full profile: experience, education, skills, connections</div>
+                    <div class="tool-usecase">"Get profile data for /in/elonmusk"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_linkedin_posts</div>
+                    <div class="tool-description">Recent posts with engagement metrics and reactions</div>
+                    <div class="tool-usecase">"Analyze their content strategy"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">analyze_linkedin_voice</div>
+                    <div class="tool-description">AI analysis of writing style, tone, and communication patterns</div>
+                    <div class="tool-usecase">"Personalize outreach to match their voice"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Company Research -->
+        <section id="company">
+            <h2 class="section-title"><img src="/images/sprites/XBIGA0.png" class="section-sprite" alt=""> Company Research</h2>
+            <p class="section-description">6 tools for comprehensive company intelligence: tech stacks, funding, reviews, and more.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">research_company</div>
+                    <div class="tool-description">Comprehensive company intel in one call - everything you need</div>
+                    <div class="tool-usecase">"Tell me everything about Stripe"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scan_tech_stack</div>
+                    <div class="tool-description">Detect 100+ technologies on any website</div>
+                    <div class="tool-usecase">"What tools does Shopify use?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">get_crunchbase_data</div>
+                    <div class="tool-description">Funding rounds, investors, key people, company timeline</div>
+                    <div class="tool-usecase">"Who invested in OpenAI?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">get_glassdoor_reviews</div>
+                    <div class="tool-description">Employee reviews, ratings, salary data, culture insights</div>
+                    <div class="tool-usecase">"What's the culture like at Meta?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_g2</div>
+                    <div class="tool-description">G2 software reviews, ratings, and comparisons</div>
+                    <div class="tool-usecase">"What do users say about HubSpot?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_capterra</div>
+                    <div class="tool-description">Capterra reviews and software comparisons</div>
+                    <div class="tool-usecase">"Compare Salesforce vs HubSpot"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Review Intelligence -->
+        <section id="reviews">
+            <h2 class="section-title"><img src="/images/sprites/BR7BA0.png" class="section-sprite" alt=""> Review Intelligence</h2>
+            <p class="section-description">4 tools to aggregate and analyze reviews from all major platforms.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_trustpilot</div>
+                    <div class="tool-description">Consumer reviews and trust scores from Trustpilot</div>
+                    <div class="tool-usecase">"Check reputation of this vendor"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_yelp</div>
+                    <div class="tool-description">Local business reviews from Yelp</div>
+                    <div class="tool-usecase">"Get reviews for this restaurant"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">aggregate_reviews</div>
+                    <div class="tool-description">Combine reviews from all platforms into one view</div>
+                    <div class="tool-usecase">"Show me all reviews everywhere"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">analyze_sentiment</div>
+                    <div class="tool-description">AI sentiment analysis of reviews - find patterns</div>
+                    <div class="tool-usecase">"What are the common complaints?"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Competitive Intelligence -->
+        <section id="competitive">
+            <h2 class="section-title"><img src="/images/sprites/STFKILL2.png" class="section-sprite" alt=""> Competitive Intelligence</h2>
+            <p class="section-description">5 tools to monitor competitors, track their ads, and analyze market gaps.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">monitor_competitors</div>
+                    <div class="tool-description">Track website changes, hiring, social activity</div>
+                    <div class="tool-usecase">"Alert me when competitors update pricing"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_facebook_ads</div>
+                    <div class="tool-description">Facebook Ad Library scraping - see competitor ads</div>
+                    <div class="tool-usecase">"What ads are my competitors running?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">track_competitor_keywords</div>
+                    <div class="tool-description">SEO keyword tracking and ranking analysis</div>
+                    <div class="tool-usecase">"What keywords do they rank for?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">compare_tech_stacks</div>
+                    <div class="tool-description">Side-by-side technology comparison</div>
+                    <div class="tool-usecase">"How does our stack compare?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">competitive_gap_analysis</div>
+                    <div class="tool-description">AI-powered gap analysis - find opportunities</div>
+                    <div class="tool-usecase">"Where are we falling behind?"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Local Business -->
+        <section id="local">
+            <h2 class="section-title"><img src="/images/sprites/XMEDA0.png" class="section-sprite" alt=""> Local Business Intelligence</h2>
+            <p class="section-description">4 tools for Google Business Profile data, local rankings, and citation audits.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_gbp</div>
+                    <div class="tool-description">Full Google Business Profile data extraction</div>
+                    <div class="tool-usecase">"Get all GBP data for this business"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">track_local_serp</div>
+                    <div class="tool-description">Local pack ranking tracking for any keyword</div>
+                    <div class="tool-usecase">"Where do we rank for 'plumber near me'?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">audit_citations</div>
+                    <div class="tool-description">NAP consistency check across 50+ directories</div>
+                    <div class="tool-usecase">"Find citation errors"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">analyze_local_competitors</div>
+                    <div class="tool-description">Local market competitive analysis</div>
+                    <div class="tool-usecase">"Who are the top 10 dentists nearby?"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Intelligence -->
+        <section id="social">
+            <h2 class="section-title"><img src="/images/sprites/MSBDE0.png" class="section-sprite" alt=""> Social Listening</h2>
+            <p class="section-description">3 tools to monitor Reddit, Quora, and brand mentions across the web.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_reddit</div>
+                    <div class="tool-description">Reddit discussions, comments, and sentiment analysis</div>
+                    <div class="tool-usecase">"What does Reddit say about our product?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">scrape_quora</div>
+                    <div class="tool-description">Quora questions and answers in your space</div>
+                    <div class="tool-usecase">"Find questions we can answer"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <div class="tool-name">monitor_brand_mentions</div>
+                    <div class="tool-description">Cross-platform brand monitoring</div>
+                    <div class="tool-usecase">"Track mentions of our brand"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI-Powered Actions -->
+        <section id="ai">
+            <h2 class="section-title"><img src="/images/sprites/XAIRA0.png" class="section-sprite" alt=""> AI-Powered Sales Actions</h2>
+            <p class="section-description">5 tools that use AI for lead scoring, personalized outreach, and deal predictions.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">score_and_prioritize</div>
+                    <div class="tool-description">AI lead scoring based on ICP fit - A/B/C/D rankings</div>
+                    <div class="tool-usecase">"Rank these 100 leads A/B/C/D"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">generate_outreach</div>
+                    <div class="tool-description">Hyper-personalized message generation with AI</div>
+                    <div class="tool-usecase">"Write 3 email variants for this lead"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">analyze_buying_signals</div>
+                    <div class="tool-description">Detect purchase intent from multiple data sources</div>
+                    <div class="tool-usecase">"Is this company ready to buy?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">predict_deal_probability</div>
+                    <div class="tool-description">AI deal close prediction based on signals</div>
+                    <div class="tool-usecase">"What's the chance this closes?"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">recommend_approach</div>
+                    <div class="tool-description">AI sales strategy recommendation</div>
+                    <div class="tool-usecase">"How should I approach this prospect?"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Full Pipelines -->
+        <section id="pipelines">
+            <h2 class="section-title"><img src="/images/sprites/GUTSF0.png" class="section-sprite" alt=""> Full Pipelines</h2>
+            <p class="section-description">3 end-to-end tools that chain multiple operations for complete workflows.</p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">full_company_research</div>
+                    <div class="tool-description">Tech stack + funding + reviews + contacts in one call</div>
+                    <div class="tool-usecase">"Complete dossier on this company"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">full_prospect_pipeline</div>
+                    <div class="tool-description">Discover → Enrich → Score → Generate Outreach</div>
+                    <div class="tool-usecase">"Find and prep 50 leads automatically"</div>
+                </div>
+                <div class="tool-card">
+                    <span class="badge badge-apify">APIFY</span>
+                    <span class="badge badge-ai">AI</span>
+                    <div class="tool-name">full_competitive_audit</div>
+                    <div class="tool-description">Tech + content + ads + SEO + reviews audit</div>
+                    <div class="tool-usecase">"Full competitive analysis report"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Reference -->
+        <section id="api">
+            <h2 class="section-title"><img src="/images/sprites/BR7BE0.png" class="section-sprite" alt=""> API Reference</h2>
+            <p class="section-description">How to integrate GOD MODE INTEL with Make.com, Claude Desktop, and your applications.</p>
+
+            <h3 style="font-family: 'Creepster', cursive; color: var(--blood-bright); margin: 2rem 0 1rem;">Endpoints</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/</code></td>
+                        <td>GET</td>
+                        <td>Server info, status, and tool count</td>
+                    </tr>
+                    <tr>
+                        <td><code>/tools</code></td>
+                        <td>GET</td>
+                        <td>List all 48+ tools with schemas</td>
+                    </tr>
+                    <tr>
+                        <td><code>/execute</code></td>
+                        <td>POST</td>
+                        <td>Execute a tool directly</td>
+                    </tr>
+                    <tr>
+                        <td><code>/sse</code></td>
+                        <td>GET</td>
+                        <td>SSE endpoint for MCP protocol</td>
+                    </tr>
+                    <tr>
+                        <td><code>/health</code></td>
+                        <td>GET</td>
+                        <td>Health check</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-family: 'Creepster', cursive; color: var(--blood-bright); margin: 2rem 0 1rem;">Execute Tool Request</h3>
+
+            <div class="code-block">
+                <pre>curl -X POST https://god-mode-intel-mcp.vercel.app/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "scan_tech_stack",
+    "input": {
+      "url": "https://stripe.com",
+      "deepScan": true
+    }
+  }'</pre>
+            </div>
+
+            <h3 style="font-family: 'Creepster', cursive; color: var(--blood-bright); margin: 2rem 0 1rem;">Response Format</h3>
+
+            <div class="code-block">
+                <pre>{
+  "success": true,
+  "tool": "scan_tech_stack",
+  "data": {
+    "url": "https://stripe.com",
+    "technologies": [
+      { "name": "React", "category": "FRAMEWORK", "confidence": "HIGH" },
+      { "name": "Ruby on Rails", "category": "FRAMEWORK", "confidence": "HIGH" },
+      { "name": "Google Analytics", "category": "ANALYTICS", "confidence": "HIGH" }
+    ],
+    "summary": {
+      "framework": "React, Ruby on Rails",
+      "analytics": ["Google Analytics", "Segment"],
+      "hosting": "AWS",
+      "cdn": "Cloudflare"
+    }
+  },
+  "actorRunId": "xyz789abc",
+  "actorStatus": "SUCCEEDED"
+}</pre>
+            </div>
+
+            <h3 style="font-family: 'Creepster', cursive; color: var(--blood-bright); margin: 2rem 0 1rem;">Make.com Integration</h3>
+
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;"><strong>Method 1: HTTP Module</strong></p>
+            <div class="code-block">
+                <pre>{
+  "url": "https://god-mode-intel-mcp.vercel.app/execute",
+  "method": "POST",
+  "body": {
+    "tool": "find_prospects",
+    "input": {
+      "query": "{{1.searchQuery}}",
+      "location": "{{1.location}}",
+      "maxResults": 25
+    }
+  }
+}</pre>
+            </div>
+
+            <p style="color: var(--text-secondary); margin: 1.5rem 0 1rem;"><strong>Method 2: MCP Module</strong></p>
+            <div class="code-block">
+                <pre>Server URL: https://god-mode-intel-mcp.vercel.app/sse</pre>
+            </div>
+
+            <p style="color: var(--text-secondary); margin: 1.5rem 0 1rem;"><strong>Method 3: Webhook Callback</strong></p>
+            <div class="code-block">
+                <pre>{
+  "tool": "full_prospect_pipeline",
+  "input": { "query": "dentists", "location": "Austin, TX" },
+  "webhookUrl": "https://hook.make.com/your-webhook-id"
+}</pre>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/components.js"></script>
+    <script src="/js/audio-player.js"></script>
+    <script src="/js/secrets.js"></script>
+    <script src="/js/hud.js"></script>
+    <script src="/js/insanity.js"></script>
+</body>
+</html>

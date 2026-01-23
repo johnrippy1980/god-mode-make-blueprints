@@ -1,0 +1,24 @@
+{
+  "name": "nextdoor-scraper",
+  "version": "1.0.0",
+  "description": "Scrape local business recommendations and neighborhood posts from Nextdoor",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts"
+  },
+  "author": "John Rippy",
+  "license": "MIT",
+  "dependencies": {
+    "apify": "^3.1.0",
+    "axios": "^1.6.0",
+    "crawlee": "^3.6.0",
+    "playwright": "^1.40.0",
+    "camoufox-js": "^0.8.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

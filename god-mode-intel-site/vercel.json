@@ -1,0 +1,81 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/audio/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/arsenal",
+      "destination": "/arsenal.html"
+    },
+    {
+      "source": "/executive",
+      "destination": "/executive.html"
+    },
+    {
+      "source": "/slaughterhouse",
+      "destination": "/slaughterhouse.html"
+    },
+    {
+      "source": "/weapons",
+      "destination": "/weapons.html"
+    },
+    {
+      "source": "/faq",
+      "destination": "/faq.html"
+    },
+    {
+      "source": "/blood-scrolls",
+      "destination": "/blood-scrolls/index.html"
+    },
+    {
+      "source": "/blood-scrolls/launch-announcement",
+      "destination": "/blood-scrolls/launch-announcement.html"
+    }
+  ]
+}

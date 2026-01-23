@@ -1,0 +1,184 @@
+{
+  "title": "Nextdoor Scraper Input",
+  "description": "Scrape business recommendations and 'Hearts' from Nextdoor. Requires your Nextdoor account cookies for authentication.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "scrapeType": {
+      "title": "Scrape Type",
+      "description": "What type of content to scrape from Nextdoor",
+      "type": "string",
+      "enum": [
+        "businesses",
+        "recommendations",
+        "posts",
+        "events"
+      ],
+      "enumTitles": [
+        "Business Listings (with Hearts/Recommendations)",
+        "Business Recommendations",
+        "Neighborhood Posts",
+        "Local Events"
+      ],
+      "default": "businesses",
+      "prefill": "businesses"
+    },
+    "location": {
+      "title": "Location",
+      "description": "City and state to search (e.g., 'Sausalito, CA', 'Austin, TX')",
+      "type": "string",
+      "editor": "textfield",
+      "default": "Sausalito, CA",
+      "prefill": "Sausalito, CA"
+    },
+    "searchQuery": {
+      "title": "Search Query",
+      "description": "What to search for (e.g., 'Plumber', 'Restaurant', 'Electrician')",
+      "type": "string",
+      "editor": "textfield",
+      "default": "Plumber",
+      "prefill": "Plumber"
+    },
+    "nextdoorEmail": {
+      "title": "Nextdoor Email (Recommended)",
+      "description": "Your Nextdoor account email address. The scraper will log in automatically. This is the easiest authentication method.",
+      "type": "string",
+      "editor": "textfield"
+    },
+    "nextdoorPassword": {
+      "title": "Nextdoor Password",
+      "description": "Your Nextdoor account password. Stored securely and only used for login.",
+      "type": "string",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "nextdoorCookies": {
+      "title": "Nextdoor Session Cookies (Alternative)",
+      "description": "Alternative to email/password: Export cookies from your logged-in browser using EditThisCookie (Chrome) or Cookie-Editor (Firefox). Only needed if you don't want to use email/password login.",
+      "type": "string",
+      "editor": "textarea",
+      "isSecret": true
+    },
+    "useFirecrawl": {
+      "title": "Use Firecrawl (Optional)",
+      "description": "Try Firecrawl API first before browser scraping. May help with some pages but won't bypass login wall alone. Use with login credentials for best results.",
+      "type": "boolean",
+      "default": false
+    },
+    "firecrawlApiKey": {
+      "title": "Firecrawl API Key",
+      "description": "Your Firecrawl API key (get one at firecrawl.dev). Optional enhancement - browser scraping with login works without this.",
+      "type": "string",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "searchUrl": {
+      "title": "Direct Search URL (Optional)",
+      "description": "Paste a Nextdoor search URL directly (overrides location/query). Example: https://nextdoor.com/search/businesses/?query=Plumber",
+      "type": "string",
+      "editor": "textfield"
+    },
+    "category": {
+      "title": "Business Category",
+      "description": "Filter by business category",
+      "type": "string",
+      "enum": [
+        "all",
+        "home_services",
+        "restaurants",
+        "automotive",
+        "health",
+        "pets",
+        "education",
+        "shopping",
+        "professional_services"
+      ],
+      "enumTitles": [
+        "All Categories",
+        "Home Services (Plumbers, Electricians, HVAC)",
+        "Restaurants & Food",
+        "Automotive",
+        "Health & Wellness",
+        "Pets",
+        "Education",
+        "Shopping",
+        "Professional Services"
+      ],
+      "default": "all"
+    },
+    "maxResults": {
+      "title": "Max Results",
+      "description": "Maximum number of businesses to scrape",
+      "type": "integer",
+      "default": 50,
+      "prefill": 50,
+      "minimum": 1,
+      "maximum": 500
+    },
+    "minRecommendations": {
+      "title": "Minimum Hearts/Recommendations",
+      "description": "Only include businesses with at least this many hearts (recommendations)",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0
+    },
+    "includeComments": {
+      "title": "Include Comments",
+      "description": "Extract comments/replies on recommendations (slower)",
+      "type": "boolean",
+      "default": false
+    },
+    "includeVotes": {
+      "title": "Include Vote Counts",
+      "description": "Extract upvote/thanks counts",
+      "type": "boolean",
+      "default": true
+    },
+    "dateRange": {
+      "title": "Date Range",
+      "description": "Filter posts by date range",
+      "type": "string",
+      "enum": [
+        "all",
+        "today",
+        "week",
+        "month",
+        "year"
+      ],
+      "enumTitles": [
+        "All Time",
+        "Today",
+        "Past Week",
+        "Past Month",
+        "Past Year"
+      ],
+      "default": "all"
+    },
+    "proxyConfiguration": {
+      "title": "Proxy Configuration",
+      "description": "Proxy settings for browser scraping",
+      "type": "object",
+      "editor": "proxy",
+      "prefill": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": [
+          "RESIDENTIAL"
+        ]
+      }
+    },
+    "demoMode": {
+      "title": "Demo Mode (Test Without Cookies)",
+      "description": "Return sample data instead of scraping. Use this to test your workflow without needing cookies. Set to false for real data.",
+      "type": "boolean",
+      "default": false,
+      "prefill": false
+    },
+    "webhookUrl": {
+      "title": "Webhook URL",
+      "type": "string",
+      "description": "URL to POST results when scraping completes (Zapier, Make, n8n, custom endpoint)",
+      "editor": "textfield"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,25 @@
+{
+    "name": "apple-maps-scraper",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Scrape business listings from Apple Maps with ratings, hours, and contact info",
+    "main": "dist/main.js",
+    "scripts": {
+        "start": "node dist/main.js",
+        "build": "tsc",
+        "dev": "ts-node src/main.ts"
+    },
+    "author": "Actor Arsenal",
+    "license": "ISC",
+    "dependencies": {
+        "apify": "^3.1.0",
+        "axios": "^1.6.0",
+        "crawlee": "^3.5.0",
+        "playwright": "^1.40.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "typescript": "^5.0.0",
+        "ts-node": "^10.9.0"
+    }
+}

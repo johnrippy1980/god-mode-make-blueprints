@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Lost in the Mansion | GOD MODE INTEL</title>
+    <meta name="description" content="You've wandered too deep into West Mansion. The page you seek doesn't exist... or does it?">
+    <link rel="icon" type="image/png" href="/images/sprites/STFGOD0.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nosifer&family=Butcherman&family=Eater&family=Metal+Mania&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #050202;
+            --blood-red: #6B0000;
+            --blood-drip: #cc0000;
+            --bone-white: #d4ccc0;
+            --terror-green: #00cc44;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ending scene background */
+        .ending-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        .scene-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            image-rendering: pixelated;
+        }
+
+        .scene-mansion {
+            background:
+                linear-gradient(180deg, rgba(5,2,2,0.3) 0%, rgba(5,2,2,0.6) 100%),
+                url('images/sprites/END1.png') center center / cover no-repeat;
+            animation: sceneFlicker 8s ease-in-out infinite;
+        }
+
+        .scene-sunset {
+            background: url('images/sprites/END2.png') center center / cover no-repeat;
+            opacity: 0;
+            animation: sceneFade 12s ease-in-out infinite;
+        }
+
+        @keyframes sceneFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes sceneFade {
+            0%, 40% { opacity: 0; }
+            50%, 90% { opacity: 0.6; }
+            100% { opacity: 0; }
+        }
+
+        /* Content */
+        .content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(5, 2, 2, 0.85);
+            border: 3px solid var(--blood-red);
+            max-width: 600px;
+            margin: 2rem;
+        }
+
+        .content::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 30px;
+            background: linear-gradient(180deg, var(--blood-drip) 0%, transparent 100%);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30'%3E%3Cpath d='M0,0 L100,0 L100,5 Q90,10 90,20 L85,20 Q85,10 80,5 L75,5 Q75,15 70,25 L65,25 Q65,10 60,5 L55,5 Q55,20 50,30 L45,30 Q45,15 40,5 L35,5 Q35,12 30,18 L25,18 Q25,8 20,5 L15,5 Q15,15 10,22 L5,22 Q5,10 0,5 Z' fill='white'/%3E%3C/svg%3E");
+            mask-size: 100% 100%;
+        }
+
+        .error-code {
+            font-family: 'Nosifer', cursive;
+            font-size: 6rem;
+            color: var(--blood-drip);
+            text-shadow:
+                0 5px 0 #330000,
+                0 0 40px rgba(153, 0, 0, 0.8),
+                0 0 80px rgba(107, 0, 0, 0.6);
+            line-height: 1;
+            margin-bottom: 1rem;
+            animation: bloodPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes bloodPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 20px rgba(153, 0, 0, 0.8));
+            }
+            50% {
+                transform: scale(1.02);
+                filter: drop-shadow(0 0 40px rgba(204, 0, 0, 1));
+            }
+        }
+
+        .error-title {
+            font-family: 'Butcherman', cursive;
+            font-size: 1.8rem;
+            color: var(--bone-white);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 0 #000;
+        }
+
+        .error-message {
+            font-family: 'Metal Mania', cursive;
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-message em {
+            color: var(--blood-drip);
+            font-style: normal;
+        }
+
+        /* Rick sprite */
+        .rick-sprite {
+            width: 80px;
+            height: auto;
+            image-rendering: pixelated;
+            margin: 1rem auto;
+            animation: rickIdle 1s steps(2) infinite;
+            filter: drop-shadow(0 0 10px rgba(107, 0, 0, 0.5));
+        }
+
+        @keyframes rickIdle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-family: 'Metal Mania', cursive;
+            font-size: 1rem;
+            text-decoration: none;
+            border: 3px solid;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-blood {
+            background: linear-gradient(180deg, var(--blood-drip) 0%, var(--blood-red) 100%);
+            color: white;
+            border-color: var(--blood-drip);
+            box-shadow: 0 4px 0 #330000;
+        }
+
+        .btn-blood:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #330000, 0 0 30px rgba(204, 0, 0, 0.6);
+        }
+
+        .btn-ghost {
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--terror-green);
+            border-color: var(--terror-green);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(0, 204, 68, 0.2);
+            box-shadow: 0 0 20px rgba(0, 204, 68, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Floating enemies */
+        .floating-enemy {
+            position: fixed;
+            image-rendering: pixelated;
+            pointer-events: none;
+            opacity: 0.4;
+            z-index: 5;
+            filter: drop-shadow(0 0 15px rgba(107, 0, 0, 0.6));
+        }
+
+        .enemy-1 {
+            top: 10%;
+            left: 5%;
+            width: 100px;
+            animation: float1 6s ease-in-out infinite;
+        }
+
+        .enemy-2 {
+            bottom: 15%;
+            right: 5%;
+            width: 120px;
+            animation: float2 7s ease-in-out infinite;
+        }
+
+        .enemy-3 {
+            top: 50%;
+            right: 10%;
+            width: 60px;
+            animation: float3 5s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0) rotate(3deg); }
+            50% { transform: translateY(-30px) rotate(-3deg); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        /* Scanlines */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.4;
+        }
+
+        /* Film grain */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 99;
+            animation: grainMove 0.5s steps(10) infinite;
+        }
+
+        @keyframes grainMove {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-2px, 1px); }
+        }
+
+        /* Quote */
+        .quote {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #331111;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: #555;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .error-code { font-size: 4rem; }
+            .error-title { font-size: 1.4rem; }
+            .btn { padding: 0.8rem 1.5rem; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="grain"></div>
+
+    <!-- Ending scene backgrounds -->
+    <div class="ending-scene">
+        <div class="scene-layer scene-mansion"></div>
+        <div class="scene-layer scene-sunset"></div>
+    </div>
+
+    <!-- Floating enemies -->
+    <img src="images/sprites/XBIGA0.png" alt="" class="floating-enemy enemy-1">
+    <img src="images/sprites/XAIRA0.png" alt="" class="floating-enemy enemy-2">
+    <img src="images/sprites/GUTSA0.png" alt="" class="floating-enemy enemy-3">
+
+    <!-- Main content -->
+    <div class="content">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Lost in West Mansion</h1>
+
+        <img src="images/sprites/RICKA1.png" alt="Rick" class="rick-sprite">
+
+        <p class="error-message">
+            The page you seek has been <em>consumed by darkness</em>.<br>
+            Even the Terror Mask cannot find it.<br><br>
+            Perhaps it never existed... or perhaps<br>
+            <em>it was devoured by something worse.</em>
+        </p>
+
+        <div class="btn-container">
+            <a href="/" class="btn btn-blood">Escape to Safety</a>
+            <a href="/arsenal.html" class="btn btn-ghost">Enter the Arsenal</a>
+        </div>
+
+        <p class="quote">"The mask chose you, Rick. Now find your way back."</p>
+    </div>
+
+    <!-- Insanity system -->
+    <script src="/js/insanity.js"></script>
+</body>
+</html>

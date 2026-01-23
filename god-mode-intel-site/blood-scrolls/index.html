@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOOD SCROLLS | GOD MODE INTEL - The Chronicle of B2B Carnage</title>
+    <meta name="description" content="The Blood Scrolls - where B2B intelligence meets brutal honesty. Updates, insights, and the occasional blood-soaked rant about sales automation and MCP tools.">
+    <meta name="keywords" content="B2B blog, sales automation, MCP server updates, lead generation tips, competitive intelligence, John Rippy">
+    <meta name="author" content="John Rippy - Zapier Zappy 2025 Automation Hero of the Year">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://god-mode-intel-site.vercel.app/blood-scrolls/">
+    <link rel="icon" type="image/png" href="/images/sprites/STFGOD0.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="blog">
+    <meta property="og:url" content="https://god-mode-intel-site.vercel.app/blood-scrolls/">
+    <meta property="og:title" content="BLOOD SCROLLS | GOD MODE INTEL Blog">
+    <meta property="og:description" content="The Chronicle of B2B Carnage. Updates, insights, and brutal honesty about sales intelligence.">
+    <meta property="og:image" content="https://god-mode-intel-site.vercel.app/images/og-blog.png">
+
+    <!-- Schema.org Blog -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Blood Scrolls - GOD MODE INTEL Blog",
+        "description": "Updates, insights, and documentation about GOD MODE INTEL MCP server and B2B sales intelligence",
+        "url": "https://god-mode-intel-site.vercel.app/blood-scrolls/",
+        "author": {
+            "@type": "Person",
+            "name": "John Rippy",
+            "url": "https://johnrippy.link"
+        },
+        "blogPost": [
+            {
+                "@type": "BlogPosting",
+                "headline": "GOD MODE INTEL UNLEASHED: 48 Tools of Mass Destruction",
+                "datePublished": "2026-01-23",
+                "author": {"@type": "Person", "name": "John Rippy"},
+                "url": "https://god-mode-intel-site.vercel.app/blood-scrolls/launch-announcement"
+            }
+        ]
+    }
+    </script>
+
+    <!-- BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://god-mode-intel-site.vercel.app/"},
+            {"@type": "ListItem", "position": 2, "name": "Blood Scrolls", "item": "https://god-mode-intel-site.vercel.app/blood-scrolls/"}
+        ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0505;
+            --bg-card: #1a0a0a;
+            --blood-red: #8B0000;
+            --blood-bright: #cc0000;
+            --terror-green: #00ff66;
+            --ghost-blue: #4488ff;
+            --bone-white: #e8e0d0;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border: #331111;
+            --gold: #ffd700;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.3;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(139,0,0,0.3) 0%, rgba(10,5,5,0.9) 100%);
+            border: 2px solid var(--blood-red);
+        }
+
+        .hero-title {
+            font-family: 'Creepster', cursive;
+            font-size: 4rem;
+            color: var(--blood-bright);
+            text-shadow: 4px 4px 0 #000, 0 0 40px rgba(204, 0, 0, 0.6);
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--terror-green);
+        }
+
+        /* Post Grid */
+        .posts-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .post-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            transition: all 0.3s;
+            display: block;
+            text-decoration: none;
+        }
+
+        .post-card:hover {
+            border-color: var(--blood-bright);
+            transform: translateX(5px);
+            box-shadow: -5px 0 30px rgba(204, 0, 0, 0.2);
+        }
+
+        .post-card.featured {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(255,215,0,0.05) 0%, var(--bg-card) 100%);
+        }
+
+        .post-featured-badge {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+            padding: 0.3rem 0.6rem;
+            border: 1px solid var(--gold);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .post-date {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            color: var(--blood-bright);
+            margin-bottom: 0.75rem;
+        }
+
+        .post-title {
+            font-family: 'Creepster', cursive;
+            font-size: 1.8rem;
+            color: var(--bone-white);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .post-card:hover .post-title {
+            color: var(--blood-bright);
+        }
+
+        .post-excerpt {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .post-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .post-tag {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            color: var(--terror-green);
+            background: rgba(0, 255, 102, 0.1);
+            padding: 0.3rem 0.5rem;
+            border: 1px solid var(--terror-green);
+        }
+
+        .read-more {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--ghost-blue);
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div id="header-placeholder"></div>
+
+    <main>
+        <section class="hero">
+            <h1 class="hero-title">BLOOD SCROLLS</h1>
+            <p class="hero-subtitle">THE CHRONICLE OF B2B CARNAGE</p>
+        </section>
+
+        <section class="posts-grid">
+            <!-- Featured Launch Post -->
+            <a href="/blood-scrolls/launch-announcement" class="post-card featured">
+                <span class="post-featured-badge">FEATURED</span>
+                <div class="post-date">JANUARY 23, 2026</div>
+                <h2 class="post-title">GOD MODE INTEL UNLEASHED: 48 Tools of Mass Destruction</h2>
+                <p class="post-excerpt">The Terror Mask has been activated. After months in the blood-soaked development chamber, GOD MODE INTEL is LIVE. 48 B2B intelligence tools. 7 standalone weapons. One MCP endpoint to rule them all. Your overpriced sales tools never stood a chance...</p>
+                <div class="post-tags">
+                    <span class="post-tag">LAUNCH</span>
+                    <span class="post-tag">MCP</span>
+                    <span class="post-tag">MAKE.COM</span>
+                </div>
+                <span class="read-more">READ THE BLOOD-SOAKED DETAILS →</span>
+            </a>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/components.js"></script>
+    <script src="/js/audio-player.js"></script>
+    <script src="/js/secrets.js"></script>
+    <script src="/js/hud.js"></script>
+</body>
+</html>

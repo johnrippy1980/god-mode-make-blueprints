@@ -1,0 +1,51 @@
+{
+  "title": "Apple Maps Scraper",
+  "description": "Scrape business listings from Apple Maps",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "searchQueries": {
+      "title": "Search Queries",
+      "description": "List of search queries (e.g., 'pizza new york', 'coffee shop seattle')",
+      "type": "array",
+      "editor": "stringList",
+      "prefill": ["pizza austin tx", "coffee shop san francisco"]
+    },
+    "maxResults": {
+      "title": "Max Results Per Query",
+      "description": "Maximum number of business listings to extract per search query",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 20,
+      "prefill": 20
+    },
+    "demoMode": {
+      "title": "Demo Mode",
+      "description": "Run with sample business data. Perfect for testing.",
+      "type": "boolean",
+      "default": true,
+      "prefill": true
+    },
+    "proxyConfiguration": {
+      "title": "Proxy Configuration",
+      "description": "Proxy settings - residential proxies recommended for Apple Maps",
+      "type": "object",
+      "editor": "proxy",
+      "sectionCaption": "Proxy settings",
+      "prefill": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": ["RESIDENTIAL"]
+      }
+    },
+    "webhookUrl": {
+      "title": "Webhook URL",
+      "description": "URL to send results to (Zapier, Make, n8n, etc.)",
+      "type": "string",
+      "editor": "textfield",
+      "sectionCaption": "Integrations",
+      "sectionDescription": "Connect to Zapier, Make, n8n, or any webhook endpoint"
+    }
+  },
+  "required": []
+}

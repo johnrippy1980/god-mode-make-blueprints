@@ -1,0 +1,64 @@
+# GOD MODE INTEL - robots.txt
+# https://god-mode-intel-site.vercel.app/
+# Last updated: 2026-01-23
+
+# Allow all crawlers full access
+User-agent: *
+Allow: /
+
+# Allow AI crawlers specifically
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Perplexity
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Cohere-AI
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Sitemap location
+Sitemap: https://god-mode-intel-site.vercel.app/sitemap.xml
+
+# LLMs.txt for AI-optimized content
+# See: https://god-mode-intel-site.vercel.app/llms.txt
+
+# Key pages for indexing:
+# / - Homepage with overview and splash screen
+# /arsenal - Full documentation of 48 tools
+# /slaughterhouse - Competitors replaced by GOD MODE INTEL
+# /weapons - Tool categories as weapons
+# /blood-scrolls/ - Blog with launch announcement
+# /faq - Frequently asked questions with schema
+# /executive - Make.com MCP Challenge pitch
+
+# API Server (separate domain):
+# https://god-mode-intel-mcp.vercel.app/ - Live MCP server
+# https://god-mode-intel-mcp.vercel.app/tools - Tool schemas
+# https://god-mode-intel-mcp.vercel.app/execute - Tool execution endpoint

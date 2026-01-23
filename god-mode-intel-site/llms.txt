@@ -1,0 +1,193 @@
+# GOD MODE INTEL - LLMs.txt
+# https://llmstxt.org/
+# Last updated: 2026-01-23
+
+> GOD MODE INTEL is an enterprise-grade MCP (Model Context Protocol) server providing 48 B2B intelligence tools for lead generation, company research, competitive intelligence, and AI-powered sales automation. Built by John Rippy, Zapier Zappy 2025 Automation Hero of the Year.
+
+## About GOD MODE INTEL
+
+GOD MODE INTEL consolidates the entire B2B sales intelligence stack into a single MCP endpoint. 48 devastating tools. 7 standalone tools that work WITHOUT any API keys. One connection. Unlimited scale.
+
+### Key Features
+- **48 Total Tools**: Lead discovery, enrichment, LinkedIn intelligence, company research, review aggregation, competitive intel, local business data, social listening, AI-powered actions, and full pipelines
+- **7 Standalone Tools**: validate_email, validate_domain, extract_url_metadata, calculate_lead_score, parse_business_card, clean_lead_data, generate_icp_questions - NO API keys needed
+- **MCP Protocol Compliant**: Full stdio transport (Claude Desktop) and HTTP/SSE transport (Make.com) support
+- **Enterprise Scale**: Powered by 280+ Apify actors for real-time web scraping
+- **Production Ready**: Deployed on Vercel with global edge distribution
+
+## API Endpoints
+
+- **Server Info**: GET https://god-mode-intel-mcp.vercel.app/
+- **Tool List**: GET https://god-mode-intel-mcp.vercel.app/tools
+- **Execute Tool**: POST https://god-mode-intel-mcp.vercel.app/execute
+- **SSE Endpoint**: GET https://god-mode-intel-mcp.vercel.app/sse
+- **Health Check**: GET https://god-mode-intel-mcp.vercel.app/health
+
+## Tool Categories
+
+### Lead Discovery (5 tools)
+- find_prospects: Search Google Maps for local businesses
+- find_lookalikes: Find companies similar to your best customers
+- scrape_local_leads: Bulk extract local business data
+- discover_companies: AI-powered company discovery from any URL
+- enrich_from_url: Extract company data from any webpage
+
+### Lead Enrichment (3 tools)
+- enrich_lead: Full enrichment with email, company, social profiles
+- enrich_leads_batch: Enrich up to 100 leads at once
+- enrich_company_contacts: Find decision-makers at a company
+
+### LinkedIn Intelligence (3 tools)
+- scrape_linkedin_profile: Full profile with experience, education, skills
+- scrape_linkedin_posts: Recent posts with engagement metrics
+- analyze_linkedin_voice: AI analysis of writing style and tone
+
+### Company Research (6 tools)
+- research_company: Comprehensive company intel in one call
+- scan_tech_stack: Detect 100+ technologies on any website
+- get_crunchbase_data: Funding rounds, investors, key people
+- get_glassdoor_reviews: Employee reviews, ratings, salary data
+- scrape_g2: G2 software reviews and ratings
+- scrape_capterra: Capterra reviews and comparisons
+
+### Review Intelligence (4 tools)
+- scrape_trustpilot: Consumer reviews and trust scores
+- scrape_yelp: Local business reviews
+- aggregate_reviews: Combine reviews from all platforms
+- analyze_sentiment: AI sentiment analysis of reviews
+
+### Competitive Intelligence (5 tools)
+- monitor_competitors: Track website changes, hiring, social activity
+- scrape_facebook_ads: Facebook Ad Library scraping
+- track_competitor_keywords: SEO keyword tracking
+- compare_tech_stacks: Side-by-side technology comparison
+- competitive_gap_analysis: AI-powered gap analysis
+
+### Local Business (4 tools)
+- scrape_gbp: Full Google Business Profile data
+- track_local_serp: Local pack ranking tracking
+- audit_citations: NAP consistency check across 50+ directories
+- analyze_local_competitors: Local market competitive analysis
+
+### Social Listening (3 tools)
+- scrape_reddit: Reddit discussions and sentiment
+- scrape_quora: Quora questions and answers
+- monitor_brand_mentions: Cross-platform brand monitoring
+
+### AI-Powered Actions (5 tools)
+- score_and_prioritize: AI lead scoring based on ICP fit
+- generate_outreach: Hyper-personalized message generation
+- analyze_buying_signals: Detect purchase intent
+- predict_deal_probability: AI deal close prediction
+- recommend_approach: AI sales strategy recommendation
+
+### Full Pipelines (3 tools)
+- full_company_research: Tech stack + funding + reviews + contacts
+- full_prospect_pipeline: Discover, Enrich, Score, Generate Outreach
+- full_competitive_audit: Tech + content + ads + SEO + reviews
+
+### Standalone Tools (7 tools - NO API KEYS NEEDED)
+- validate_email: Format + MX record validation
+- validate_domain: DNS A/MX record checking
+- extract_url_metadata: Title, OG tags, tech detection
+- calculate_lead_score: Built-in ICP scoring algorithm
+- parse_business_card: Extract structured contact data
+- clean_lead_data: Normalize phones, names, emails
+- generate_icp_questions: Sales qualification questions
+
+## Integration
+
+### Make.com HTTP Module
+```json
+{
+  "url": "https://god-mode-intel-mcp.vercel.app/execute",
+  "method": "POST",
+  "body": {
+    "tool": "find_prospects",
+    "input": {
+      "query": "dentists",
+      "location": "Austin, TX",
+      "maxResults": 25
+    }
+  }
+}
+```
+
+### Make.com MCP Module
+Server URL: https://god-mode-intel-mcp.vercel.app/sse
+
+### Claude Desktop
+Add to claude_desktop_config.json:
+```json
+{
+  "mcpServers": {
+    "god-mode-intel": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-remote", "https://god-mode-intel-mcp.vercel.app/sse"]
+    }
+  }
+}
+```
+
+## Example Usage
+
+### Try a Standalone Tool (No API Key Required)
+```bash
+curl -X POST https://god-mode-intel-mcp.vercel.app/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "calculate_lead_score",
+    "input": {
+      "lead": {
+        "company_size": "enterprise",
+        "job_title": "VP Sales",
+        "has_budget": true,
+        "timeline": "immediate"
+      }
+    }
+  }'
+```
+
+### Response Format
+```json
+{
+  "success": true,
+  "tool": "calculate_lead_score",
+  "data": {
+    "score": 100,
+    "tier": "A",
+    "standalone": true
+  }
+}
+```
+
+## Links
+
+- Live MCP Server: https://god-mode-intel-mcp.vercel.app
+- Tool Schemas: https://god-mode-intel-mcp.vercel.app/tools
+- Apify Actor: https://apify.com/alizarin_refrigerator-owner/god-mode-intel-mcp
+- Documentation Site: https://god-mode-intel-site.vercel.app
+- Arsenal (Tools): https://god-mode-intel-site.vercel.app/arsenal
+- FAQ: https://god-mode-intel-site.vercel.app/faq
+
+## About the Builder
+
+John Rippy
+- Zapier Zappy 2025 Automation Hero of the Year
+- 280+ Apify actors in production
+- CTO at Drive Social Media, St. Louis
+- Website: https://johnrippy.link
+- LinkedIn: https://linkedin.com/in/johnrippy
+
+## Related Projects
+
+- Actor Arsenal (DOOM themed): https://actor-arsenal-site.vercel.app - 280+ Apify actors
+- Zapier Quake: https://zapier-quake-site.vercel.app - Quake-themed Zapier automation
+- Duke SEMrush: https://duke-semrush-site.vercel.app - Duke Nukem-themed SEO tools
+- Splatterhouse 3D: https://splatterhouse-3d-site.vercel.app - Original Splatterhouse tribute
+
+## Make.com MCP Challenge 2026
+
+GOD MODE INTEL is a submission for the Make.com MCP Community Challenge 2026: "Managing and Scaling Workflows with Make and MCP"
+
+Challenge Link: https://community.make.com/t/community-challenge-managing-and-scaling-workflows-with-make-and-mcp/101210

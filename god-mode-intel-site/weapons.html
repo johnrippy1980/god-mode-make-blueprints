@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEAPONS | GOD MODE INTEL - 48 Tools of Mass Destruction</title>
+    <meta name="description" content="Your arsenal of 48 B2B intelligence weapons. Lead discovery shotguns, enrichment chainsaws, competitive analysis flamethrowers. 7 standalone weapons require no ammo (API keys).">
+    <meta name="keywords" content="B2B tools, lead generation tools, enrichment API, LinkedIn scraping, competitive intelligence, MCP tools, sales automation weapons">
+    <meta name="author" content="John Rippy - Zapier Zappy 2025 Automation Hero of the Year">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://god-mode-intel-site.vercel.app/weapons">
+    <link rel="icon" type="image/png" href="/images/sprites/STFGOD0.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://god-mode-intel-site.vercel.app/weapons">
+    <meta property="og:title" content="WEAPONS | GOD MODE INTEL - 48 Tools of Mass Destruction">
+    <meta property="og:description" content="Your arsenal of 48 B2B intelligence weapons. Lead shotguns, enrichment chainsaws, AI flamethrowers. 7 require no ammo.">
+    <meta property="og:image" content="https://god-mode-intel-site.vercel.app/images/og-weapons.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WEAPONS | 48 Tools of Mass Destruction">
+    <meta name="twitter:description" content="Lead shotguns, enrichment chainsaws, competitive analysis flamethrowers. Arm yourself.">
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "GOD MODE INTEL MCP Server",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "48 B2B intelligence tools delivered via Model Context Protocol. Lead discovery, enrichment, LinkedIn scraping, competitive analysis, and AI-powered sales automation.",
+        "url": "https://god-mode-intel-mcp.vercel.app",
+        "author": {
+            "@type": "Person",
+            "name": "John Rippy",
+            "url": "https://johnrippy.link"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "description": "Pay-per-use pricing with 7 free standalone tools"
+        },
+        "featureList": [
+            "48 B2B intelligence tools",
+            "7 standalone tools (no API keys)",
+            "Lead discovery from Google Maps",
+            "Lead enrichment with email/phone",
+            "LinkedIn profile scraping",
+            "Tech stack detection",
+            "Competitive intelligence",
+            "AI-powered outreach generation"
+        ]
+    }
+    </script>
+
+    <!-- BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://god-mode-intel-site.vercel.app/"},
+            {"@type": "ListItem", "position": 2, "name": "Weapons", "item": "https://god-mode-intel-site.vercel.app/weapons"}
+        ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0505;
+            --bg-card: #1a0a0a;
+            --bg-card-hover: #2a0f0f;
+            --blood-red: #8B0000;
+            --blood-bright: #cc0000;
+            --terror-green: #00ff66;
+            --ghost-blue: #4488ff;
+            --bone-white: #e8e0d0;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border: #331111;
+            --gold: #ffd700;
+            --weapon-orange: #ff6600;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.3;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(255,102,0,0.2) 0%, rgba(10,5,5,0.9) 100%);
+            border: 2px solid var(--weapon-orange);
+            position: relative;
+        }
+
+        .hero-title {
+            font-family: 'Creepster', cursive;
+            font-size: 4rem;
+            color: var(--weapon-orange);
+            text-shadow: 4px 4px 0 #000, 0 0 40px rgba(255, 102, 0, 0.6);
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: var(--terror-green);
+            margin-bottom: 2rem;
+        }
+
+        /* Weapon Categories */
+        .weapon-category {
+            margin-bottom: 4rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--blood-red);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+        }
+
+        .category-sprite, .section-sprite {
+            width: 40px;
+            height: 40px;
+            image-rendering: pixelated;
+            vertical-align: middle;
+        }
+
+        .category-title {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: var(--blood-bright);
+        }
+
+        .category-count {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--terror-green);
+            background: rgba(0, 255, 102, 0.1);
+            padding: 0.3rem 0.6rem;
+            border: 1px solid var(--terror-green);
+        }
+
+        .category-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* Weapon Grid */
+        .weapon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .weapon-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .weapon-card:hover {
+            border-color: var(--weapon-orange);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 102, 0, 0.2);
+        }
+
+        .weapon-card.standalone {
+            border-color: var(--terror-green);
+            background: linear-gradient(135deg, rgba(0,255,102,0.05) 0%, var(--bg-card) 100%);
+        }
+
+        .weapon-card.standalone:hover {
+            border-color: var(--terror-green);
+            box-shadow: 0 10px 30px rgba(0, 255, 102, 0.2);
+        }
+
+        .weapon-badge {
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            padding: 0.3rem 0.5rem;
+        }
+
+        .badge-standalone {
+            background: var(--terror-green);
+            color: #000;
+        }
+
+        .badge-ai {
+            background: var(--gold);
+            color: #000;
+        }
+
+        .badge-apify {
+            background: var(--ghost-blue);
+            color: #fff;
+        }
+
+        .weapon-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--weapon-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .weapon-card.standalone .weapon-name {
+            color: var(--terror-green);
+        }
+
+        .weapon-type {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .weapon-description {
+            color: var(--bone-white);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .weapon-usecase {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.45rem;
+            color: var(--ghost-blue);
+            background: rgba(68, 136, 255, 0.1);
+            padding: 0.5rem;
+            border-left: 2px solid var(--ghost-blue);
+        }
+
+        /* Standalone Highlight */
+        .standalone-highlight {
+            background: linear-gradient(135deg, rgba(0,255,102,0.1) 0%, rgba(10,5,5,0.9) 100%);
+            border: 2px solid var(--terror-green);
+            padding: 3rem;
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .standalone-title {
+            font-family: 'Creepster', cursive;
+            font-size: 2.5rem;
+            color: var(--terror-green);
+            margin-bottom: 1rem;
+        }
+
+        .standalone-subtitle {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--bone-white);
+            margin-bottom: 2rem;
+        }
+
+        .standalone-features {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .standalone-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--terror-green);
+        }
+
+        /* Code Example */
+        .code-section {
+            background: var(--bg-card);
+            border: 2px solid var(--blood-red);
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .code-title {
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+            color: var(--blood-bright);
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #0a0505;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--terror-green);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .weapon-grid { grid-template-columns: 1fr; }
+            .standalone-features { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div id="header-placeholder"></div>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero">
+            <h1 class="hero-title">WEAPONS CACHE</h1>
+            <p class="hero-subtitle">48 TOOLS OF MASS DESTRUCTION - ARM YOURSELF</p>
+        </section>
+
+        <!-- Standalone Highlight -->
+        <section class="standalone-highlight">
+            <h2 class="standalone-title"><img src="/images/sprites/XSKID0.png" class="section-sprite" alt=""> 7 STANDALONE WEAPONS - NO AMMO REQUIRED</h2>
+            <p class="standalone-subtitle">THESE WEAPONS WORK WITHOUT ANY API KEYS OR EXTERNAL SERVICES</p>
+            <div class="standalone-features">
+                <div class="standalone-feature"><span>✓</span> Zero Setup</div>
+                <div class="standalone-feature"><span>✓</span> Unlimited Uses</div>
+                <div class="standalone-feature"><span>✓</span> Instant Results</div>
+                <div class="standalone-feature"><span>✓</span> No Cost</div>
+            </div>
+        </section>
+
+        <!-- Standalone Weapons -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/XSKIA0.png" class="category-sprite" alt="">
+                <h2 class="category-title">STANDALONE ARSENAL</h2>
+                <span class="category-count">7 WEAPONS</span>
+            </div>
+            <p class="category-description">Zero API keys. Zero setup. Unlimited devastation. These weapons are always loaded and ready to fire.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card standalone">
+                    <span class="weapon-badge badge-standalone">NO API KEY</span>
+                    <h3 class="weapon-name">validate_email</h3>
+                    <div class="weapon-type">EMAIL VERIFICATION LASER</div>
+                    <p class="weapon-description">Validate email format and check MX records. Never send to a dead address again.</p>
+                    <div class="weapon-usecase">"Is john@acme.com real?"</div>
+                </article>
+
+                <article class="weapon-card standalone">
+                    <span class="weapon-badge badge-standalone">NO API KEY</span>
+                    <h3 class="weapon-name">validate_domain</h3>
+                    <div class="weapon-type">DOMAIN EXISTENCE SCANNER</div>
+                    <p class="weapon-description">Check if a domain exists with DNS A/MX record verification.</p>
+                    <div class="weapon-usecase">"Does acme.com exist?"</div>
+                </article>
+
+                <article class="weapon-card standalone">
+                    <span class="weapon-badge badge-standalone">NO API KEY</span>
+                    <h3 class="weapon-name">extract_url_metadata</h3>
+                    <div class="weapon-type">PAGE EXTRACTION CLAW</div>
+                    <p class="weapon-description">Scrape title, description, OG tags, and detect tech stack from any URL.</p>
+                    <div class="weapon-usecase">"What's on this page?"</div>
+                </article>
+
+                <article class="weapon-card standalone">
+                    <span class="weapon-badge badge-standalone">NO API KEY</span>
+                    <h3 class="weapon-name">calculate_lead_score</h3>
+                    <div class="weapon-type">AI SCORING ALGORITHM</div>
+                    <p class="weapon-description">Score leads A/B/C/D based on ICP fit. Built-in intelligence, no external AI needed.</p>
+                    <div class="weapon-usecase">"Rate this lead 0-100"</div>
+                </article>
+
+                <article class="weapon-card standalone">
+                    <span class="weapon-badge badge-standalone">NO API KEY</span>
+                    <h3 class="weapon-name">parse_business_card</h3>
+                    <div class="weapon-type">TEXT EXTRACTION BLADE</div>
+                    <p class="weapon-description">Extract structured contact data from raw business card text.</p>
+                    <div class="weapon-usecase">"Parse this messy text"</div>
+                </article>
+
+                <article class="weapon-card standalone">
+                    <span class="weapon-badge badge-standalone">NO API KEY</span>
+                    <h3 class="weapon-name">clean_lead_data</h3>
+                    <div class="weapon-type">DATA SANITIZATION BOMB</div>
+                    <p class="weapon-description">Normalize phone numbers, capitalize names, validate email formats.</p>
+                    <div class="weapon-usecase">"Clean my dirty data"</div>
+                </article>
+
+                <article class="weapon-card standalone">
+                    <span class="weapon-badge badge-standalone">NO API KEY</span>
+                    <h3 class="weapon-name">generate_icp_questions</h3>
+                    <div class="weapon-type">DISCOVERY QUESTION GENERATOR</div>
+                    <p class="weapon-description">Generate sales discovery and qualification questions for any industry.</p>
+                    <div class="weapon-usecase">"What should I ask?"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Lead Discovery -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/MSBDA0.png" class="category-sprite" alt="">
+                <h2 class="category-title">LEAD DISCOVERY SHOTGUNS</h2>
+                <span class="category-count">5 WEAPONS</span>
+            </div>
+            <p class="category-description">Spray and pray? No. Precision targeting. Find your ideal prospects from Google Maps, databases, and the dark corners of the web.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">find_prospects</h3>
+                    <div class="weapon-type">GOOGLE MAPS HUNTER</div>
+                    <p class="weapon-description">Search Google Maps for local businesses. Industry + location = leads delivered.</p>
+                    <div class="weapon-usecase">"Find dentists in Austin, TX"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">find_lookalikes</h3>
+                    <div class="weapon-type">CLONE DETECTOR</div>
+                    <p class="weapon-description">Find companies similar to your best customers. Feed it a winner, get 50 more.</p>
+                    <div class="weapon-usecase">"Find companies like Stripe"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">scrape_local_leads</h3>
+                    <div class="weapon-type">BULK EXTRACTION CANNON</div>
+                    <p class="weapon-description">Mass extract local business data from multiple cities simultaneously.</p>
+                    <div class="weapon-usecase">"Get restaurants in 5 cities"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">discover_companies</h3>
+                    <div class="weapon-type">AI COMPANY FINDER</div>
+                    <p class="weapon-description">Point it at any URL and watch it extract every company mentioned.</p>
+                    <div class="weapon-usecase">"Find SaaS on TechCrunch"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">enrich_from_url</h3>
+                    <div class="weapon-type">URL INTELLIGENCE EXTRACTOR</div>
+                    <p class="weapon-description">Extract company data from any webpage - About pages, LinkedIn, anywhere.</p>
+                    <div class="weapon-usecase">"Pull info from this page"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Lead Enrichment -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/GUTSA0.png" class="category-sprite" alt="">
+                <h2 class="category-title">ENRICHMENT CHAINSAWS</h2>
+                <span class="category-count">3 WEAPONS</span>
+            </div>
+            <p class="category-description">Take a name. Get everything. Email, phone, company, social profiles, tech stack. Rip through data gaps like butter.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">enrich_lead</h3>
+                    <div class="weapon-type">FULL ENRICHMENT ENGINE</div>
+                    <p class="weapon-description">The big one. Email, phone, company data, social profiles, tech stack - all in one call.</p>
+                    <div class="weapon-usecase">"Enrich john@acme.com"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">enrich_leads_batch</h3>
+                    <div class="weapon-type">BATCH PROCESSOR</div>
+                    <p class="weapon-description">Enrich up to 100 leads at once. Perfect for imported CSV carnage.</p>
+                    <div class="weapon-usecase">"Enrich my entire list"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">enrich_company_contacts</h3>
+                    <div class="weapon-type">CONTACT FINDER</div>
+                    <p class="weapon-description">Find decision-makers at any company. VPs, Directors, C-suite - all exposed.</p>
+                    <div class="weapon-usecase">"Find VPs at Salesforce"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- LinkedIn -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/BSBDA0.png" class="category-sprite" alt="">
+                <h2 class="category-title">LINKEDIN INFILTRATORS</h2>
+                <span class="category-count">3 WEAPONS</span>
+            </div>
+            <p class="category-description">Bypass Sales Navigator. Get profile data, posts, engagement metrics. Understand your prospects better than they understand themselves.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">scrape_linkedin_profile</h3>
+                    <div class="weapon-type">PROFILE EXTRACTOR</div>
+                    <p class="weapon-description">Full profile: experience, education, skills, connections. Everything LinkedIn shows.</p>
+                    <div class="weapon-usecase">"Get /in/elonmusk"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">scrape_linkedin_posts</h3>
+                    <div class="weapon-type">CONTENT ANALYZER</div>
+                    <p class="weapon-description">Recent posts with likes, comments, shares. See what they care about.</p>
+                    <div class="weapon-usecase">"Analyze their posts"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">analyze_linkedin_voice</h3>
+                    <div class="weapon-type">WRITING STYLE DECODER</div>
+                    <p class="weapon-description">AI analyzes their writing style, tone, communication patterns. Personalize outreach to match.</p>
+                    <div class="weapon-usecase">"Match their voice"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Company Research -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/XBIGA0.png" class="category-sprite" alt="">
+                <h2 class="category-title">COMPANY RESEARCH MISSILES</h2>
+                <span class="category-count">6 WEAPONS</span>
+            </div>
+            <p class="category-description">Deep intel on any company. Tech stacks, funding rounds, employee reviews, software usage. Know everything before the first call.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">research_company</h3>
+                    <div class="weapon-type">FULL COMPANY DOSSIER</div>
+                    <p class="weapon-description">Everything in one call. The nuclear option for company research.</p>
+                    <div class="weapon-usecase">"Tell me about Stripe"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">scan_tech_stack</h3>
+                    <div class="weapon-type">TECHNOLOGY DETECTOR</div>
+                    <p class="weapon-description">Detect 100+ technologies on any website. Know their tools before they know yours.</p>
+                    <div class="weapon-usecase">"What does Shopify use?"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">get_crunchbase_data</h3>
+                    <div class="weapon-type">FUNDING TRACKER</div>
+                    <p class="weapon-description">Funding rounds, investors, key people. Follow the money.</p>
+                    <div class="weapon-usecase">"Who funded OpenAI?"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">get_glassdoor_reviews</h3>
+                    <div class="weapon-type">CULTURE SCANNER</div>
+                    <p class="weapon-description">Employee reviews, ratings, salaries. Know the internal truth.</p>
+                    <div class="weapon-usecase">"Culture at Meta?"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">scrape_g2</h3>
+                    <div class="weapon-type">SOFTWARE REVIEW GRABBER</div>
+                    <p class="weapon-description">G2 reviews, ratings, feature comparisons. What users really think.</p>
+                    <div class="weapon-usecase">"Reviews for HubSpot"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">scrape_capterra</h3>
+                    <div class="weapon-type">SOFTWARE COMPARISON ENGINE</div>
+                    <p class="weapon-description">Capterra reviews and head-to-head comparisons.</p>
+                    <div class="weapon-usecase">"Compare Salesforce vs HubSpot"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Competitive Intel -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/BR7BA0.png" class="category-sprite" alt="">
+                <h2 class="category-title">COMPETITIVE INTEL FLAMETHROWERS</h2>
+                <span class="category-count">5 WEAPONS</span>
+            </div>
+            <p class="category-description">Know your enemies. Track their every move. Ads, keywords, tech changes, market gaps. Burn the competition with superior intelligence.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">monitor_competitors</h3>
+                    <div class="weapon-type">24/7 SURVEILLANCE</div>
+                    <p class="weapon-description">Track website changes, hiring activity, social updates. Never be surprised.</p>
+                    <div class="weapon-usecase">"Watch competitor pricing"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">scrape_facebook_ads</h3>
+                    <div class="weapon-type">AD LIBRARY RAIDER</div>
+                    <p class="weapon-description">See every ad your competitors are running on Facebook/Instagram.</p>
+                    <div class="weapon-usecase">"What ads are they running?"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">track_competitor_keywords</h3>
+                    <div class="weapon-type">SEO SPY</div>
+                    <p class="weapon-description">Track what keywords competitors rank for. Steal their traffic strategy.</p>
+                    <div class="weapon-usecase">"Their SEO keywords?"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-apify">APIFY</span>
+                    <h3 class="weapon-name">compare_tech_stacks</h3>
+                    <div class="weapon-type">TECH COMPARISON</div>
+                    <p class="weapon-description">Side-by-side technology comparison. See who's ahead.</p>
+                    <div class="weapon-usecase">"Our stack vs theirs"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">competitive_gap_analysis</h3>
+                    <div class="weapon-type">AI GAP FINDER</div>
+                    <p class="weapon-description">AI identifies where you're falling behind and opportunities to exploit.</p>
+                    <div class="weapon-usecase">"Where are our gaps?"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- AI-Powered -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/XAIRA0.png" class="category-sprite" alt="">
+                <h2 class="category-title">AI DEVASTATION SUITE</h2>
+                <span class="category-count">5 WEAPONS</span>
+            </div>
+            <p class="category-description">Artificial intelligence weaponized for sales. Scoring, outreach, predictions. Let the machines do the thinking.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">score_and_prioritize</h3>
+                    <div class="weapon-type">AI LEAD SCORER</div>
+                    <p class="weapon-description">Rank leads A/B/C/D based on ICP fit. Stop wasting time on bad leads.</p>
+                    <div class="weapon-usecase">"Rank these 100 leads"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">generate_outreach</h3>
+                    <div class="weapon-type">PERSONALIZATION ENGINE</div>
+                    <p class="weapon-description">Generate hyper-personalized messages based on all available intel.</p>
+                    <div class="weapon-usecase">"Write 3 email variants"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">analyze_buying_signals</h3>
+                    <div class="weapon-type">INTENT DETECTOR</div>
+                    <p class="weapon-description">Detect purchase intent from hiring, tech changes, funding, content.</p>
+                    <div class="weapon-usecase">"Are they ready to buy?"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">predict_deal_probability</h3>
+                    <div class="weapon-type">DEAL PREDICTOR</div>
+                    <p class="weapon-description">AI predicts likelihood of deal closing based on all signals.</p>
+                    <div class="weapon-usecase">"Chance this closes?"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">recommend_approach</h3>
+                    <div class="weapon-type">STRATEGY ADVISOR</div>
+                    <p class="weapon-description">AI recommends the best sales approach for each prospect.</p>
+                    <div class="weapon-usecase">"How do I approach them?"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Full Pipelines -->
+        <section class="weapon-category">
+            <div class="category-header">
+                <img src="/images/sprites/GUTSF0.png" class="category-sprite" alt="">
+                <h2 class="category-title">NUCLEAR PIPELINES</h2>
+                <span class="category-count">3 WEAPONS</span>
+            </div>
+            <p class="category-description">End-to-end destruction. Chain multiple tools into devastating workflows. One call, total annihilation.</p>
+
+            <div class="weapon-grid">
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">full_company_research</h3>
+                    <div class="weapon-type">COMPLETE DOSSIER</div>
+                    <p class="weapon-description">Tech + funding + reviews + contacts. Everything in one nuclear strike.</p>
+                    <div class="weapon-usecase">"Everything on this company"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">full_prospect_pipeline</h3>
+                    <div class="weapon-type">LEAD FACTORY</div>
+                    <p class="weapon-description">Discover → Enrich → Score → Generate Outreach. Leads delivered ready to contact.</p>
+                    <div class="weapon-usecase">"Find and prep 50 leads"</div>
+                </article>
+
+                <article class="weapon-card">
+                    <span class="weapon-badge badge-ai">AI</span>
+                    <h3 class="weapon-name">full_competitive_audit</h3>
+                    <div class="weapon-type">COMPETITIVE NUKE</div>
+                    <p class="weapon-description">Tech + content + ads + SEO + reviews. Complete competitive destruction report.</p>
+                    <div class="weapon-usecase">"Full competitive analysis"</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Code Example -->
+        <section class="code-section">
+            <h2 class="code-title">FIRE A WEAPON</h2>
+            <div class="code-block">
+                <pre>curl -X POST https://god-mode-intel-mcp.vercel.app/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "find_prospects",
+    "input": {
+      "query": "coffee shops",
+      "location": "Seattle, WA",
+      "maxResults": 25
+    }
+  }'</pre>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/components.js"></script>
+    <script src="/js/audio-player.js"></script>
+    <script src="/js/secrets.js"></script>
+    <script src="/js/hud.js"></script>
+    <script src="/js/insanity.js"></script>
+</body>
+</html>
