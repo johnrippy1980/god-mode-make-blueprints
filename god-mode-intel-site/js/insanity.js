@@ -14,8 +14,8 @@
         timeIncrement: 2,  // FASTER: was 0.5, now 2 per second
         timeInterval: 1000,
         navigationDecrease: 15,
-        fightBackDecrease: 20,
-        fightBackClicksNeeded: 5,
+        fightBackDecrease: 8,
+        fightBackClicksNeeded: 12,
         storageKey: 'godmode_insanity',
         scoreKey: 'godmode_score',
         secretsKey: 'godmode_secrets',
@@ -147,7 +147,7 @@
                 </div>
                 <div class="escape-text">
                     <span class="escape-title">THE MASK IS CONSUMING YOU</span>
-                    <span class="escape-subtitle">Click FIGHT BACK to resist! (<span id="fight-clicks">0</span>/5)</span>
+                    <span class="escape-subtitle">Click FIGHT BACK to resist! (<span id="fight-clicks">0</span>/12)</span>
                     <div class="fight-progress">
                         <div class="fight-progress-fill" id="fight-progress-fill"></div>
                     </div>
@@ -665,19 +665,20 @@
 
             /* Punch/Kick Overlay */
             #punch-overlay {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 40vh;
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: 50vh;
                 pointer-events: none;
-                z-index: 999998;
+                z-index: 9999999 !important;
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-end;
-                padding: 0 5vw;
+                padding: 0 10vw 5vh;
                 opacity: 0;
                 visibility: hidden;
+                transition: opacity 0.2s ease;
             }
             #punch-overlay.visible {
                 opacity: 1;
@@ -685,35 +686,35 @@
             }
             .punch-sprite {
                 width: auto;
-                height: 35vh;
-                max-height: 300px;
+                height: 40vh;
+                max-height: 400px;
                 image-rendering: pixelated;
-                transform: translateY(100%);
-                transition: transform 0.15s ease-out;
-                filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.8));
+                transform: translateY(20%);
+                transition: transform 0.12s ease-out, filter 0.12s ease-out;
+                filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
             }
             #punch-sprite-left {
                 transform-origin: bottom left;
             }
             #punch-sprite-right {
                 transform-origin: bottom right;
-                transform: translateY(100%) scaleX(-1);
+                transform: translateY(20%) scaleX(-1);
             }
             .punch-sprite.punch-left {
-                transform: translateY(0) rotate(-15deg) scale(1.1);
-                filter: drop-shadow(0 0 30px rgba(255, 50, 0, 1)) brightness(1.2);
+                transform: translateY(-10%) rotate(-20deg) scale(1.3) !important;
+                filter: drop-shadow(0 0 40px rgba(255, 50, 0, 1)) brightness(1.4) !important;
             }
             .punch-sprite.punch-right {
-                transform: translateY(0) scaleX(-1) rotate(15deg) scale(1.1);
-                filter: drop-shadow(0 0 30px rgba(255, 50, 0, 1)) brightness(1.2);
+                transform: translateY(-10%) scaleX(-1) rotate(20deg) scale(1.3) !important;
+                filter: drop-shadow(0 0 40px rgba(255, 50, 0, 1)) brightness(1.4) !important;
             }
             .punch-sprite.kick-left {
-                transform: translateY(-20%) rotate(-25deg) scale(1.2);
-                filter: drop-shadow(0 0 40px rgba(255, 0, 0, 1)) brightness(1.3);
+                transform: translateY(-30%) rotate(-35deg) scale(1.5) !important;
+                filter: drop-shadow(0 0 60px rgba(255, 0, 0, 1)) brightness(1.5) !important;
             }
             .punch-sprite.kick-right {
-                transform: translateY(-20%) scaleX(-1) rotate(25deg) scale(1.2);
-                filter: drop-shadow(0 0 40px rgba(255, 0, 0, 1)) brightness(1.3);
+                transform: translateY(-30%) scaleX(-1) rotate(35deg) scale(1.5) !important;
+                filter: drop-shadow(0 0 60px rgba(255, 0, 0, 1)) brightness(1.5) !important;
             }
 
             @keyframes punchImpact {
@@ -729,6 +730,21 @@
                 60% { transform: translate(-6px, 2px); }
                 80% { transform: translate(4px, -2px); }
                 100% { transform: translate(0, 0); }
+            }
+
+            @keyframes screenShakeHard {
+                0% { transform: translate(0, 0) rotate(0deg); }
+                15% { transform: translate(-15px, 8px) rotate(-1deg); }
+                30% { transform: translate(15px, -8px) rotate(1deg); }
+                45% { transform: translate(-12px, 5px) rotate(-0.5deg); }
+                60% { transform: translate(10px, -5px) rotate(0.5deg); }
+                75% { transform: translate(-5px, 3px); }
+                100% { transform: translate(0, 0) rotate(0deg); }
+            }
+
+            @keyframes flashFade {
+                0% { opacity: 1; }
+                100% { opacity: 0; }
             }
         `;
         document.head.appendChild(style);
@@ -874,30 +890,43 @@
         // Show overlay
         overlay.classList.add('visible');
 
-        // Alternate between left and right punches, with kicks on 3rd and 5th
-        const isKick = clickNum === 3 || clickNum === 5;
+        // Alternate between left and right punches, with kicks on every 4th hit
+        const isKick = clickNum % 4 === 0;
         const isLeft = clickNum % 2 === 1;
 
         // Clear previous classes
         leftSprite.classList.remove('punch-left', 'punch-right', 'kick-left', 'kick-right');
         rightSprite.classList.remove('punch-left', 'punch-right', 'kick-left', 'kick-right');
 
+        // Apply attack animation
         if (isLeft) {
             leftSprite.classList.add(isKick ? 'kick-left' : 'punch-left');
         } else {
             rightSprite.classList.add(isKick ? 'kick-right' : 'punch-right');
         }
 
-        // Add screen shake effect
+        // Add screen shake effect - stronger for kicks
+        const shakeIntensity = isKick ? 'screenShakeHard' : 'screenShake';
         document.body.style.animation = 'none';
         document.body.offsetHeight; // Trigger reflow
-        document.body.style.animation = 'screenShake 0.15s ease-out';
+        document.body.style.animation = `${shakeIntensity} 0.15s ease-out`;
+
+        // Flash effect on screen
+        const flashDiv = document.createElement('div');
+        flashDiv.style.cssText = `
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: ${isKick ? 'rgba(255, 0, 0, 0.4)' : 'rgba(255, 150, 0, 0.3)'};
+            z-index: 99999999; pointer-events: none;
+            animation: flashFade 0.15s ease-out forwards;
+        `;
+        document.body.appendChild(flashDiv);
+        setTimeout(() => flashDiv.remove(), 150);
 
         // Reset after animation
         setTimeout(() => {
             leftSprite.classList.remove('punch-left', 'kick-left');
             rightSprite.classList.remove('punch-right', 'kick-right');
-        }, 200);
+        }, 150);
     }
 
     function hidePunchOverlay() {
