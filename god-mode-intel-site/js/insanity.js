@@ -669,16 +669,15 @@
                 bottom: 0 !important;
                 left: 0 !important;
                 right: 0 !important;
-                height: 50vh;
+                height: 60vh;
                 pointer-events: none;
                 z-index: 9999999 !important;
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-end;
-                padding: 0 10vw 5vh;
+                padding: 0 5vw;
                 opacity: 0;
                 visibility: hidden;
-                transition: opacity 0.2s ease;
             }
             #punch-overlay.visible {
                 opacity: 1;
@@ -686,35 +685,50 @@
             }
             .punch-sprite {
                 width: auto;
-                height: 40vh;
-                max-height: 400px;
+                height: 50vh;
+                max-height: 500px;
                 image-rendering: pixelated;
-                transform: translateY(20%);
-                transition: transform 0.12s ease-out, filter 0.12s ease-out;
                 filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
             }
             #punch-sprite-left {
-                transform-origin: bottom left;
+                transform-origin: bottom center;
             }
             #punch-sprite-right {
-                transform-origin: bottom right;
-                transform: translateY(20%) scaleX(-1);
+                transform-origin: bottom center;
+                transform: scaleX(-1);
             }
-            .punch-sprite.punch-left {
-                transform: translateY(-10%) rotate(-20deg) scale(1.3) !important;
-                filter: drop-shadow(0 0 40px rgba(255, 50, 0, 1)) brightness(1.4) !important;
+            .punch-sprite.punching-left {
+                animation: punchLeft 0.2s ease-out forwards !important;
             }
-            .punch-sprite.punch-right {
-                transform: translateY(-10%) scaleX(-1) rotate(20deg) scale(1.3) !important;
-                filter: drop-shadow(0 0 40px rgba(255, 50, 0, 1)) brightness(1.4) !important;
+            .punch-sprite.punching-right {
+                animation: punchRight 0.2s ease-out forwards !important;
             }
-            .punch-sprite.kick-left {
-                transform: translateY(-30%) rotate(-35deg) scale(1.5) !important;
-                filter: drop-shadow(0 0 60px rgba(255, 0, 0, 1)) brightness(1.5) !important;
+            .punch-sprite.kicking-left {
+                animation: kickLeft 0.25s ease-out forwards !important;
             }
-            .punch-sprite.kick-right {
-                transform: translateY(-30%) scaleX(-1) rotate(35deg) scale(1.5) !important;
-                filter: drop-shadow(0 0 60px rgba(255, 0, 0, 1)) brightness(1.5) !important;
+            .punch-sprite.kicking-right {
+                animation: kickRight 0.25s ease-out forwards !important;
+            }
+
+            @keyframes punchLeft {
+                0% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+                40% { transform: translateX(30vw) translateY(-20vh) rotate(-30deg) scale(1.4); filter: drop-shadow(0 0 50px rgba(255,100,0,1)) brightness(1.5); }
+                100% { transform: translateX(15vw) translateY(-10vh) rotate(-15deg) scale(1.2); filter: drop-shadow(0 0 30px rgba(255,50,0,0.8)); }
+            }
+            @keyframes punchRight {
+                0% { transform: scaleX(-1) translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+                40% { transform: scaleX(-1) translateX(30vw) translateY(-20vh) rotate(30deg) scale(1.4); filter: drop-shadow(0 0 50px rgba(255,100,0,1)) brightness(1.5); }
+                100% { transform: scaleX(-1) translateX(15vw) translateY(-10vh) rotate(15deg) scale(1.2); filter: drop-shadow(0 0 30px rgba(255,50,0,0.8)); }
+            }
+            @keyframes kickLeft {
+                0% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+                30% { transform: translateX(40vw) translateY(-35vh) rotate(-45deg) scale(1.6); filter: drop-shadow(0 0 80px rgba(255,0,0,1)) brightness(1.8); }
+                100% { transform: translateX(20vw) translateY(-15vh) rotate(-20deg) scale(1.3); filter: drop-shadow(0 0 40px rgba(255,0,0,0.8)); }
+            }
+            @keyframes kickRight {
+                0% { transform: scaleX(-1) translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+                30% { transform: scaleX(-1) translateX(40vw) translateY(-35vh) rotate(45deg) scale(1.6); filter: drop-shadow(0 0 80px rgba(255,0,0,1)) brightness(1.8); }
+                100% { transform: scaleX(-1) translateX(20vw) translateY(-15vh) rotate(20deg) scale(1.3); filter: drop-shadow(0 0 40px rgba(255,0,0,0.8)); }
             }
 
             @keyframes punchImpact {
@@ -894,15 +908,19 @@
         const isKick = clickNum % 4 === 0;
         const isLeft = clickNum % 2 === 1;
 
-        // Clear previous classes
-        leftSprite.classList.remove('punch-left', 'punch-right', 'kick-left', 'kick-right');
-        rightSprite.classList.remove('punch-left', 'punch-right', 'kick-left', 'kick-right');
+        // Clear ALL animation classes first
+        leftSprite.classList.remove('punching-left', 'punching-right', 'kicking-left', 'kicking-right');
+        rightSprite.classList.remove('punching-left', 'punching-right', 'kicking-left', 'kicking-right');
 
-        // Apply attack animation
+        // Force reflow to reset animation
+        leftSprite.offsetHeight;
+        rightSprite.offsetHeight;
+
+        // Apply attack animation to the correct hand
         if (isLeft) {
-            leftSprite.classList.add(isKick ? 'kick-left' : 'punch-left');
+            leftSprite.classList.add(isKick ? 'kicking-left' : 'punching-left');
         } else {
-            rightSprite.classList.add(isKick ? 'kick-right' : 'punch-right');
+            rightSprite.classList.add(isKick ? 'kicking-right' : 'punching-right');
         }
 
         // Add screen shake effect - stronger for kicks
@@ -915,18 +933,19 @@
         const flashDiv = document.createElement('div');
         flashDiv.style.cssText = `
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: ${isKick ? 'rgba(255, 0, 0, 0.4)' : 'rgba(255, 150, 0, 0.3)'};
+            background: ${isKick ? 'rgba(255, 0, 0, 0.5)' : 'rgba(255, 150, 0, 0.4)'};
             z-index: 99999999; pointer-events: none;
             animation: flashFade 0.15s ease-out forwards;
         `;
         document.body.appendChild(flashDiv);
-        setTimeout(() => flashDiv.remove(), 150);
+        setTimeout(() => flashDiv.remove(), 200);
 
-        // Reset after animation
+        // Reset animation classes after animation completes
+        const duration = isKick ? 250 : 200;
         setTimeout(() => {
-            leftSprite.classList.remove('punch-left', 'kick-left');
-            rightSprite.classList.remove('punch-right', 'kick-right');
-        }, 150);
+            leftSprite.classList.remove('punching-left', 'kicking-left');
+            rightSprite.classList.remove('punching-right', 'kicking-right');
+        }, duration);
     }
 
     function hidePunchOverlay() {
