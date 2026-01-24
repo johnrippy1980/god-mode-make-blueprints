@@ -1,0 +1,221 @@
+{
+  "name": "God Mode Intel - Competitive Intelligence Monitor",
+  "flow": [
+    {
+      "id": 1,
+      "module": "builtin:BasicScheduler",
+      "version": 1,
+      "parameters": {
+        "interval": "daily"
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [],
+        "expect": [],
+        "notes": "Runs daily to monitor competitors"
+      }
+    },
+    {
+      "id": 2,
+      "module": "google-sheets:searchRows",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Competitors",
+        "includeHeaders": "yes"
+      },
+      "mapper": {
+        "filter": "status = 'active'"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [],
+        "expect": [
+          {
+            "name": "competitor_name",
+            "type": "text"
+          },
+          {
+            "name": "website",
+            "type": "text"
+          },
+          {
+            "name": "linkedin_url",
+            "type": "text"
+          }
+        ],
+        "notes": "Get list of competitors to monitor"
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{2.bundles}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [],
+        "expect": [],
+        "notes": "Iterator for each competitor"
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"monitor_competitors\", \"args\": {\"competitorUrls\": [\"{{3.website}}\"], \"monitorAds\": true, \"monitorContent\": true, \"monitorPricing\": true, \"monitorReviews\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        },
+        "notes": "Call God Mode to monitor competitor"
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{4.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        },
+        "notes": "Get monitoring results"
+      }
+    },
+    {
+      "id": 6,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [7, 8],
+            "condition": "{{5.data[0].result.hasChanges == true}}"
+          },
+          {
+            "flow": [9],
+            "condition": "{{5.data[0].result.hasChanges == false}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        },
+        "notes": "Route based on whether changes detected"
+      }
+    },
+    {
+      "id": 7,
+      "module": "google-sheets:addRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Competitive_Alerts",
+        "includeHeaders": "yes"
+      },
+      "mapper": {
+        "values": {
+          "date": "{{formatDate(now; \"YYYY-MM-DD\")}}",
+          "competitor": "{{3.competitor_name}}",
+          "change_type": "{{5.data[0].result.changeType}}",
+          "change_summary": "{{5.data[0].result.changeSummary}}",
+          "impact_score": "{{5.data[0].result.impactScore}}",
+          "recommended_action": "{{5.data[0].result.recommendedAction}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": -100
+        },
+        "notes": "Log change to alerts sheet"
+      }
+    },
+    {
+      "id": 8,
+      "module": "slack:createMessage",
+      "version": 5,
+      "parameters": {
+        "channel": "{{YOUR_SLACK_CHANNEL}}"
+      },
+      "mapper": {
+        "text": ":warning: *Competitive Alert: {{3.competitor_name}}*\n\n*Change Detected:* {{5.data[0].result.changeType}}\n*Summary:* {{5.data[0].result.changeSummary}}\n*Impact Score:* {{5.data[0].result.impactScore}}/10\n\n*Recommended Action:*\n{{5.data[0].result.recommendedAction}}\n\n_Monitored by God Mode Intel MCP_"
+      },
+      "metadata": {
+        "designer": {
+          "x": 2100,
+          "y": -100
+        },
+        "notes": "Send Slack alert for changes"
+      }
+    },
+    {
+      "id": 9,
+      "module": "builtin:Noop",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 100
+        },
+        "notes": "No changes - do nothing"
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "sequential": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com",
+    "notes": "Competitive Intelligence Monitor using God Mode Intel MCP.\n\nThis scenario runs daily to:\n1. Get list of competitors from Google Sheets\n2. For each competitor, trigger God Mode to monitor changes\n3. If changes detected, log to alerts sheet and send Slack notification\n4. Track pricing changes, new ads, content updates, review changes\n\nReplace placeholders:\n- YOUR_SPREADSHEET_ID\n- YOUR_APIFY_TOKEN  \n- YOUR_SLACK_CHANNEL"
+  }
+}

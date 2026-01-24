@@ -1,0 +1,357 @@
+{
+  "name": "God Mode Intel - Full Prospect Pipeline",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {},
+        "expect": [
+          {
+            "name": "industry",
+            "type": "text",
+            "label": "Target Industry"
+          },
+          {
+            "name": "location",
+            "type": "text",
+            "label": "Target Location"
+          },
+          {
+            "name": "company_size",
+            "type": "text",
+            "label": "Company Size Range"
+          }
+        ],
+        "notes": "Webhook to trigger prospect search"
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"find_prospects\", \"args\": {\"query\": \"{{1.industry}}\", \"location\": \"{{1.location}}\", \"maxResults\": 25, \"includeEmails\": true, \"includePhones\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "notes": "Step 1: Find prospects using Google Maps"
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        },
+        "notes": "Get prospect list results"
+      }
+    },
+    {
+      "id": 4,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{3.data[0].result.prospects}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        },
+        "notes": "Iterate through each prospect"
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"enrich_lead\", \"args\": {\"companyName\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"includeDecisionMakers\": true, \"includeTechStack\": true, \"includeReviews\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        },
+        "notes": "Step 2: Enrich each lead with company data"
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{5.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        },
+        "notes": "Get enrichment results"
+      }
+    },
+    {
+      "id": 7,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"score_and_prioritize\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}, \"idealCustomerProfile\": {\"industry\": \"{{1.industry}}\", \"minEmployees\": 10, \"hasWebsite\": true}}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 0
+        },
+        "notes": "Step 3: Score and prioritize the lead"
+      }
+    },
+    {
+      "id": 8,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{7.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 2100,
+          "y": 0
+        },
+        "notes": "Get scoring results"
+      }
+    },
+    {
+      "id": 9,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [10, 11, 12],
+            "condition": "{{8.data[0].result.score >= 70}}"
+          },
+          {
+            "flow": [13],
+            "condition": "{{8.data[0].result.score < 70}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 2400,
+          "y": 0
+        },
+        "notes": "Route based on lead score (70+ is hot)"
+      }
+    },
+    {
+      "id": 10,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}, \"tone\": \"professional\", \"includePersonalization\": true, \"channels\": [\"email\", \"linkedin\"]}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 2700,
+          "y": -150
+        },
+        "notes": "Step 4: Generate personalized outreach for hot leads"
+      }
+    },
+    {
+      "id": 11,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{10.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 3000,
+          "y": -150
+        }
+      }
+    },
+    {
+      "id": 12,
+      "module": "airtable:upsertRecord",
+      "version": 3,
+      "parameters": {
+        "baseId": "{{YOUR_AIRTABLE_BASE}}",
+        "tableId": "Hot_Leads"
+      },
+      "mapper": {
+        "fields": {
+          "Company": "{{4.name}}",
+          "Website": "{{4.website}}",
+          "Phone": "{{4.phone}}",
+          "Email": "{{6.data[0].result.email}}",
+          "Industry": "{{6.data[0].result.industry}}",
+          "Employee_Count": "{{6.data[0].result.employeeCount}}",
+          "Tech_Stack": "{{join(6.data[0].result.techStack; \", \")}}",
+          "Decision_Makers": "{{join(6.data[0].result.decisionMakers; \", \")}}",
+          "Lead_Score": "{{8.data[0].result.score}}",
+          "Email_Draft": "{{11.data[0].result.emailDraft}}",
+          "LinkedIn_Draft": "{{11.data[0].result.linkedinDraft}}",
+          "Status": "Ready for Outreach",
+          "Created": "{{formatDate(now; \"YYYY-MM-DD\")}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 3300,
+          "y": -150
+        },
+        "notes": "Add hot lead to Airtable with outreach drafts"
+      }
+    },
+    {
+      "id": 13,
+      "module": "airtable:upsertRecord",
+      "version": 3,
+      "parameters": {
+        "baseId": "{{YOUR_AIRTABLE_BASE}}",
+        "tableId": "Nurture_Leads"
+      },
+      "mapper": {
+        "fields": {
+          "Company": "{{4.name}}",
+          "Website": "{{4.website}}",
+          "Lead_Score": "{{8.data[0].result.score}}",
+          "Status": "Nurture",
+          "Created": "{{formatDate(now; \"YYYY-MM-DD\")}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 2700,
+          "y": 150
+        },
+        "notes": "Add lower-score leads to nurture pipeline"
+      }
+    },
+    {
+      "id": 14,
+      "module": "builtin:BasicAggregator",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 3600,
+          "y": 0
+        },
+        "notes": "Aggregate all results"
+      }
+    },
+    {
+      "id": 15,
+      "module": "slack:createMessage",
+      "version": 5,
+      "parameters": {
+        "channel": "{{YOUR_SLACK_CHANNEL}}"
+      },
+      "mapper": {
+        "text": ":dart: *Prospect Pipeline Complete*\n\n*Search:* {{1.industry}} in {{1.location}}\n*Prospects Found:* {{length(3.data[0].result.prospects)}}\n*Hot Leads (70+):* {{14.hotCount}}\n*Nurture Leads:* {{14.nurtureCount}}\n\n:fire: Hot leads added to Airtable with personalized outreach drafts ready!\n\n_Powered by God Mode Intel MCP + Make.com_"
+      },
+      "metadata": {
+        "designer": {
+          "x": 3900,
+          "y": 0
+        },
+        "notes": "Send summary to Slack"
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "sequential": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com",
+    "notes": "Full Prospect Pipeline using God Mode Intel MCP.\n\nThis comprehensive scenario:\n1. Receives webhook with target industry/location\n2. Finds prospects using Google Maps (find_prospects)\n3. Enriches each lead with company data (enrich_lead)\n4. Scores leads against ICP (score_and_prioritize)\n5. For hot leads (70+): Generates personalized outreach (generate_outreach)\n6. Routes to appropriate Airtable table\n7. Sends Slack summary\n\nGod Mode Tools Used:\n- find_prospects\n- enrich_lead  \n- score_and_prioritize\n- generate_outreach\n\nReplace placeholders:\n- YOUR_APIFY_TOKEN\n- YOUR_AIRTABLE_BASE\n- YOUR_SLACK_CHANNEL"
+  }
+}

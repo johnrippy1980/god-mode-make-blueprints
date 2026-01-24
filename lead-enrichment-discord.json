@@ -1,0 +1,197 @@
+{
+  "name": "God Mode Intel - Lead Enrichment (Discord)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:watchRows",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes",
+        "limit": 10
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "expect": [
+          {
+            "name": "company_name",
+            "type": "text"
+          },
+          {
+            "name": "website",
+            "type": "text"
+          },
+          {
+            "name": "row_number",
+            "type": "number"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"research_company\", \"args\": {\"companyUrl\": \"{{1.website}}\", \"includeReviews\": true, \"includeTechStack\": true, \"includeNews\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "timeout": 30
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "google-sheets:updateRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes"
+      },
+      "mapper": {
+        "row_number": "{{1.row_number}}",
+        "values": {
+          "industry": "{{4.data[0].result.industry}}",
+          "employee_count": "{{4.data[0].result.employeeCount}}",
+          "tech_stack": "{{join(4.data[0].result.techStack; \", \")}}",
+          "review_score": "{{4.data[0].result.reviewScore}}",
+          "funding_stage": "{{4.data[0].result.fundingStage}}",
+          "enriched_at": "{{formatDate(now; \"YYYY-MM-DD HH:mm:ss\")}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "discord:createMessage",
+      "version": 1,
+      "parameters": {
+        "webhookUrl": "{{YOUR_DISCORD_WEBHOOK_URL}}"
+      },
+      "mapper": {
+        "content": "",
+        "embeds": [
+          {
+            "title": "🚀 New Lead Enriched via God Mode Intel",
+            "description": "Company research complete!",
+            "color": 5763719,
+            "fields": [
+              {
+                "name": "Company",
+                "value": "{{1.company_name}}",
+                "inline": true
+              },
+              {
+                "name": "Website",
+                "value": "{{1.website}}",
+                "inline": true
+              },
+              {
+                "name": "Industry",
+                "value": "{{4.data[0].result.industry}}",
+                "inline": true
+              },
+              {
+                "name": "Employees",
+                "value": "{{4.data[0].result.employeeCount}}",
+                "inline": true
+              },
+              {
+                "name": "Tech Stack",
+                "value": "{{join(4.data[0].result.techStack; \", \")}}",
+                "inline": false
+              },
+              {
+                "name": "Review Score",
+                "value": "{{4.data[0].result.reviewScore}}/5 ⭐",
+                "inline": true
+              },
+              {
+                "name": "Funding",
+                "value": "{{4.data[0].result.fundingStage}}",
+                "inline": true
+              }
+            ],
+            "footer": {
+              "text": "Powered by God Mode Intel MCP + Make.com"
+            },
+            "timestamp": "{{formatDate(now; \"YYYY-MM-DDTHH:mm:ssZ\")}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        },
+        "notes": "Send Discord embed notification"
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true
+    },
+    "zone": "us1.make.com",
+    "notes": "Lead Enrichment with DISCORD notifications.\n\nTo get Discord webhook URL:\n1. Server Settings → Integrations → Webhooks\n2. Create new webhook\n3. Copy webhook URL\n\nReplace:\n- YOUR_SPREADSHEET_ID\n- YOUR_APIFY_TOKEN\n- YOUR_DISCORD_WEBHOOK_URL"
+  }
+}

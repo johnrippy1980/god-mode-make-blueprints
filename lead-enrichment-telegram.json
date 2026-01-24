@@ -1,0 +1,151 @@
+{
+  "name": "God Mode Intel - Lead Enrichment (Telegram)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:watchRows",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes",
+        "limit": 10
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "expect": [
+          {
+            "name": "company_name",
+            "type": "text"
+          },
+          {
+            "name": "website",
+            "type": "text"
+          },
+          {
+            "name": "row_number",
+            "type": "number"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"research_company\", \"args\": {\"companyUrl\": \"{{1.website}}\", \"includeReviews\": true, \"includeTechStack\": true, \"includeNews\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "timeout": 30
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "google-sheets:updateRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes"
+      },
+      "mapper": {
+        "row_number": "{{1.row_number}}",
+        "values": {
+          "industry": "{{4.data[0].result.industry}}",
+          "employee_count": "{{4.data[0].result.employeeCount}}",
+          "tech_stack": "{{join(4.data[0].result.techStack; \", \")}}",
+          "review_score": "{{4.data[0].result.reviewScore}}",
+          "enriched_at": "{{formatDate(now; \"YYYY-MM-DD HH:mm:ss\")}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "telegram:sendMessage",
+      "version": 4,
+      "parameters": {
+        "botToken": "{{YOUR_TELEGRAM_BOT_TOKEN}}",
+        "chatId": "{{YOUR_TELEGRAM_CHAT_ID}}"
+      },
+      "mapper": {
+        "text": "🚀 <b>New Lead Enriched via God Mode Intel</b>\n\n<b>Company:</b> {{1.company_name}}\n<b>Website:</b> {{1.website}}\n<b>Industry:</b> {{4.data[0].result.industry}}\n<b>Employees:</b> {{4.data[0].result.employeeCount}}\n<b>Tech Stack:</b> {{join(4.data[0].result.techStack; \", \")}}\n<b>Review Score:</b> {{4.data[0].result.reviewScore}}/5 ⭐\n<b>Funding:</b> {{4.data[0].result.fundingStage}}\n\n<i>Powered by God Mode Intel MCP + Make.com</i>",
+        "parseMode": "HTML",
+        "disableWebPagePreview": false
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        },
+        "notes": "Send Telegram notification"
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true
+    },
+    "zone": "us1.make.com",
+    "notes": "Lead Enrichment with TELEGRAM notifications.\n\nTo set up Telegram bot:\n1. Message @BotFather on Telegram\n2. Send /newbot and follow instructions\n3. Copy the bot token\n4. Add bot to your group/channel\n5. Get chat ID (message your bot, then check https://api.telegram.org/bot<TOKEN>/getUpdates)\n\nReplace:\n- YOUR_SPREADSHEET_ID\n- YOUR_APIFY_TOKEN\n- YOUR_TELEGRAM_BOT_TOKEN\n- YOUR_TELEGRAM_CHAT_ID"
+  }
+}

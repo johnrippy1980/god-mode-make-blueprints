@@ -1,0 +1,282 @@
+{
+  "name": "God Mode Intel - Full Prospect Pipeline (PostgreSQL)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "expect": [
+          {
+            "name": "industry",
+            "type": "text"
+          },
+          {
+            "name": "location",
+            "type": "text"
+          }
+        ],
+        "notes": "Webhook trigger"
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"find_prospects\", \"args\": {\"query\": \"{{1.industry}}\", \"location\": \"{{1.location}}\", \"maxResults\": 25, \"includeEmails\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "notes": "Find prospects"
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{3.data[0].result.prospects}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"enrich_lead\", \"args\": {\"companyName\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"includeDecisionMakers\": true, \"includeTechStack\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        },
+        "notes": "Enrich lead"
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{5.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"score_and_prioritize\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 0
+        },
+        "notes": "Score lead"
+      }
+    },
+    {
+      "id": 8,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{7.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 2100,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 9,
+      "module": "postgresql:executeQuery",
+      "version": 2,
+      "parameters": {
+        "connection": "{{YOUR_POSTGRES_CONNECTION}}"
+      },
+      "mapper": {
+        "query": "INSERT INTO leads (company_name, website, phone, email, industry, employee_count, tech_stack, decision_makers, lead_score, status, source_industry, source_location, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW()) ON CONFLICT (website) DO UPDATE SET lead_score = EXCLUDED.lead_score, updated_at = NOW() RETURNING id",
+        "values": [
+          "{{4.name}}",
+          "{{4.website}}",
+          "{{4.phone}}",
+          "{{6.data[0].result.email}}",
+          "{{6.data[0].result.industry}}",
+          "{{6.data[0].result.employeeCount}}",
+          "{{JSON.stringify(6.data[0].result.techStack)}}",
+          "{{JSON.stringify(6.data[0].result.decisionMakers)}}",
+          "{{8.data[0].result.score}}",
+          "{{if(8.data[0].result.score >= 70; \"hot\"; \"nurture\")}}",
+          "{{1.industry}}",
+          "{{1.location}}"
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 2400,
+          "y": 0
+        },
+        "notes": "Insert/Upsert to PostgreSQL"
+      }
+    },
+    {
+      "id": 10,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [11, 12],
+            "condition": "{{8.data[0].result.score >= 70}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 2700,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 11,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}, \"tone\": \"professional\"}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 3000,
+          "y": -100
+        }
+      }
+    },
+    {
+      "id": 12,
+      "module": "postgresql:executeQuery",
+      "version": 2,
+      "parameters": {
+        "connection": "{{YOUR_POSTGRES_CONNECTION}}"
+      },
+      "mapper": {
+        "query": "UPDATE leads SET email_draft = $1, linkedin_draft = $2, outreach_generated_at = NOW() WHERE id = $3",
+        "values": [
+          "{{11.data[0].result.emailDraft}}",
+          "{{11.data[0].result.linkedinDraft}}",
+          "{{9.id}}"
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 3300,
+          "y": -100
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3
+    },
+    "zone": "us1.make.com",
+    "notes": "PostgreSQL version of Full Prospect Pipeline.\n\nTable Schema:\nCREATE TABLE leads (\n  id SERIAL PRIMARY KEY,\n  company_name TEXT NOT NULL,\n  website TEXT UNIQUE,\n  phone TEXT,\n  email TEXT,\n  industry TEXT,\n  employee_count INTEGER,\n  tech_stack JSONB,\n  decision_makers JSONB,\n  lead_score INTEGER,\n  status TEXT,\n  email_draft TEXT,\n  linkedin_draft TEXT,\n  source_industry TEXT,\n  source_location TEXT,\n  created_at TIMESTAMPTZ DEFAULT NOW(),\n  updated_at TIMESTAMPTZ,\n  outreach_generated_at TIMESTAMPTZ\n);\n\nReplace:\n- YOUR_APIFY_TOKEN\n- YOUR_POSTGRES_CONNECTION (Make.com connection ID)"
+  }
+}
