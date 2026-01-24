@@ -451,8 +451,8 @@
             justify-content: center;
             padding: 8rem 2rem 4rem;
             background:
-                linear-gradient(180deg, rgba(5,2,2,0.95) 0%, rgba(15,6,6,0.9) 30%, rgba(5,2,2,0.95) 100%),
-                url('images/sprites/TITLEPIC.png') center center / cover no-repeat fixed;
+                linear-gradient(180deg, rgba(5,2,2,0.7) 0%, rgba(15,6,6,0.5) 30%, rgba(5,2,2,0.7) 100%),
+                url('images/splatterhouse-title.png') center center / cover no-repeat fixed;
             position: relative;
             overflow: hidden;
         }
@@ -616,6 +616,47 @@
         .gore-2 { top: 70%; right: 8%; width: 100px; animation: goreFloat 6s ease-in-out infinite reverse; }
         .gore-3 { bottom: 5%; left: 40%; width: 70px; animation: goreFloat 4s ease-in-out infinite 1s; }
         .gore-4 { top: 65%; right: 25%; width: 90px; animation: goreFloat 7s ease-in-out infinite 0.5s; }
+
+        /* Floating/Walking Monster Decorations */
+        .monster-sprite {
+            position: absolute;
+            pointer-events: none;
+            image-rendering: pixelated;
+            opacity: 0.7;
+            z-index: 0;
+        }
+        .monster-float {
+            animation: monsterFloat 4s ease-in-out infinite;
+        }
+        .monster-walk {
+            animation: monsterWalk 8s linear infinite;
+        }
+        .monster-hover {
+            animation: monsterHover 3s ease-in-out infinite;
+        }
+        @keyframes monsterFloat {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-20px) rotate(3deg); }
+        }
+        @keyframes monsterWalk {
+            0% { transform: translateX(-100px); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateX(calc(100vw + 100px)); opacity: 0; }
+        }
+        @keyframes monsterHover {
+            0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(100,0,0,0.5)); }
+            50% { transform: scale(1.05) translateY(-10px); filter: drop-shadow(0 0 20px rgba(150,0,0,0.7)); }
+        }
+        /* Specific monster positions */
+        .monster-ghost { width: 80px; filter: drop-shadow(0 0 15px rgba(100,150,100,0.6)); opacity: 0.5; }
+        .monster-teddy { width: 60px; filter: drop-shadow(0 0 10px rgba(100,50,0,0.6)); }
+        .monster-dog { width: 70px; filter: drop-shadow(0 0 10px rgba(80,0,0,0.6)); }
+        .monster-worm { width: 50px; filter: drop-shadow(0 0 8px rgba(100,80,50,0.5)); }
+        .monster-mimi { width: 55px; filter: drop-shadow(0 0 12px rgba(150,0,0,0.6)); }
+        .monster-bighead { width: 90px; filter: drop-shadow(0 0 15px rgba(150,50,50,0.7)); }
+        .monster-drwest { width: 70px; filter: drop-shadow(0 0 12px rgba(100,100,100,0.6)); }
+        .monster-golem { width: 100px; filter: drop-shadow(0 0 15px rgba(100,80,50,0.6)); }
 
         .hero-content {
             max-width: 1200px;
@@ -879,7 +920,11 @@
         /* ===== TOOLS SECTION ===== */
         .tools-section {
             padding: 6rem 2rem;
-            background: linear-gradient(180deg, #0f0808 0%, var(--bg-dark) 50%, #0f0808 100%);
+            background:
+                url('images/sprites/bloodpool.png') 5% 20% / 150px no-repeat,
+                url('images/sprites/bloodpool2.png') 95% 70% / 120px no-repeat,
+                url('images/sprites/bloodpoolstainS.png') 50% 90% / 80px no-repeat,
+                linear-gradient(180deg, #0f0808 0%, var(--bg-dark) 50%, #0f0808 100%);
             position: relative;
         }
 
@@ -1003,7 +1048,10 @@
         .scenarios-section {
             padding: 6rem 2rem;
             background:
-                radial-gradient(ellipse at 30% 50%, rgba(139, 0, 0, 0.1) 0%, transparent 50%),
+                url('images/sprites/bloodpool2.png') 8% 30% / 100px no-repeat,
+                url('images/sprites/bloodpool.png') 92% 60% / 130px no-repeat,
+                radial-gradient(ellipse at 30% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 70%, rgba(100, 0, 0, 0.1) 0%, transparent 40%),
                 var(--bg-dark);
         }
 
@@ -1071,7 +1119,11 @@
         /* ===== INTEGRATION SECTION ===== */
         .integration-section {
             padding: 6rem 2rem;
-            background: linear-gradient(180deg, var(--bg-dark) 0%, #0f0505 100%);
+            background:
+                url('images/sprites/bloodpoolstainS.png') 3% 40% / 90px no-repeat,
+                url('images/sprites/bloodpool2.png') 97% 20% / 110px no-repeat,
+                url('images/splatterhouse-title.png') center center / cover no-repeat fixed,
+                linear-gradient(180deg, rgba(15,5,5,0.92) 0%, rgba(10,3,3,0.95) 100%);
         }
 
         .integration-content {
@@ -1270,9 +1322,12 @@
         <img src="images/sprites/bloodpool2.png" alt="" class="gore-sprite gore-2">
         <img src="images/sprites/MSBDA0.png" alt="" class="gore-sprite gore-3">
         <img src="images/sprites/MSBDB0.png" alt="" class="gore-sprite gore-4">
+        <img src="images/sprites/bloodpoolstainS.png" alt="" class="gore-sprite" style="top: 25%; left: 15%; width: 60px; animation: goreFloat 6s ease-in-out infinite 2s;">
+        <img src="images/sprites/bloodpool.png" alt="" class="gore-sprite" style="top: 80%; left: 20%; width: 90px; opacity: 0.5; animation: goreFloat 5s ease-in-out infinite 1s;">
+        <img src="images/sprites/bloodpool2.png" alt="" class="gore-sprite" style="top: 50%; right: 15%; width: 70px; opacity: 0.4; animation: goreFloat 7s ease-in-out infinite 0.5s;">
 
         <div class="hero-content">
-            <h1>GOD MODE INTEL</h1>
+            <img src="/images/splatterhouse-3d-logo.png" alt="SPLATTERHOUSE 3D" class="hero-logo" style="max-width: 400px; width: 100%; height: auto; image-rendering: pixelated; filter: drop-shadow(0 0 20px rgba(204, 0, 0, 0.8)) drop-shadow(0 4px 0 #000); margin-bottom: 1rem;">
             <h2>THE ULTIMATE B2B INTELLIGENCE MCP SERVER</h2>
 
             <p class="hero-tagline">
@@ -1313,7 +1368,10 @@
     </section>
 
     <!-- Standalone Tools Highlight -->
-    <section class="standalone-highlight">
+    <section class="standalone-highlight" style="position: relative; overflow: hidden;">
+        <!-- Floating Monsters -->
+        <img src="images/sprites/GHOSA0.png" alt="" class="monster-sprite monster-ghost monster-float" style="top: 20%; left: 5%; animation-delay: 0s;">
+        <img src="images/sprites/GHOSB0.png" alt="" class="monster-sprite monster-ghost monster-float" style="top: 60%; right: 8%; animation-delay: 1.5s;">
         <div class="standalone-content">
             <h2 class="standalone-title">7 STANDALONE TOOLS</h2>
             <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
@@ -1355,7 +1413,13 @@
     </section>
 
     <!-- Tools Section -->
-    <section class="tools-section" id="tools">
+    <section class="tools-section" id="tools" style="position: relative; overflow: hidden;">
+        <!-- Walking/Hovering Monsters -->
+        <img src="images/sprites/TEDMA0.png" alt="" class="monster-sprite monster-teddy monster-hover" style="top: 15%; left: 3%;">
+        <img src="images/sprites/DOGYA0.png" alt="" class="monster-sprite monster-dog monster-walk" style="top: 85%; left: 0; animation-delay: 2s;">
+        <img src="images/sprites/MIMIA0.png" alt="" class="monster-sprite monster-mimi monster-float" style="top: 45%; right: 2%; animation-delay: 0.5s;">
+        <img src="images/sprites/WORMA0.png" alt="" class="monster-sprite monster-worm monster-hover" style="bottom: 10%; right: 5%; animation-delay: 1s;">
+
         <h2 class="section-title">THE ARSENAL</h2>
         <p class="section-subtitle">48 tools of destruction for B2B intelligence warfare</p>
 
@@ -1514,7 +1578,12 @@
     </section>
 
     <!-- Scenarios Section -->
-    <section class="scenarios-section" id="scenarios">
+    <section class="scenarios-section" id="scenarios" style="position: relative; overflow: hidden;">
+        <!-- More monsters! -->
+        <img src="images/sprites/GOY2A0.png" alt="" class="monster-sprite monster-golem monster-hover" style="top: 20%; left: 2%; animation-delay: 0.3s;">
+        <img src="images/sprites/BGHDA0.png" alt="" class="monster-sprite monster-bighead monster-float" style="top: 60%; right: 3%; animation-delay: 1.2s;">
+        <img src="images/sprites/LKMNA0.png" alt="" class="monster-sprite monster-float" style="width: 70px; bottom: 15%; left: 5%; animation-delay: 2s; filter: drop-shadow(0 0 15px rgba(50,100,50,0.6));">
+
         <h2 class="section-title">MAKE.COM SCENARIOS</h2>
         <p class="section-subtitle">Pre-built workflows ready to unleash</p>
 
@@ -1546,7 +1615,11 @@
     </section>
 
     <!-- Integration Section -->
-    <section class="integration-section" id="integration">
+    <section class="integration-section" id="integration" style="position: relative; overflow: hidden;">
+        <!-- Dr. West lurking! -->
+        <img src="images/sprites/DWSTA0.png" alt="" class="monster-sprite monster-drwest monster-hover" style="top: 30%; right: 3%; animation-delay: 0.7s;">
+        <img src="images/sprites/MJENA0.png" alt="" class="monster-sprite monster-mimi monster-walk" style="bottom: 20%; left: 0; animation-delay: 4s;">
+
         <div class="integration-content">
             <h2 class="section-title">SUMMON THE POWER</h2>
             <p class="section-subtitle">Connect to the MCP server from any Make.com scenario</p>

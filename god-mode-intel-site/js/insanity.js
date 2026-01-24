@@ -14,14 +14,27 @@
         timeIncrement: 2,  // FASTER: was 0.5, now 2 per second
         timeInterval: 1000,
         navigationDecrease: 15,
-        fightBackDecrease: 8,
-        fightBackClicksNeeded: 12,
+        maskMaxHP: 150,        // Base HP - modified by difficulty
+        minDamage: 0,          // Miss
+        maxDamage: 20,         // Critical hit
         storageKey: 'godmode_insanity',
         scoreKey: 'godmode_score',
         secretsKey: 'godmode_secrets',
         livesKey: 'godmode_lives',
+        difficultyKey: 'godmode_difficulty',
         thresholds: { calm: 0, uneasy: 15, anxious: 30, panicked: 50, terrified: 70, madness: 90 }
     };
+
+    // Difficulty settings - 1 (baby) to 5 (nightmare)
+    const DIFFICULTY = {
+        1: { name: "BABY MODE", hp: 50, insult: "For tiny babies who cry at horror movies", color: "#ffaaff" },
+        2: { name: "WIMP", hp: 100, insult: "Still scared of the dark, huh?", color: "#aaffaa" },
+        3: { name: "NORMAL", hp: 150, insult: "Average mortal. How boring.", color: "#ffff66" },
+        4: { name: "BRUTAL", hp: 250, insult: "You might actually survive...", color: "#ffaa44" },
+        5: { name: "NIGHTMARE", hp: 400, insult: "THE MASK APPROVES. PREPARE TO DIE.", color: "#ff4444" }
+    };
+
+    let currentDifficulty = parseInt(localStorage.getItem(CONFIG.difficultyKey)) || 3;
 
     let audioContext = null;
     let heartbeatInterval = null;
@@ -33,7 +46,10 @@
     let timeOnPage = 0;
     let secretsFound = 0;
     let totalSecrets = 13;
-    let fightBackClicks = 0;
+    let fightBackClicks = 0;  // Now tracks combo for punch/kick pattern
+    let maskHP = DIFFICULTY[currentDifficulty].hp;  // Dr. West's HP based on difficulty
+    let difficultySelected = false;  // Track if difficulty was chosen this fight
+    let fightInProgress = false;  // Track if actively fighting Dr. West (don't auto-hide)
     let lives = 4;  // Start with 4 lives
     let isDead = false;
 
@@ -136,25 +152,43 @@
         whispers.id = 'insanity-whispers';
         document.body.appendChild(whispers);
 
-        // CENTERED Escape prompt with FIGHT BACK - appended to html element for true fixed positioning
+        // CENTERED Escape prompt with FIGHT BACK - Battle Dr. West!
         const escapePrompt = document.createElement('div');
         escapePrompt.id = 'escape-prompt';
         escapePrompt.innerHTML = `
             <div class="escape-backdrop"></div>
-            <div class="escape-content">
-                <div class="escape-icon">
-                    <img src="/images/sprites/TMSKA0.png" alt="Terror Mask">
+            <div class="escape-content" id="escape-dialog">
+                <div class="difficulty-select" id="difficulty-select">
+                    <div class="difficulty-title">CHOOSE YOUR FATE</div>
+                    <div class="difficulty-options">
+                        <button class="diff-btn" data-diff="1"><span class="diff-num">1</span><span class="diff-name">BABY MODE</span></button>
+                        <button class="diff-btn" data-diff="2"><span class="diff-num">2</span><span class="diff-name">WIMP</span></button>
+                        <button class="diff-btn" data-diff="3"><span class="diff-num">3</span><span class="diff-name">NORMAL</span></button>
+                        <button class="diff-btn" data-diff="4"><span class="diff-num">4</span><span class="diff-name">BRUTAL</span></button>
+                        <button class="diff-btn" data-diff="5"><span class="diff-num">5</span><span class="diff-name">NIGHTMARE</span></button>
+                    </div>
+                    <div class="difficulty-insult" id="difficulty-insult"></div>
                 </div>
-                <div class="escape-text">
-                    <span class="escape-title">THE MASK IS CONSUMING YOU</span>
-                    <span class="escape-subtitle">Click FIGHT BACK to resist! (<span id="fight-clicks">0</span>/12)</span>
-                    <div class="fight-progress">
-                        <div class="fight-progress-fill" id="fight-progress-fill"></div>
+                <div class="fight-arena" id="fight-arena" style="display: none;">
+                    <div class="mask-encouragement" id="mask-encouragement">
+                        <img src="/images/sprites/TMSKA0.png" alt="Terror Mask" class="mask-helper">
+                        <span class="mask-speech" id="mask-speech">DESTROY HIM!</span>
+                    </div>
+                    <div class="boss-container" id="boss-container">
+                        <img src="/images/sprites/DWSTA0.png" alt="Dr. West" id="boss-sprite" class="boss-sprite">
+                    </div>
+                    <div class="boss-hp-container">
+                        <span class="boss-hp-label">DR. WEST</span>
+                        <div class="boss-hp-bar">
+                            <div class="boss-hp-fill" id="mask-hp-fill"></div>
+                        </div>
+                        <span class="boss-hp-value" id="mask-hp-value">150/150</span>
                     </div>
                 </div>
-                <div class="escape-buttons">
-                    <button class="escape-btn escape-stay" id="btn-stay">STAY</button>
-                    <button class="escape-btn escape-fight" id="btn-fight">FIGHT BACK</button>
+                <div class="damage-display" id="damage-display"></div>
+                <div class="escape-buttons" id="escape-buttons" style="display: none;">
+                    <button class="escape-btn escape-stay" id="btn-stay">FLEE</button>
+                    <button class="escape-btn escape-fight" id="btn-fight">ATTACK!</button>
                 </div>
             </div>
         `;
@@ -199,14 +233,21 @@
         `;
         document.documentElement.appendChild(gameOverScreen);
 
-        // Punch/Kick overlay for Fight Back
+        // Punch/Kick overlay for Fight Back - frame-based animation
         const punchOverlay = document.createElement('div');
         punchOverlay.id = 'punch-overlay';
         punchOverlay.innerHTML = `
-            <img src="/images/sprites/FISTA0.png" alt="Punch" class="punch-sprite" id="punch-sprite-left">
-            <img src="/images/sprites/FISTA0.png" alt="Punch" class="punch-sprite" id="punch-sprite-right">
+            <img src="/images/sprites/FISTA0.png" alt="Punch" class="punch-sprite" id="punch-sprite-active">
         `;
         document.documentElement.appendChild(punchOverlay);
+
+        // Preload all punch/kick sprites
+        const punchFrames = ['FISTA0', 'RFISD0', 'RFISG0', 'RFISI0'];
+        const kickFrames = ['RBUTA0', 'RBUTB0', 'RBUTC0', 'RBUTD0', 'RBUTE0', 'RBUTF0'];
+        [...punchFrames, ...kickFrames].forEach(frame => {
+            const img = new Image();
+            img.src = `/images/sprites/${frame}.png`;
+        });
 
         // Add styles
         const style = document.createElement('style');
@@ -390,6 +431,301 @@
             .escape-fight { background: #660000; border-color: #cc0000; color: #fff; animation: fightPulse 0.5s ease-in-out infinite; }
             .escape-fight:hover { background: #880000; border-color: #ff0000; transform: scale(1.05); }
             @keyframes fightPulse { 0%, 100% { box-shadow: 0 0 10px rgba(204, 0, 0, 0.5); } 50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); } }
+
+            /* Difficulty Selector */
+            .difficulty-select {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                padding: 20px;
+            }
+            .difficulty-title {
+                font-family: 'Nosifer', cursive;
+                font-size: 1.2rem;
+                color: #ff0000;
+                text-shadow: 0 0 15px rgba(255, 0, 0, 0.8), 3px 3px 0 #000;
+                animation: diffTitlePulse 1s ease-in-out infinite;
+            }
+            @keyframes diffTitlePulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); text-shadow: 0 0 25px rgba(255, 0, 0, 1), 3px 3px 0 #000; }
+            }
+            .difficulty-options {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .diff-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                padding: 12px 15px;
+                background: rgba(30, 5, 5, 0.9);
+                border: 2px solid #440000;
+                cursor: pointer;
+                transition: all 0.2s;
+                min-width: 80px;
+            }
+            .diff-btn:hover {
+                border-color: #ff0000;
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+            }
+            .diff-btn[data-diff="1"] { border-color: #ffaaff; }
+            .diff-btn[data-diff="1"]:hover { box-shadow: 0 0 20px rgba(255, 170, 255, 0.6); }
+            .diff-btn[data-diff="2"] { border-color: #aaffaa; }
+            .diff-btn[data-diff="2"]:hover { box-shadow: 0 0 20px rgba(170, 255, 170, 0.6); }
+            .diff-btn[data-diff="3"] { border-color: #ffff66; }
+            .diff-btn[data-diff="3"]:hover { box-shadow: 0 0 20px rgba(255, 255, 102, 0.6); }
+            .diff-btn[data-diff="4"] { border-color: #ffaa44; }
+            .diff-btn[data-diff="4"]:hover { box-shadow: 0 0 20px rgba(255, 170, 68, 0.6); }
+            .diff-btn[data-diff="5"] { border-color: #ff4444; }
+            .diff-btn[data-diff="5"]:hover { box-shadow: 0 0 20px rgba(255, 68, 68, 0.6); }
+            .diff-btn.selected {
+                background: rgba(80, 0, 0, 0.9);
+                transform: scale(1.15);
+            }
+            .diff-num {
+                font-family: 'Nosifer', cursive;
+                font-size: 1.5rem;
+                color: inherit;
+            }
+            .diff-btn[data-diff="1"] .diff-num { color: #ffaaff; }
+            .diff-btn[data-diff="2"] .diff-num { color: #aaffaa; }
+            .diff-btn[data-diff="3"] .diff-num { color: #ffff66; }
+            .diff-btn[data-diff="4"] .diff-num { color: #ffaa44; }
+            .diff-btn[data-diff="5"] .diff-num { color: #ff4444; }
+            .diff-name {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.4rem;
+                color: #888;
+                text-transform: uppercase;
+            }
+            .difficulty-insult {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                color: #cc0000;
+                text-align: center;
+                min-height: 2em;
+                padding: 10px;
+                background: rgba(0, 0, 0, 0.5);
+                border: 1px solid #330000;
+                max-width: 350px;
+                animation: insultFlicker 3s ease-in-out infinite;
+            }
+            @keyframes insultFlicker {
+                0%, 90%, 100% { opacity: 1; }
+                92%, 96% { opacity: 0.3; }
+            }
+
+            /* Fight Arena Layout */
+            .fight-arena {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                padding: 15px;
+                background: radial-gradient(ellipse at center, rgba(50,0,0,0.8) 0%, rgba(20,0,0,0.95) 100%);
+                border: 3px solid #440000;
+                border-radius: 10px;
+            }
+            .mask-encouragement {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 5px 15px;
+                background: rgba(0,0,0,0.6);
+                border: 2px solid #cc0000;
+                border-radius: 5px;
+            }
+            .mask-helper {
+                width: 40px;
+                height: auto;
+                image-rendering: pixelated;
+                filter: drop-shadow(0 0 8px rgba(255,0,0,0.8));
+                animation: maskBob 1s ease-in-out infinite;
+            }
+            @keyframes maskBob {
+                0%, 100% { transform: translateY(0) rotate(-5deg); }
+                50% { transform: translateY(-5px) rotate(5deg); }
+            }
+            .mask-speech {
+                font-family: 'Nosifer', cursive;
+                font-size: 0.8rem;
+                color: #ff0000;
+                text-shadow: 2px 2px 0 #000, 0 0 10px rgba(255,0,0,0.5);
+                animation: speechPulse 2s ease-in-out infinite;
+            }
+            @keyframes speechPulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+            .boss-container {
+                position: relative;
+                padding: 20px;
+            }
+            .boss-sprite {
+                width: auto;
+                height: 150px;
+                image-rendering: pixelated;
+                filter: drop-shadow(0 0 15px rgba(100,0,0,0.9));
+                transition: filter 0.1s;
+            }
+            .boss-sprite.hit {
+                animation: bossHit 0.2s ease-out !important;
+            }
+            .boss-sprite.critical-hit {
+                animation: bossCritical 0.4s ease-out !important;
+            }
+            .boss-sprite.dead {
+                animation: bossDeath 0.8s ease-out forwards !important;
+            }
+            @keyframes bossHit {
+                0% { transform: translateX(0); filter: brightness(1); }
+                25% { transform: translateX(-15px) rotate(-5deg); filter: brightness(2) sepia(1) hue-rotate(-30deg); }
+                50% { transform: translateX(15px) rotate(5deg); filter: brightness(1.5); }
+                100% { transform: translateX(0); filter: brightness(1); }
+            }
+            @keyframes bossCritical {
+                0% { transform: scale(1) rotate(0); filter: brightness(1); }
+                20% { transform: scale(0.8) rotate(-10deg); filter: brightness(3) sepia(1) saturate(3); }
+                40% { transform: scale(1.1) rotate(10deg); filter: brightness(2) hue-rotate(-20deg); }
+                60% { transform: scale(0.9) rotate(-5deg); filter: brightness(2.5); }
+                100% { transform: scale(1) rotate(0); filter: brightness(1); }
+            }
+            @keyframes bossDeath {
+                0% { transform: scale(1) rotate(0); opacity: 1; }
+                30% { transform: scale(1.2) rotate(-15deg); filter: brightness(3) sepia(1); }
+                60% { transform: scale(0.8) rotate(15deg) translateY(20px); filter: brightness(0.5); }
+                100% { transform: scale(0.5) rotate(0) translateY(50px); opacity: 0; filter: brightness(0); }
+            }
+
+            /* Boss HP Bar */
+            .boss-hp-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                min-width: 200px;
+            }
+            .boss-hp-label {
+                font-family: 'Nosifer', cursive;
+                font-size: 0.6rem;
+                color: #ff4444;
+                text-shadow: 2px 2px 0 #000;
+                letter-spacing: 2px;
+            }
+            .boss-hp-bar {
+                width: 100%;
+                height: 20px;
+                background: #1a0808;
+                border: 3px solid #660000;
+                box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(100,0,0,0.5);
+                overflow: hidden;
+            }
+            .boss-hp-fill {
+                height: 100%;
+                width: 100%;
+                background: linear-gradient(180deg, #ff0000 0%, #aa0000 50%, #880000 100%);
+                box-shadow: 0 0 10px #ff0000;
+                transition: width 0.3s ease-out;
+            }
+            .boss-hp-fill.critical {
+                background: linear-gradient(180deg, #ff4400 0%, #cc2200 50%, #aa0000 100%);
+                animation: hpCritical 0.3s ease-in-out infinite;
+            }
+            @keyframes hpCritical {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+            .boss-hp-value {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.4rem;
+                color: #ff6666;
+                text-shadow: 1px 1px 0 #000;
+            }
+
+            /* Damage Display */
+            .damage-display {
+                min-height: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .damage-number {
+                font-family: 'Nosifer', cursive;
+                font-size: 1.5rem;
+                font-weight: bold;
+                animation: damagePopup 0.6s ease-out forwards;
+                text-shadow: 2px 2px 0 #000, 0 0 10px currentColor;
+            }
+            .damage-number.hit {
+                color: #ffcc00;
+            }
+            .damage-number.critical {
+                color: #ff0000;
+                font-size: 2rem;
+                animation: criticalPopup 0.8s ease-out forwards;
+            }
+            .damage-number.miss {
+                color: #666;
+                font-size: 1rem;
+            }
+            @keyframes damagePopup {
+                0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+                30% { transform: scale(1.3) translateY(-10px); opacity: 1; }
+                100% { transform: scale(1) translateY(0); opacity: 0; }
+            }
+            @keyframes criticalPopup {
+                0% { transform: scale(0.5) translateY(20px) rotate(-10deg); opacity: 0; }
+                20% { transform: scale(1.8) translateY(-15px) rotate(5deg); opacity: 1; }
+                40% { transform: scale(1.5) translateY(-10px) rotate(-3deg); opacity: 1; }
+                100% { transform: scale(1.2) translateY(0) rotate(0deg); opacity: 0; }
+            }
+
+            /* Mask Hit Reactions */
+            .escape-content.hit-reaction {
+                animation: dialogHit 0.15s ease-out !important;
+            }
+            .escape-content.critical-reaction {
+                animation: dialogCritical 0.3s ease-out !important;
+            }
+            @keyframes dialogHit {
+                0% { transform: translateX(0); }
+                25% { transform: translateX(-15px) rotate(-2deg); }
+                50% { transform: translateX(15px) rotate(2deg); }
+                75% { transform: translateX(-8px) rotate(-1deg); }
+                100% { transform: translateX(0) rotate(0deg); }
+            }
+            @keyframes dialogCritical {
+                0% { transform: translate(0, 0) rotate(0deg); filter: brightness(1); }
+                15% { transform: translate(-20px, -10px) rotate(-5deg); filter: brightness(2); }
+                30% { transform: translate(20px, 10px) rotate(5deg); filter: brightness(1.5); }
+                45% { transform: translate(-15px, -5px) rotate(-3deg); filter: brightness(2); }
+                60% { transform: translate(15px, 5px) rotate(3deg); filter: brightness(1); }
+                80% { transform: translate(-5px, 0) rotate(-1deg); }
+                100% { transform: translate(0, 0) rotate(0deg); filter: brightness(1); }
+            }
+            #mask-icon.hit {
+                animation: maskHit 0.2s ease-out !important;
+            }
+            #mask-icon.critical {
+                animation: maskCritical 0.4s ease-out !important;
+            }
+            @keyframes maskHit {
+                0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 15px rgba(204, 0, 0, 0.9)); }
+                50% { transform: scale(0.8) rotate(-10deg); filter: drop-shadow(0 0 30px rgba(255, 255, 0, 1)) brightness(1.5); }
+            }
+            @keyframes maskCritical {
+                0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 15px rgba(204, 0, 0, 0.9)); }
+                25% { transform: scale(0.6) rotate(-20deg); filter: drop-shadow(0 0 50px rgba(255, 0, 0, 1)) brightness(2); }
+                50% { transform: scale(1.3) rotate(15deg); filter: drop-shadow(0 0 40px rgba(255, 255, 0, 1)) brightness(1.8); }
+                75% { transform: scale(0.9) rotate(-5deg); filter: drop-shadow(0 0 25px rgba(255, 100, 0, 1)); }
+                100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 15px rgba(204, 0, 0, 0.9)); }
+            }
 
             #insanity-whispers { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 9984; overflow: hidden; }
             .whisper { position: absolute; font-family: 'Nosifer', cursive; color: rgba(139, 0, 0, 0.7); font-size: 1.5rem; text-shadow: 0 0 20px rgba(139, 0, 0, 0.6); animation: whisperFloat 4s ease-out forwards; white-space: nowrap; }
@@ -684,51 +1020,64 @@
                 visibility: visible;
             }
             .punch-sprite {
+                position: absolute;
                 width: auto;
-                height: 50vh;
-                max-height: 500px;
+                height: 45vh;
+                max-height: 400px;
                 image-rendering: pixelated;
-                filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
-            }
-            #punch-sprite-left {
+                filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.9));
                 transform-origin: bottom center;
             }
-            #punch-sprite-right {
-                transform-origin: bottom center;
+            #punch-overlay {
+                justify-content: center;
+            }
+            #punch-sprite-active {
+                transition: none;
+            }
+            /* Position punches at bottom corners, AWAY from dialog */
+            #punch-sprite-active.left-punch {
+                left: -5vw;
+                right: auto;
+                bottom: -20vh;
+            }
+            #punch-sprite-active.right-punch {
+                right: -5vw;
+                left: auto;
+                bottom: -20vh;
                 transform: scaleX(-1);
             }
-            .punch-sprite.punching-left {
-                animation: punchLeft 0.2s ease-out forwards !important;
+            #punch-sprite-active.left-kick {
+                left: -10vw;
+                right: auto;
+                bottom: -15vh;
             }
-            .punch-sprite.punching-right {
-                animation: punchRight 0.2s ease-out forwards !important;
+            #punch-sprite-active.right-kick {
+                right: -10vw;
+                left: auto;
+                bottom: -15vh;
+                transform: scaleX(-1);
             }
-            .punch-sprite.kicking-left {
-                animation: kickLeft 0.25s ease-out forwards !important;
+            .punch-sprite.animate-punch {
+                animation: punchSwing 0.25s ease-out forwards !important;
             }
-            .punch-sprite.kicking-right {
-                animation: kickRight 0.25s ease-out forwards !important;
+            .punch-sprite.animate-kick {
+                animation: kickSwing 0.35s ease-out forwards !important;
             }
 
-            @keyframes punchLeft {
-                0% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
-                40% { transform: translateX(30vw) translateY(-20vh) rotate(-30deg) scale(1.4); filter: drop-shadow(0 0 50px rgba(255,100,0,1)) brightness(1.5); }
-                100% { transform: translateX(15vw) translateY(-10vh) rotate(-15deg) scale(1.2); filter: drop-shadow(0 0 30px rgba(255,50,0,0.8)); }
+            /* Punch swings from bottom corner UP and TOWARD center (toward the mask) */
+            @keyframes punchSwing {
+                0% { transform: translateY(30vh) translateX(0) scale(0.6); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+                40% { transform: translateY(-15vh) translateX(20vw) scale(1.4); filter: drop-shadow(0 0 50px rgba(255,100,0,1)) brightness(1.4); }
+                60% { transform: translateY(-20vh) translateX(30vw) scale(1.5); filter: drop-shadow(0 0 70px rgba(255,50,0,1)) brightness(1.6); }
+                100% { transform: translateY(-10vh) translateX(25vw) scale(1.2); filter: drop-shadow(0 0 30px rgba(255,50,0,0.6)); }
             }
-            @keyframes punchRight {
-                0% { transform: scaleX(-1) translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
-                40% { transform: scaleX(-1) translateX(30vw) translateY(-20vh) rotate(30deg) scale(1.4); filter: drop-shadow(0 0 50px rgba(255,100,0,1)) brightness(1.5); }
-                100% { transform: scaleX(-1) translateX(15vw) translateY(-10vh) rotate(15deg) scale(1.2); filter: drop-shadow(0 0 30px rgba(255,50,0,0.8)); }
-            }
-            @keyframes kickLeft {
-                0% { transform: translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
-                30% { transform: translateX(40vw) translateY(-35vh) rotate(-45deg) scale(1.6); filter: drop-shadow(0 0 80px rgba(255,0,0,1)) brightness(1.8); }
-                100% { transform: translateX(20vw) translateY(-15vh) rotate(-20deg) scale(1.3); filter: drop-shadow(0 0 40px rgba(255,0,0,0.8)); }
-            }
-            @keyframes kickRight {
-                0% { transform: scaleX(-1) translateX(0) translateY(0) rotate(0deg) scale(1); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
-                30% { transform: scaleX(-1) translateX(40vw) translateY(-35vh) rotate(45deg) scale(1.6); filter: drop-shadow(0 0 80px rgba(255,0,0,1)) brightness(1.8); }
-                100% { transform: scaleX(-1) translateX(20vw) translateY(-15vh) rotate(20deg) scale(1.3); filter: drop-shadow(0 0 40px rgba(255,0,0,0.8)); }
+            /* Kick swings from bottom corner with leg extended toward mask */
+            @keyframes kickSwing {
+                0% { transform: translateY(35vh) translateX(0) rotate(-30deg) scale(0.5); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+                30% { transform: translateY(-5vh) translateX(15vw) rotate(-10deg) scale(1.3); filter: drop-shadow(0 0 40px rgba(255,0,0,0.9)); }
+                50% { transform: translateY(-25vh) translateX(30vw) rotate(15deg) scale(1.6); filter: drop-shadow(0 0 100px rgba(255,0,0,1)) brightness(1.6); }
+                70% { transform: translateY(-20vh) translateX(25vw) rotate(10deg) scale(1.4); filter: drop-shadow(0 0 60px rgba(255,0,0,0.9)); }
+                100% { transform: translateY(-5vh) translateX(20vw) rotate(0deg) scale(1.1); filter: drop-shadow(0 0 25px rgba(255,0,0,0.4)); }
             }
 
             @keyframes punchImpact {
@@ -756,6 +1105,44 @@
                 100% { transform: translate(0, 0) rotate(0deg); }
             }
 
+            @keyframes screenShakeBat {
+                0% { transform: translate(0, 0) rotate(0deg); }
+                10% { transform: translate(-25px, 15px) rotate(-2deg); }
+                20% { transform: translate(25px, -15px) rotate(2deg); }
+                30% { transform: translate(-20px, 10px) rotate(-1.5deg); }
+                40% { transform: translate(20px, -10px) rotate(1.5deg); }
+                50% { transform: translate(-15px, 8px) rotate(-1deg); }
+                60% { transform: translate(15px, -8px) rotate(1deg); }
+                70% { transform: translate(-10px, 5px) rotate(-0.5deg); }
+                80% { transform: translate(8px, -4px) rotate(0.5deg); }
+                90% { transform: translate(-4px, 2px); }
+                100% { transform: translate(0, 0) rotate(0deg); }
+            }
+
+            /* Bat attack positioning and animation */
+            #punch-sprite-active.left-bat {
+                left: -15vw;
+                right: auto;
+                bottom: -10vh;
+            }
+            #punch-sprite-active.right-bat {
+                right: -15vw;
+                left: auto;
+                bottom: -10vh;
+                transform: scaleX(-1);
+            }
+            .punch-sprite.animate-bat {
+                animation: batSwing 0.4s ease-out forwards !important;
+            }
+            @keyframes batSwing {
+                0% { transform: translateY(40vh) translateX(0) rotate(-60deg) scale(0.4); filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+                20% { transform: translateY(10vh) translateX(10vw) rotate(-30deg) scale(1.2); filter: drop-shadow(0 0 30px rgba(255,200,0,0.8)); }
+                40% { transform: translateY(-15vh) translateX(25vw) rotate(30deg) scale(1.8); filter: drop-shadow(0 0 80px rgba(255,255,0,1)) brightness(1.5); }
+                60% { transform: translateY(-20vh) translateX(35vw) rotate(60deg) scale(2.0); filter: drop-shadow(0 0 100px rgba(255,255,0,1)) brightness(1.8); }
+                80% { transform: translateY(-10vh) translateX(30vw) rotate(45deg) scale(1.6); filter: drop-shadow(0 0 60px rgba(255,200,0,0.9)); }
+                100% { transform: translateY(0) translateX(25vw) rotate(30deg) scale(1.3); filter: drop-shadow(0 0 30px rgba(255,150,0,0.5)); }
+            }
+
             @keyframes flashFade {
                 0% { opacity: 1; }
                 100% { opacity: 0; }
@@ -781,46 +1168,142 @@
             document.removeEventListener('click', initAudioOnce);
         }, { once: true });
 
+        // Difficulty selector handlers
+        const diffButtons = document.querySelectorAll('.diff-btn');
+        const diffInsult = document.getElementById('difficulty-insult');
+
+        diffButtons.forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                const diff = parseInt(this.dataset.diff);
+                diffInsult.textContent = DIFFICULTY[diff].insult;
+                diffInsult.style.color = DIFFICULTY[diff].color;
+            });
+
+            btn.addEventListener('click', function() {
+                currentDifficulty = parseInt(this.dataset.diff);
+                localStorage.setItem(CONFIG.difficultyKey, currentDifficulty);
+
+                // Update maskHP based on difficulty
+                maskHP = DIFFICULTY[currentDifficulty].hp;
+                difficultySelected = true;
+                fightInProgress = true;  // Fight has begun - don't auto-hide prompt
+
+                // Visual feedback
+                diffButtons.forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+
+                // Show fight arena after short delay
+                setTimeout(() => {
+                    document.getElementById('difficulty-select').style.display = 'none';
+                    document.getElementById('fight-arena').style.display = 'flex';
+                    document.getElementById('escape-buttons').style.display = 'flex';
+                    updateMaskHP();
+
+                    // Play mask approval or mockery
+                    if (isAudioEnabled) {
+                        if (currentDifficulty <= 2) {
+                            playMaskTaunt(); // Mock them for easy mode
+                        }
+                    }
+                }, 300);
+            });
+        });
+
         // Button handlers
         document.getElementById('btn-stay').addEventListener('click', function() {
-            // STAY resets insanity so users can read content
+            // SUBMIT - user gives in to the mask (resets insanity to read content)
+            fightInProgress = false;  // Fight ended - fled
             insanity = 0;
             fightBackClicks = 0;
+            maskHP = DIFFICULTY[currentDifficulty].hp;
             resetBloodPool();
             updateEffects();
-            updateFightProgress();
+            updateMaskHP();
             hideEscapePrompt();
             saveState();
+
+            // Mask laughs at submission
+            if (isAudioEnabled) playMaskTaunt();
         });
 
         document.getElementById('btn-fight').addEventListener('click', function() {
             fightBackClicks++;
-            updateFightProgress();
 
             // Visual feedback on button
             this.style.transform = 'scale(0.95)';
             setTimeout(() => this.style.transform = '', 100);
 
-            // Show punch/kick animation
-            triggerPunchAnimation(fightBackClicks);
+            // Determine attack type: bat (8th), kick (4th), punch (default)
+            const attackType = getAttackType(fightBackClicks);
 
-            // Reduce insanity per click
-            insanity = Math.max(0, insanity - CONFIG.fightBackDecrease);
-            updateEffects();
+            // Show punch/kick/bat animation
+            triggerPunchAnimation(fightBackClicks, attackType);
 
-            // Play fight sound if audio enabled
-            if (isAudioEnabled) playFightBack();
+            // Calculate damage based on attack type
+            // Punch: 0-20, Kick: 5-25, Bat: 15-40 (always hits hard!)
+            let baseDamage, maxDamage;
+            if (attackType === 'bat') {
+                baseDamage = 15;
+                maxDamage = 40;
+            } else if (attackType === 'kick') {
+                baseDamage = 5;
+                maxDamage = 25;
+            } else {
+                baseDamage = 0;
+                maxDamage = 20;
+            }
+            const damage = baseDamage + Math.floor(Math.random() * (maxDamage - baseDamage + 1));
+            const isCritical = (attackType === 'bat' && damage >= 30) || (attackType !== 'bat' && damage >= 15);
+            const isMiss = damage === 0;
 
-            // If 5 clicks, fully reset
-            if (fightBackClicks >= CONFIG.fightBackClicksNeeded) {
-                insanity = 0;
-                fightBackClicks = 0;
-                score += 1000;
-                resetBloodPool();
+            // Apply damage to mask
+            maskHP = Math.max(0, maskHP - damage);
+
+            // Update HP display
+            updateMaskHP();
+
+            // Show damage number
+            showDamageNumber(damage, isCritical, isMiss);
+
+            // Dialog and mask hit reactions
+            triggerHitReaction(isCritical, isMiss);
+
+            // Play appropriate sound
+            if (isAudioEnabled) {
+                if (isMiss) {
+                    playMissSound();
+                    playMaskTaunt(); // Mask laughs at misses
+                } else if (isCritical) {
+                    playCriticalHitSound();
+                } else {
+                    playFightBack();
+                }
+            }
+
+            // Reduce insanity slightly per hit (not miss)
+            if (!isMiss) {
+                insanity = Math.max(0, insanity - 3);
+                updateEffects();
+            }
+
+            // Check if Dr. West is defeated
+            if (maskHP <= 0) {
+                // Victory! Show death animation then Jennifer vision
+                fightInProgress = false;  // Fight ended - victory!
+                showBossDeath();  // This triggers the full Jennifer vision sequence
+                if (isAudioEnabled) playVictorySound();
+
+                // Award score bonus now (the full reset happens in resetAndContinue)
+                const diffBonus = 1000 + (currentDifficulty * 500);
+                score += diffBonus;
                 updateScoreDisplay();
-                updateFightProgress();
-                hideEscapePrompt();
-                hidePunchOverlay();
+                saveState();
+            } else if (fightBackClicks % 5 === 0 && !isMiss) {
+                // Mask encourages on every 5th hit
+                const maskSpeech = document.getElementById('mask-speech');
+                if (maskSpeech) {
+                    maskSpeech.textContent = maskPhrases[Math.floor(Math.random() * maskPhrases.length)];
+                }
             }
         });
 
@@ -893,59 +1376,667 @@
         osc2.stop(now + 0.15);
     }
 
-    // Punch/Kick animation for Fight Back
-    function triggerPunchAnimation(clickNum) {
-        const overlay = document.getElementById('punch-overlay');
-        const leftSprite = document.getElementById('punch-sprite-left');
-        const rightSprite = document.getElementById('punch-sprite-right');
+    // Update Mask HP display
+    function updateMaskHP() {
+        const fill = document.getElementById('mask-hp-fill');
+        const value = document.getElementById('mask-hp-value');
+        const maxHP = DIFFICULTY[currentDifficulty].hp;
+        const percent = (maskHP / maxHP) * 100;
 
-        if (!overlay || !leftSprite || !rightSprite) return;
+        if (fill) {
+            fill.style.width = percent + '%';
+            // Add critical class when low
+            if (percent <= 25) {
+                fill.classList.add('critical');
+            } else {
+                fill.classList.remove('critical');
+            }
+        }
+        if (value) {
+            value.textContent = `${maskHP}/${maxHP}`;
+        }
+    }
+
+    // Show damage number popup
+    function showDamageNumber(damage, isCritical, isMiss) {
+        const display = document.getElementById('damage-display');
+        if (!display) return;
+
+        // Clear previous
+        display.innerHTML = '';
+
+        const dmgEl = document.createElement('span');
+        dmgEl.className = 'damage-number';
+
+        if (isMiss) {
+            dmgEl.classList.add('miss');
+            dmgEl.textContent = 'MISS!';
+        } else if (isCritical) {
+            dmgEl.classList.add('critical');
+            dmgEl.textContent = `CRITICAL! -${damage}`;
+        } else {
+            dmgEl.classList.add('hit');
+            dmgEl.textContent = `-${damage}`;
+        }
+
+        display.appendChild(dmgEl);
+
+        // Remove after animation
+        setTimeout(() => dmgEl.remove(), 800);
+    }
+
+    // Dr. West sprite states
+    const drWestSprites = {
+        idle: ['DWSTA0', 'DWSTB0', 'DWSTC0', 'DWSTD0'],
+        hurt: ['DWSTI0', 'DWSTJ0', 'DWSTK0'],
+        attack: ['DWSTE0', 'DWSTF0', 'DWSTG0', 'DWSTH0'],
+        death: 'DWSTL0'
+    };
+
+    // Mask encouragement phrases
+    const maskPhrases = [
+        "DESTROY HIM!", "TEAR HIM APART!", "MAKE HIM BLEED!", "KILL HIM!",
+        "SHOW NO MERCY!", "CRUSH HIM!", "FINISH HIM!", "RIP HIM APART!",
+        "YES! MORE!", "AGAIN!", "HARDER!", "HE'S WEAKENING!"
+    ];
+
+    // Trigger boss hit reaction - animate Dr. West
+    function triggerHitReaction(isCritical, isMiss) {
+        const bossSprite = document.getElementById('boss-sprite');
+        const maskSpeech = document.getElementById('mask-speech');
+        const bossContainer = document.getElementById('boss-container');
+
+        if (isMiss) {
+            // Dr. West taunts on miss - show attack pose
+            if (bossSprite) {
+                const attackFrame = drWestSprites.attack[Math.floor(Math.random() * drWestSprites.attack.length)];
+                bossSprite.src = `/images/sprites/${attackFrame}.png`;
+                setTimeout(() => {
+                    bossSprite.src = '/images/sprites/DWSTA0.png';
+                }, 400);
+            }
+            return;
+        }
+
+        // Hit! Show hurt sprite and animate
+        if (bossSprite) {
+            // Show hurt frame
+            const hurtFrame = drWestSprites.hurt[Math.floor(Math.random() * drWestSprites.hurt.length)];
+            bossSprite.src = `/images/sprites/${hurtFrame}.png`;
+
+            // Apply hit animation
+            bossSprite.classList.remove('hit', 'critical-hit');
+            bossSprite.offsetHeight;
+            bossSprite.classList.add(isCritical ? 'critical-hit' : 'hit');
+
+            // Return to idle after animation
+            const duration = isCritical ? 400 : 200;
+            setTimeout(() => {
+                bossSprite.classList.remove('hit', 'critical-hit');
+                // Show idle if not dead
+                if (maskHP > 0) {
+                    const idleFrame = drWestSprites.idle[Math.floor(Math.random() * drWestSprites.idle.length)];
+                    bossSprite.src = `/images/sprites/${idleFrame}.png`;
+                }
+            }, duration);
+        }
+
+        // Mask encouragement on hit
+        if (maskSpeech && Math.random() > 0.5) {
+            maskSpeech.textContent = maskPhrases[Math.floor(Math.random() * maskPhrases.length)];
+        }
+
+        // Screen shake on hit
+        if (bossContainer) {
+            bossContainer.style.animation = 'none';
+            bossContainer.offsetHeight;
+            bossContainer.style.animation = isCritical ? 'dialogCritical 0.3s ease-out' : 'dialogHit 0.15s ease-out';
+        }
+    }
+
+    // Show Dr. West death animation followed by Jennifer vision
+    function showBossDeath() {
+        const bossSprite = document.getElementById('boss-sprite');
+        const bossContainer = document.getElementById('boss-container');
+        const maskSpeech = document.getElementById('mask-speech');
+        const fightArena = document.getElementById('fight-arena');
+        const escapeButtons = document.getElementById('escape-buttons');
+
+        // Hide attack buttons during sequence
+        if (escapeButtons) escapeButtons.style.display = 'none';
+
+        if (bossSprite) {
+            bossSprite.src = `/images/sprites/${drWestSprites.death}.png`;
+            bossSprite.classList.add('dead');
+        }
+
+        if (maskSpeech) {
+            maskSpeech.textContent = "HE'S FINISHED!";
+            maskSpeech.style.fontSize = '1rem';
+        }
+
+        // 50/50 chance: good ending (Jennifer) or bad ending (Monster Jennifer)
+        const isGoodEnding = Math.random() < 0.5;
+
+        // Start Jennifer vision sequence after Dr. West death
+        setTimeout(() => {
+            showJenniferVision(bossContainer, fightArena, isGoodEnding);
+        }, 1500);
+    }
+
+    // Jennifer vision sequence - ghost appears, then either reunion or nightmare
+    function showJenniferVision(container, arena, isGoodEnding) {
+        if (!container) return;
+
+        // Hide mask encouragement
+        const maskEncouragement = document.getElementById('mask-encouragement');
+        if (maskEncouragement) maskEncouragement.style.opacity = '0';
+
+        // Hide HP bar
+        const hpContainer = document.querySelector('.boss-hp-container');
+        if (hpContainer) hpContainer.style.opacity = '0';
+
+        // Spirit Jennifer animation sequence
+        const spiritFrames = ['SPIRA0', 'SPIRB0', 'SPIRC0', 'SPIRD0'];
+        const normalJennFrames = ['JENNA0', 'JENNB0', 'JENNC0', 'JENND0'];
+        const monsterJennFrames = ['MJENA0', 'MJENB0', 'MJENC0', 'MJEND0', 'MJENE0'];
+
+        // Create vision overlay
+        const visionOverlay = document.createElement('div');
+        visionOverlay.id = 'jennifer-vision';
+        visionOverlay.innerHTML = `
+            <div class="vision-backdrop"></div>
+            <div class="vision-content">
+                <img src="/images/sprites/SPIRA0.png" alt="Jennifer" class="jennifer-sprite" id="jennifer-sprite">
+                <div class="vision-text" id="vision-text"></div>
+            </div>
+        `;
+        document.body.appendChild(visionOverlay);
+
+        // Add vision CSS
+        const visionStyle = document.createElement('style');
+        visionStyle.id = 'vision-style';
+        visionStyle.textContent = `
+            #jennifer-vision {
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                z-index: 99999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .vision-backdrop {
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: #000;
+                animation: visionFadeIn 1s ease-out forwards;
+            }
+            @keyframes visionFadeIn {
+                0% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+            .vision-content {
+                position: relative;
+                z-index: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
+            }
+            .jennifer-sprite {
+                width: auto;
+                height: 200px;
+                image-rendering: pixelated;
+                filter: drop-shadow(0 0 30px rgba(100, 200, 255, 0.8));
+                animation: jenniferFloat 2s ease-in-out infinite;
+            }
+            @keyframes jenniferFloat {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-15px); }
+            }
+            .jennifer-sprite.monster {
+                filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.9));
+                animation: monsterTwitch 0.1s step-end infinite;
+            }
+            @keyframes monsterTwitch {
+                0%, 50% { transform: translateX(0) rotate(0deg); }
+                25% { transform: translateX(-3px) rotate(-1deg); }
+                75% { transform: translateX(3px) rotate(1deg); }
+            }
+            .vision-text {
+                font-family: 'Nosifer', cursive;
+                font-size: 1.2rem;
+                color: #88ccff;
+                text-shadow: 0 0 20px rgba(100, 200, 255, 0.8);
+                text-align: center;
+                opacity: 0;
+                max-width: 80vw;
+            }
+            .vision-text.visible {
+                animation: textFadeIn 2s ease-out forwards;
+            }
+            @keyframes textFadeIn {
+                0% { opacity: 0; transform: translateY(20px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+            .vision-text.nightmare {
+                color: #ff4444;
+                text-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+            }
+            .reunion-image {
+                width: auto;
+                height: 250px;
+                image-rendering: pixelated;
+                opacity: 0;
+                transition: opacity 2s ease-in;
+            }
+            .reunion-image.visible {
+                opacity: 1;
+            }
+            .continue-btn {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.6rem;
+                padding: 1rem 2rem;
+                background: transparent;
+                border: 2px solid #666;
+                color: #888;
+                cursor: pointer;
+                opacity: 0;
+                transition: all 0.3s;
+                margin-top: 1rem;
+            }
+            .continue-btn.visible {
+                opacity: 1;
+                animation: continuePulse 1.5s ease-in-out infinite;
+            }
+            @keyframes continuePulse {
+                0%, 100% { border-color: #666; color: #888; }
+                50% { border-color: #88ccff; color: #88ccff; }
+            }
+            .continue-btn.nightmare {
+                animation: continueNightmare 0.5s ease-in-out infinite;
+            }
+            @keyframes continueNightmare {
+                0%, 100% { border-color: #880000; color: #ff4444; }
+                50% { border-color: #ff0000; color: #ff0000; }
+            }
+            .continue-btn:hover {
+                background: rgba(100, 200, 255, 0.2);
+                border-color: #88ccff;
+                color: #fff;
+            }
+        `;
+        document.head.appendChild(visionStyle);
+
+        const jenniferSprite = document.getElementById('jennifer-sprite');
+        const visionText = document.getElementById('vision-text');
+        let frameIndex = 0;
+
+        // Animate spirit appearing
+        const spiritInterval = setInterval(() => {
+            if (frameIndex < spiritFrames.length) {
+                jenniferSprite.src = `/images/sprites/${spiritFrames[frameIndex]}.png`;
+                frameIndex++;
+            } else {
+                clearInterval(spiritInterval);
+
+                // After spirit animation, show normal Jennifer or monster
+                setTimeout(() => {
+                    if (isGoodEnding) {
+                        showGoodEnding(jenniferSprite, visionText, normalJennFrames);
+                    } else {
+                        showBadEnding(jenniferSprite, visionText, monsterJennFrames);
+                    }
+                }, 1500);
+            }
+        }, 600);
+    }
+
+    // Good ending: Jennifer reunion
+    function showGoodEnding(sprite, textEl, frames) {
+        // Show normal Jennifer getting up
+        let frameIndex = 0;
+        const jennInterval = setInterval(() => {
+            if (frameIndex < frames.length) {
+                sprite.src = `/images/sprites/${frames[frameIndex]}.png`;
+                sprite.style.filter = 'drop-shadow(0 0 20px rgba(255, 200, 100, 0.8))';
+                frameIndex++;
+            } else {
+                clearInterval(jennInterval);
+
+                // Show reunion image
+                setTimeout(() => {
+                    sprite.src = '/images/sprites/END2.png';
+                    sprite.style.height = '300px';
+                    sprite.style.filter = 'none';
+                    sprite.style.animation = 'none';
+
+                    textEl.textContent = 'Was it just a dream...?';
+                    textEl.classList.add('visible');
+
+                    // Add continue button
+                    setTimeout(() => {
+                        const content = document.querySelector('.vision-content');
+                        const btn = document.createElement('button');
+                        btn.className = 'continue-btn visible';
+                        btn.textContent = 'CONTINUE YOUR SEARCH...';
+                        btn.onclick = () => resetAndContinue();
+                        content.appendChild(btn);
+                    }, 2000);
+                }, 1000);
+            }
+        }, 400);
+    }
+
+    // Bad ending: Monster Jennifer
+    function showBadEnding(sprite, textEl, frames) {
+        // Transform into monster
+        let frameIndex = 0;
+        sprite.classList.add('monster');
+
+        // Screen flash red
+        const flashDiv = document.createElement('div');
+        flashDiv.style.cssText = `
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 0, 0, 0.8);
+            z-index: 999999999; pointer-events: none;
+            animation: flashFade 0.5s ease-out forwards;
+        `;
+        document.body.appendChild(flashDiv);
+        setTimeout(() => flashDiv.remove(), 500);
+
+        const monsterInterval = setInterval(() => {
+            if (frameIndex < frames.length) {
+                sprite.src = `/images/sprites/${frames[frameIndex]}.png`;
+                sprite.style.height = '250px';
+                frameIndex++;
+            } else {
+                clearInterval(monsterInterval);
+
+                textEl.textContent = 'JENNIFER...?';
+                textEl.classList.add('visible', 'nightmare');
+
+                setTimeout(() => {
+                    textEl.textContent = 'THE NIGHTMARE NEVER ENDS';
+
+                    // Add continue button
+                    const content = document.querySelector('.vision-content');
+                    const btn = document.createElement('button');
+                    btn.className = 'continue-btn visible nightmare';
+                    btn.textContent = 'WAKE UP...';
+                    btn.onclick = () => resetAndContinue();
+                    content.appendChild(btn);
+                }, 2000);
+            }
+        }, 300);
+    }
+
+    // Reset everything and continue (back to beginning)
+    function resetAndContinue() {
+        // Remove vision overlay
+        const vision = document.getElementById('jennifer-vision');
+        const visionStyle = document.getElementById('vision-style');
+        if (vision) vision.remove();
+        if (visionStyle) visionStyle.remove();
+
+        // Reset all game state
+        insanity = 0;
+        fightBackClicks = 0;
+        fightInProgress = false;
+        maskHP = DIFFICULTY[currentDifficulty].hp;
+
+        // Reset UI elements
+        const maskEncouragement = document.getElementById('mask-encouragement');
+        if (maskEncouragement) maskEncouragement.style.opacity = '1';
+        const hpContainer = document.querySelector('.boss-hp-container');
+        if (hpContainer) hpContainer.style.opacity = '1';
+        const bossSprite = document.getElementById('boss-sprite');
+        if (bossSprite) {
+            bossSprite.classList.remove('dead');
+            bossSprite.src = '/images/sprites/DWSTA0.png';
+        }
+
+        resetBloodPool();
+        updateEffects();
+        updateMaskHP();
+        hideEscapePrompt();
+        hidePunchOverlay();
+        saveState();
+
+        // Scroll to top (back to beginning)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Sound: Miss (whoosh)
+    function playMissSound() {
+        if (!audioContext || !isAudioEnabled) return;
+        const now = audioContext.currentTime;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+    }
+
+    // Sound: Critical hit
+    function playCriticalHitSound() {
+        if (!audioContext || !isAudioEnabled) return;
+        const now = audioContext.currentTime;
+
+        // Heavy impact
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(100, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+        gain.gain.setValueAtTime(0.8, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+
+        // Crunch overlay
+        const noise = audioContext.createOscillator();
+        const noiseGain = audioContext.createGain();
+        noise.type = 'sawtooth';
+        noise.frequency.setValueAtTime(150, now);
+        noise.frequency.linearRampToValueAtTime(80, now + 0.15);
+        noiseGain.gain.setValueAtTime(0.4, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        noise.connect(noiseGain);
+        noiseGain.connect(audioContext.destination);
+        noise.start(now);
+        noise.stop(now + 0.2);
+    }
+
+    // Sound: Dr. West taunt/laugh (when you miss)
+    const drWestTaunts = [
+        "HA HA HA!", "PATHETIC!", "IS THAT ALL?", "WEAK!",
+        "YOU CAN'T STOP ME!", "I AM IMMORTAL!", "FOOLISH BOY!", "YOU'LL DIE HERE!",
+        "SCIENCE PREVAILS!", "JOIN MY EXPERIMENTS!"
+    ];
+    function playMaskTaunt() {
+        if (!audioContext || !isAudioEnabled) return;
+        const now = audioContext.currentTime;
+
+        // Evil scientist laugh sound (higher pitch)
+        for (let i = 0; i < 4; i++) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'sawtooth';
+            const baseFreq = 200 + Math.random() * 100;
+            osc.frequency.setValueAtTime(baseFreq, now + i * 0.1);
+            osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.6, now + i * 0.1 + 0.08);
+            gain.gain.setValueAtTime(0.2, now + i * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.1);
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.12);
+        }
+
+        // Show Dr. West taunt text
+        const display = document.getElementById('damage-display');
+        if (display) {
+            const tauntEl = document.createElement('span');
+            tauntEl.className = 'damage-number';
+            tauntEl.style.color = '#88ff88'; // Green for Dr. West
+            tauntEl.style.fontSize = '0.9rem';
+            tauntEl.textContent = drWestTaunts[Math.floor(Math.random() * drWestTaunts.length)];
+            display.innerHTML = '';
+            display.appendChild(tauntEl);
+            setTimeout(() => tauntEl.remove(), 800);
+        }
+    }
+
+    // Sound: Victory
+    function playVictorySound() {
+        if (!audioContext || !isAudioEnabled) return;
+        const now = audioContext.currentTime;
+
+        // Triumphant fanfare
+        const notes = [261, 329, 392, 523]; // C E G C
+        notes.forEach((freq, i) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, now + i * 0.15);
+            gain.gain.setValueAtTime(0.4, now + i * 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.15 + 0.3);
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start(now + i * 0.15);
+            osc.stop(now + i * 0.15 + 0.35);
+        });
+    }
+
+    // Determine attack type based on click number with randomness
+    function getAttackType(clickNum) {
+        const rand = Math.random();
+
+        // Bat: ~10% chance after 5th hit, guaranteed on every 10th-12th hit range
+        if (clickNum >= 5 && (rand < 0.10 || (clickNum >= 10 && clickNum % 10 <= 2 && rand < 0.5))) {
+            return 'bat';
+        }
+
+        // Kick: ~25% chance after 2nd hit, higher chance every 3rd-4th hit
+        if (clickNum >= 2 && (rand < 0.25 || (clickNum % 3 === 0 && rand < 0.6))) {
+            return 'kick';
+        }
+
+        // Punch is default (most common)
+        return 'punch';
+    }
+
+    // Punch/Kick/Bat animation for Fight Back - frame-by-frame with real sprites
+    function triggerPunchAnimation(clickNum, attackType) {
+        const overlay = document.getElementById('punch-overlay');
+        const sprite = document.getElementById('punch-sprite-active');
+
+        if (!overlay || !sprite) return;
+
+        const isLeft = clickNum % 2 === 1;
+
+        // Sprite frame sequences for each attack type
+        const punchFrames = ['FISTA0', 'RFISD0', 'RFISG0', 'RFISI0', 'RFISG0', 'RFISD0', 'FISTA0'];
+        const kickFrames = ['RBUTA0', 'RBUTB0', 'RBUTC0', 'RBUTD0', 'RBUTD0', 'RBUTE0', 'RBUTF0'];
+        // Bat uses single sprite with CSS rotation animation
+        const batFrames = ['SPBTA0', 'SPBTA0', 'SPBTA0', 'SPBTA0', 'SPBTA0'];
+
+        let frames, frameDelay;
+        if (attackType === 'bat') {
+            frames = batFrames;
+            frameDelay = 60;
+        } else if (attackType === 'kick') {
+            frames = kickFrames;
+            frameDelay = 50;
+        } else {
+            frames = punchFrames;
+            frameDelay = 40;
+        }
+
+        // Set the first frame IMMEDIATELY before showing overlay
+        sprite.src = `/images/sprites/${frames[0]}.png`;
 
         // Show overlay
         overlay.classList.add('visible');
 
-        // Alternate between left and right punches, with kicks on every 4th hit
-        const isKick = clickNum % 4 === 0;
-        const isLeft = clickNum % 2 === 1;
+        // Position sprite - reset ALL position and animation classes first
+        sprite.classList.remove('left-punch', 'right-punch', 'left-kick', 'right-kick', 'left-bat', 'right-bat', 'animate-punch', 'animate-kick', 'animate-bat');
+        sprite.style.left = '';
+        sprite.style.right = '';
+        sprite.offsetHeight; // Force reflow
 
-        // Clear ALL animation classes first
-        leftSprite.classList.remove('punching-left', 'punching-right', 'kicking-left', 'kicking-right');
-        rightSprite.classList.remove('punching-left', 'punching-right', 'kicking-left', 'kicking-right');
-
-        // Force reflow to reset animation
-        leftSprite.offsetHeight;
-        rightSprite.offsetHeight;
-
-        // Apply attack animation to the correct hand
-        if (isLeft) {
-            leftSprite.classList.add(isKick ? 'kicking-left' : 'punching-left');
+        if (attackType === 'bat') {
+            sprite.classList.add(isLeft ? 'left-bat' : 'right-bat');
+            sprite.classList.add('animate-bat');
+            console.log('🏏 BAT SWING! Attack #' + clickNum);
+        } else if (attackType === 'kick') {
+            sprite.classList.add(isLeft ? 'left-kick' : 'right-kick');
+            sprite.classList.add('animate-kick');
+            console.log('🦵 KICK! Attack #' + clickNum);
         } else {
-            rightSprite.classList.add(isKick ? 'kicking-right' : 'punching-right');
+            sprite.classList.add(isLeft ? 'left-punch' : 'right-punch');
+            sprite.classList.add('animate-punch');
+            console.log('👊 PUNCH! Attack #' + clickNum);
         }
 
-        // Add screen shake effect - stronger for kicks
-        const shakeIntensity = isKick ? 'screenShakeHard' : 'screenShake';
-        document.body.style.animation = 'none';
-        document.body.offsetHeight; // Trigger reflow
-        document.body.style.animation = `${shakeIntensity} 0.15s ease-out`;
+        // Mirror for right side
+        if (!isLeft) {
+            sprite.style.transform = 'scaleX(-1)';
+        } else {
+            sprite.style.transform = '';
+        }
 
-        // Flash effect on screen
+        // Animate through frames (bat uses CSS for rotation)
+        let frameIndex = 0;
+        const animateFrames = () => {
+            if (frameIndex < frames.length) {
+                sprite.src = `/images/sprites/${frames[frameIndex]}.png`;
+                frameIndex++;
+                setTimeout(animateFrames, frameDelay);
+            }
+        };
+        animateFrames();
+
+        // Add screen shake effect - bat is strongest
+        let shakeIntensity = 'screenShake';
+        if (attackType === 'bat') shakeIntensity = 'screenShakeBat';
+        else if (attackType === 'kick') shakeIntensity = 'screenShakeHard';
+
+        document.body.style.animation = 'none';
+        document.body.offsetHeight;
+        document.body.style.animation = `${shakeIntensity} 0.3s ease-out`;
+
+        // Flash effect on screen - different colors for each attack
+        let flashColor = 'rgba(255, 150, 0, 0.4)'; // punch orange
+        if (attackType === 'kick') flashColor = 'rgba(255, 0, 0, 0.5)'; // kick red
+        if (attackType === 'bat') flashColor = 'rgba(255, 255, 0, 0.6)'; // bat yellow
+
         const flashDiv = document.createElement('div');
         flashDiv.style.cssText = `
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: ${isKick ? 'rgba(255, 0, 0, 0.5)' : 'rgba(255, 150, 0, 0.4)'};
+            background: ${flashColor};
             z-index: 99999999; pointer-events: none;
             animation: flashFade 0.15s ease-out forwards;
         `;
         document.body.appendChild(flashDiv);
         setTimeout(() => flashDiv.remove(), 200);
 
-        // Reset animation classes after animation completes
-        const duration = isKick ? 250 : 200;
+        // Reset after animation
+        const totalDuration = frames.length * frameDelay + 100;
         setTimeout(() => {
-            leftSprite.classList.remove('punching-left', 'kicking-left');
-            rightSprite.classList.remove('punching-right', 'kicking-right');
-        }, duration);
+            sprite.classList.remove('animate-punch', 'animate-kick', 'animate-bat');
+            sprite.src = '/images/sprites/FISTA0.png';
+        }, totalDuration);
     }
 
     function hidePunchOverlay() {
@@ -1080,6 +2171,24 @@
     function showEscapePrompt() {
         const prompt = document.getElementById('escape-prompt');
         const punchOverlay = document.getElementById('punch-overlay');
+        const diffSelect = document.getElementById('difficulty-select');
+        const fightArena = document.getElementById('fight-arena');
+        const escapeButtons = document.getElementById('escape-buttons');
+
+        // Show difficulty selector, hide fight arena
+        if (diffSelect) diffSelect.style.display = 'flex';
+        if (fightArena) fightArena.style.display = 'none';
+        if (escapeButtons) escapeButtons.style.display = 'none';
+
+        // Reset for new fight
+        maskHP = DIFFICULTY[currentDifficulty].hp;
+        fightBackClicks = 0;
+        difficultySelected = false;
+        updateMaskHP();
+
+        // Clear difficulty button selection visual
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+
         if (prompt) {
             prompt.classList.add('visible');
         }
@@ -1093,6 +2202,8 @@
         hidePunchOverlay();
         if (prompt) prompt.classList.remove('visible');
         fightBackClicks = 0;
+        fightInProgress = false;  // Reset fight state
+        maskHP = DIFFICULTY[currentDifficulty].hp; // Reset for next time
         updateFightProgress();
     }
 
@@ -1125,9 +2236,11 @@
         if (insanity >= CONFIG.thresholds.madness) document.body.classList.add('insanity-extreme');
 
         // Sticky escape prompt at terrified level
+        // BUT don't hide if fight is in progress (player chose to fight)
         if (insanity >= CONFIG.thresholds.terrified) {
             showEscapePrompt();
-        } else {
+        } else if (!fightInProgress) {
+            // Only hide if not actively fighting
             hideEscapePrompt();
         }
 
