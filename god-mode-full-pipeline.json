@@ -1,0 +1,375 @@
+{
+  "name": "God Mode Intel - Full B2B Pipeline",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "expect": [
+          { "name": "industry", "type": "text", "label": "Target Industry" },
+          { "name": "location", "type": "text", "label": "Target Location" },
+          { "name": "maxResults", "type": "number", "label": "Max Results" }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"find_prospects\", \"args\": {\"query\": \"{{1.industry}}\", \"location\": \"{{1.location}}\", \"maxResults\": {{if(1.maxResults; 1.maxResults; 10)}}, \"includeEmails\": true, \"includePhones\": true}}",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "notes": "Step 1: Find prospects via Google Maps using God Mode Intel"
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items",
+        "method": "GET",
+        "headers": [
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": 0 },
+        "notes": "Get prospect results from Apify dataset"
+      }
+    },
+    {
+      "id": 4,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{3.data[0].result.prospects}}"
+      },
+      "metadata": {
+        "designer": { "x": 900, "y": 0 },
+        "notes": "Iterate through each discovered prospect"
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"enrich_lead\", \"args\": {\"companyName\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"includeDecisionMakers\": true, \"includeTechStack\": true, \"includeReviews\": true}}",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 1200, "y": 0 },
+        "notes": "Step 2: Enrich lead with company data, tech stack, reviews"
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{5.data.id}}/dataset/items",
+        "method": "GET",
+        "headers": [
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 1500, "y": 0 },
+        "notes": "Get enrichment results"
+      }
+    },
+    {
+      "id": 7,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"score_and_prioritize\", \"args\": {\"companyName\": \"{{4.name}}\", \"industry\": \"{{6.data[0].result.industry}}\", \"employeeCount\": {{ifempty(6.data[0].result.employeeCount; 0)}}, \"reviewScore\": {{ifempty(6.data[0].result.reviewScore; 0)}}, \"idealCustomerProfile\": {\"industry\": \"{{1.industry}}\", \"minEmployees\": 5}}}",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 1800, "y": 0 },
+        "notes": "Step 3: AI-powered lead scoring and prioritization"
+      }
+    },
+    {
+      "id": 8,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{7.data.id}}/dataset/items",
+        "method": "GET",
+        "headers": [
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 2100, "y": 0 },
+        "notes": "Get scoring results"
+      }
+    },
+    {
+      "id": 9,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "{{YOUR_SUPABASE_URL}}/rest/v1/leads",
+        "method": "POST",
+        "headers": [
+          { "name": "apikey", "value": "{{YOUR_SUPABASE_ANON_KEY}}" },
+          { "name": "Authorization", "value": "Bearer {{YOUR_SUPABASE_ANON_KEY}}" },
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Prefer", "value": "return=representation" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"company_name\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"phone\": \"{{4.phone}}\", \"email\": \"{{6.data[0].result.email}}\", \"industry\": \"{{6.data[0].result.industry}}\", \"employee_count\": {{ifempty(6.data[0].result.employeeCount; 0)}}, \"lead_score\": {{ifempty(8.data[0].result.score; 50)}}, \"status\": \"{{if(8.data[0].result.score >= 70; \\\"hot\\\"; \\\"nurture\\\")}}\", \"source_industry\": \"{{1.industry}}\", \"source_location\": \"{{1.location}}\"}",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 2400, "y": 0 },
+        "notes": "Step 4: Store enriched lead in Supabase"
+      }
+    },
+    {
+      "id": 10,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [11, 12, 13],
+            "label": "Hot Lead (Score >= 70)",
+            "condition": "{{8.data[0].result.score >= 70}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 2700, "y": 0 },
+        "notes": "Route hot leads for outreach generation"
+      }
+    },
+    {
+      "id": 11,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=90",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"companyName\": \"{{4.name}}\", \"industry\": \"{{6.data[0].result.industry}}\", \"website\": \"{{4.website}}\", \"tone\": \"professional\", \"includePersonalization\": true, \"channels\": [\"email\", \"linkedin\"]}}",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 3000, "y": -150 },
+        "notes": "Step 5: Generate personalized email & LinkedIn outreach"
+      }
+    },
+    {
+      "id": 12,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{11.data.id}}/dataset/items",
+        "method": "GET",
+        "headers": [
+          { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 3300, "y": -150 },
+        "notes": "Get generated outreach content"
+      }
+    },
+    {
+      "id": 13,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": { "handleErrors": false },
+      "mapper": {
+        "url": "{{YOUR_SUPABASE_URL}}/rest/v1/leads?company_name=eq.{{urlEncode(4.name)}}",
+        "method": "PATCH",
+        "headers": [
+          { "name": "apikey", "value": "{{YOUR_SUPABASE_ANON_KEY}}" },
+          { "name": "Authorization", "value": "Bearer {{YOUR_SUPABASE_ANON_KEY}}" },
+          { "name": "Content-Type", "value": "application/json" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"email_draft\": \"{{12.data[0].result.emailDraft}}\", \"linkedin_draft\": \"{{12.data[0].result.linkedinDraft}}\", \"status\": \"hot\"}",
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "timeout": "",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followAllRedirects": false
+      },
+      "metadata": {
+        "designer": { "x": 3600, "y": -150 },
+        "notes": "Step 6: Update lead with AI-generated outreach drafts"
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com"
+  }
+}
