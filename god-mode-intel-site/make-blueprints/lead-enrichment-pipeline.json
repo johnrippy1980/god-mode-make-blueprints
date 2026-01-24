@@ -1,0 +1,223 @@
+{
+  "name": "God Mode Intel - Lead Enrichment Pipeline",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:watchRows",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes",
+        "valueRenderOption": "FORMATTED_VALUE",
+        "limit": 10
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [
+          {
+            "name": "spreadsheetId",
+            "type": "text",
+            "label": "Spreadsheet ID"
+          },
+          {
+            "name": "sheetId",
+            "type": "text",
+            "label": "Sheet Name"
+          }
+        ],
+        "expect": [
+          {
+            "name": "company_name",
+            "type": "text",
+            "label": "Company Name"
+          },
+          {
+            "name": "website",
+            "type": "text",
+            "label": "Website URL"
+          },
+          {
+            "name": "row_number",
+            "type": "number",
+            "label": "Row Number"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{{JSON.stringify({\"tool\": \"research_company\", \"args\": {\"companyUrl\": 1.website, \"includeReviews\": true, \"includeTechStack\": true, \"includeNews\": true}})}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "method": {
+              "label": "POST"
+            },
+            "bodyType": {
+              "label": "Raw"
+            },
+            "contentType": {
+              "label": "JSON (application/json)"
+            }
+          }
+        },
+        "parameters": [],
+        "expect": [
+          {
+            "name": "data",
+            "type": "collection",
+            "spec": [
+              {
+                "name": "id",
+                "type": "text",
+                "label": "Run ID"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "timeout": 30
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [],
+        "expect": []
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET",
+        "headers": [],
+        "qs": []
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [],
+        "expect": [
+          {
+            "name": "data",
+            "type": "array",
+            "label": "Results"
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "module": "google-sheets:updateRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes",
+        "valueInputOption": "USER_ENTERED"
+      },
+      "mapper": {
+        "row_number": "{{1.row_number}}",
+        "values": {
+          "industry": "{{4.data[0].result.industry}}",
+          "employee_count": "{{4.data[0].result.employeeCount}}",
+          "tech_stack": "{{join(4.data[0].result.techStack; \", \")}}",
+          "review_score": "{{4.data[0].result.reviewScore}}",
+          "funding_stage": "{{4.data[0].result.fundingStage}}",
+          "decision_makers": "{{join(4.data[0].result.decisionMakers; \", \")}}",
+          "enriched_at": "{{formatDate(now; \"YYYY-MM-DD HH:mm:ss\")}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [],
+        "expect": []
+      }
+    },
+    {
+      "id": 6,
+      "module": "slack:createMessage",
+      "version": 5,
+      "parameters": {
+        "channel": "{{YOUR_SLACK_CHANNEL}}"
+      },
+      "mapper": {
+        "text": ":rocket: *New Lead Enriched via God Mode Intel*\n\n*Company:* {{1.company_name}}\n*Website:* {{1.website}}\n*Industry:* {{4.data[0].result.industry}}\n*Employees:* {{4.data[0].result.employeeCount}}\n*Tech Stack:* {{join(4.data[0].result.techStack; \", \")}}\n*Review Score:* {{4.data[0].result.reviewScore}}/5\n*Funding:* {{4.data[0].result.fundingStage}}\n\n_Powered by God Mode Intel MCP + Make.com_"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        },
+        "restore": {},
+        "parameters": [],
+        "expect": []
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com",
+    "notes": "Lead Enrichment Pipeline using God Mode Intel MCP on Apify.\n\nThis scenario:\n1. Watches for new rows in Google Sheets\n2. Triggers God Mode Intel to research the company\n3. Waits for results\n4. Updates the sheet with enriched data\n5. Sends a Slack notification\n\nReplace placeholders:\n- YOUR_SPREADSHEET_ID\n- YOUR_APIFY_TOKEN\n- YOUR_SLACK_CHANNEL"
+  }
+}

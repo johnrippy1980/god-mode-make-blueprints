@@ -1,0 +1,161 @@
+{
+  "name": "God Mode Intel - Lead Enrichment (WhatsApp Business)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:watchRows",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes",
+        "limit": 10
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "expect": [
+          {
+            "name": "company_name",
+            "type": "text"
+          },
+          {
+            "name": "website",
+            "type": "text"
+          },
+          {
+            "name": "row_number",
+            "type": "number"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"research_company\", \"args\": {\"companyUrl\": \"{{1.website}}\", \"includeReviews\": true, \"includeTechStack\": true, \"includeNews\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "timeout": 30
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "google-sheets:updateRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "Sheet1",
+        "includeHeaders": "yes"
+      },
+      "mapper": {
+        "row_number": "{{1.row_number}}",
+        "values": {
+          "industry": "{{4.data[0].result.industry}}",
+          "employee_count": "{{4.data[0].result.employeeCount}}",
+          "tech_stack": "{{join(4.data[0].result.techStack; \", \")}}",
+          "review_score": "{{4.data[0].result.reviewScore}}",
+          "enriched_at": "{{formatDate(now; \"YYYY-MM-DD HH:mm:ss\")}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://graph.facebook.com/v18.0/{{YOUR_WHATSAPP_PHONE_NUMBER_ID}}/messages",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{YOUR_WHATSAPP_ACCESS_TOKEN}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"messaging_product\": \"whatsapp\", \"to\": \"{{YOUR_RECIPIENT_PHONE}}\", \"type\": \"text\", \"text\": {\"body\": \"🚀 *New Lead Enriched*\\n\\n*Company:* {{1.company_name}}\\n*Website:* {{1.website}}\\n*Industry:* {{4.data[0].result.industry}}\\n*Employees:* {{4.data[0].result.employeeCount}}\\n*Tech Stack:* {{join(4.data[0].result.techStack; \", \")}}\\n*Review Score:* {{4.data[0].result.reviewScore}}/5 ⭐\\n\\n_Powered by God Mode Intel MCP_\"}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        },
+        "notes": "Send WhatsApp Business API message"
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true
+    },
+    "zone": "us1.make.com",
+    "notes": "Lead Enrichment with WHATSAPP BUSINESS API notifications.\n\nRequirements:\n1. Meta Business Account\n2. WhatsApp Business API access\n3. Phone Number ID from Meta Developer Console\n4. Permanent Access Token\n\nReplace:\n- YOUR_SPREADSHEET_ID\n- YOUR_APIFY_TOKEN\n- YOUR_WHATSAPP_PHONE_NUMBER_ID\n- YOUR_WHATSAPP_ACCESS_TOKEN\n- YOUR_RECIPIENT_PHONE (with country code, e.g., 15551234567)"
+  }
+}

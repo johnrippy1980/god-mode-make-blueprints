@@ -1,0 +1,324 @@
+{
+  "name": "God Mode Intel - Full Prospect Pipeline (Notion)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "expect": [
+          {
+            "name": "industry",
+            "type": "text"
+          },
+          {
+            "name": "location",
+            "type": "text"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"find_prospects\", \"args\": {\"query\": \"{{1.industry}}\", \"location\": \"{{1.location}}\", \"maxResults\": 25, \"includeEmails\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{3.data[0].result.prospects}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"enrich_lead\", \"args\": {\"companyName\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"includeDecisionMakers\": true, \"includeTechStack\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{5.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"score_and_prioritize\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 8,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{7.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 2100,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 9,
+      "module": "notion:createADatabaseItem",
+      "version": 4,
+      "parameters": {
+        "databaseId": "{{YOUR_NOTION_DATABASE_ID}}"
+      },
+      "mapper": {
+        "properties": {
+          "Name": {
+            "title": [
+              {
+                "text": {
+                  "content": "{{4.name}}"
+                }
+              }
+            ]
+          },
+          "Website": {
+            "url": "{{4.website}}"
+          },
+          "Phone": {
+            "phone_number": "{{4.phone}}"
+          },
+          "Email": {
+            "email": "{{6.data[0].result.email}}"
+          },
+          "Industry": {
+            "select": {
+              "name": "{{6.data[0].result.industry}}"
+            }
+          },
+          "Employee Count": {
+            "number": "{{6.data[0].result.employeeCount}}"
+          },
+          "Tech Stack": {
+            "multi_select": "{{map(6.data[0].result.techStack; \"item\"; {\"name\": item})}}"
+          },
+          "Lead Score": {
+            "number": "{{8.data[0].result.score}}"
+          },
+          "Status": {
+            "status": {
+              "name": "{{if(8.data[0].result.score >= 70; \"Hot Lead\"; \"Nurture\")}}"
+            }
+          },
+          "Source": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": "{{1.industry}} - {{1.location}}"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 2400,
+          "y": 0
+        },
+        "notes": "Create Notion database item"
+      }
+    },
+    {
+      "id": 10,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [11, 12],
+            "condition": "{{8.data[0].result.score >= 70}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 2700,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 11,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}, \"tone\": \"professional\"}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 3000,
+          "y": -100
+        }
+      }
+    },
+    {
+      "id": 12,
+      "module": "notion:updateADatabaseItem",
+      "version": 4,
+      "parameters": {},
+      "mapper": {
+        "pageId": "{{9.id}}",
+        "properties": {
+          "Email Draft": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": "{{11.data[0].result.emailDraft}}"
+                }
+              }
+            ]
+          },
+          "LinkedIn Draft": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": "{{11.data[0].result.linkedinDraft}}"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 3300,
+          "y": -100
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3
+    },
+    "zone": "us1.make.com",
+    "notes": "Notion version of Full Prospect Pipeline.\n\nNotion Database Properties:\n- Name (title)\n- Website (url)\n- Phone (phone)\n- Email (email)\n- Industry (select)\n- Employee Count (number)\n- Tech Stack (multi_select)\n- Lead Score (number)\n- Status (status: Hot Lead, Nurture, Contacted)\n- Source (rich_text)\n- Email Draft (rich_text)\n- LinkedIn Draft (rich_text)\n\nReplace:\n- YOUR_APIFY_TOKEN\n- YOUR_NOTION_DATABASE_ID"
+  }
+}

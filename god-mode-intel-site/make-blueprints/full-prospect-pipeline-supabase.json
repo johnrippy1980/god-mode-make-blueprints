@@ -1,0 +1,329 @@
+{
+  "name": "God Mode Intel - Full Prospect Pipeline (Supabase)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "expect": [
+          {
+            "name": "industry",
+            "type": "text",
+            "label": "Target Industry"
+          },
+          {
+            "name": "location",
+            "type": "text",
+            "label": "Target Location"
+          }
+        ],
+        "notes": "Webhook to trigger prospect search"
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"find_prospects\", \"args\": {\"query\": \"{{1.industry}}\", \"location\": \"{{1.location}}\", \"maxResults\": 25, \"includeEmails\": true, \"includePhones\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "notes": "Step 1: Find prospects using Google Maps"
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        },
+        "notes": "Get prospect list results"
+      }
+    },
+    {
+      "id": 4,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{3.data[0].result.prospects}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        },
+        "notes": "Iterate through each prospect"
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=120",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"enrich_lead\", \"args\": {\"companyName\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"includeDecisionMakers\": true, \"includeTechStack\": true, \"includeReviews\": true}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        },
+        "notes": "Step 2: Enrich each lead"
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{5.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"score_and_prioritize\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}, \"idealCustomerProfile\": {\"industry\": \"{{1.industry}}\", \"minEmployees\": 10}}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 0
+        },
+        "notes": "Step 3: Score the lead"
+      }
+    },
+    {
+      "id": 8,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{7.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": {
+          "x": 2100,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 9,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "{{YOUR_SUPABASE_URL}}/rest/v1/leads",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{YOUR_SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{YOUR_SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Prefer",
+            "value": "return=representation"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"company_name\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"phone\": \"{{4.phone}}\", \"email\": \"{{6.data[0].result.email}}\", \"industry\": \"{{6.data[0].result.industry}}\", \"employee_count\": {{6.data[0].result.employeeCount}}, \"tech_stack\": {{JSON.stringify(6.data[0].result.techStack)}}, \"decision_makers\": {{JSON.stringify(6.data[0].result.decisionMakers)}}, \"lead_score\": {{8.data[0].result.score}}, \"status\": \"{{if(8.data[0].result.score >= 70; \"hot\"; \"nurture\")}}\", \"source_industry\": \"{{1.industry}}\", \"source_location\": \"{{1.location}}\", \"created_at\": \"{{formatDate(now; \"YYYY-MM-DDTHH:mm:ssZ\")}}\"}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 2400,
+          "y": 0
+        },
+        "notes": "Insert lead into Supabase"
+      }
+    },
+    {
+      "id": 10,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [11, 12],
+            "condition": "{{8.data[0].result.score >= 70}}"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 2700,
+          "y": 0
+        },
+        "notes": "Only generate outreach for hot leads"
+      }
+    },
+    {
+      "id": 11,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}&waitForFinish=60",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"lead\": {{JSON.stringify(6.data[0].result)}}, \"tone\": \"professional\", \"includePersonalization\": true, \"channels\": [\"email\", \"linkedin\"]}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 3000,
+          "y": -100
+        },
+        "notes": "Generate outreach for hot leads"
+      }
+    },
+    {
+      "id": 12,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "{{YOUR_SUPABASE_URL}}/rest/v1/leads?company_name=eq.{{encodeURL(4.name)}}",
+        "method": "PATCH",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{YOUR_SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{YOUR_SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"email_draft\": \"{{11.data[0].result.emailDraft}}\", \"linkedin_draft\": \"{{11.data[0].result.linkedinDraft}}\", \"outreach_generated_at\": \"{{formatDate(now; \"YYYY-MM-DDTHH:mm:ssZ\")}}\"}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 3300,
+          "y": -100
+        },
+        "notes": "Update lead with outreach drafts"
+      }
+    },
+    {
+      "id": 13,
+      "module": "slack:createMessage",
+      "version": 5,
+      "parameters": {
+        "channel": "{{YOUR_SLACK_CHANNEL}}"
+      },
+      "mapper": {
+        "text": ":dart: *Prospect Pipeline Complete (Supabase)*\n\n*Search:* {{1.industry}} in {{1.location}}\n*Lead:* {{4.name}}\n*Score:* {{8.data[0].result.score}}/100\n*Status:* {{if(8.data[0].result.score >= 70; \":fire: HOT\"; \":seedling: Nurture\")}}\n\n_Stored in Supabase via God Mode Intel_"
+      },
+      "metadata": {
+        "designer": {
+          "x": 3600,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com",
+    "notes": "Full Prospect Pipeline with SUPABASE database.\n\nSupabase Table Schema (leads):\n- id: uuid (auto)\n- company_name: text\n- website: text\n- phone: text\n- email: text\n- industry: text\n- employee_count: integer\n- tech_stack: jsonb\n- decision_makers: jsonb\n- lead_score: integer\n- status: text (hot/nurture)\n- email_draft: text\n- linkedin_draft: text\n- source_industry: text\n- source_location: text\n- created_at: timestamptz\n- outreach_generated_at: timestamptz\n\nReplace:\n- YOUR_APIFY_TOKEN\n- YOUR_SUPABASE_URL (e.g., https://xxxxx.supabase.co)\n- YOUR_SUPABASE_ANON_KEY\n- YOUR_SLACK_CHANNEL"
+  }
+}
