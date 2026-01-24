@@ -127,6 +127,9 @@
 
     // ===== COMPONENT STYLES =====
     const componentStyles = `
+        /* ===== FONT IMPORTS ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Nosifer&family=Butcherman&family=Eater&family=Metal+Mania&family=Press+Start+2P&display=swap');
+
         /* ===== ANNOUNCEMENT BANNER ===== */
         .announcement-banner {
             background: linear-gradient(90deg, #8B0000 0%, #cc0000 50%, #8B0000 100%);
@@ -238,10 +241,11 @@
         }
 
         .logo-text {
-            font-family: 'Creepster', cursive;
-            font-size: 1.6rem;
+            font-family: 'Nosifer', cursive;
+            font-size: 1.4rem;
             color: #cc0000;
             text-shadow: 2px 2px 0 #000, 0 0 10px rgba(204, 0, 0, 0.5);
+            letter-spacing: 2px;
         }
 
         .main-nav {
@@ -331,9 +335,10 @@
         }
 
         .footer-brand .logo-text {
-            font-family: 'Creepster', cursive;
-            font-size: 1.3rem;
+            font-family: 'Nosifer', cursive;
+            font-size: 1.1rem;
             color: #cc0000;
+            letter-spacing: 2px;
         }
 
         .footer-tagline {
@@ -503,7 +508,7 @@
             }
 
             .logo-text {
-                font-size: 1.2rem;
+                font-size: 1rem;
             }
         }
     `;
