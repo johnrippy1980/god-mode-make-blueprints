@@ -203,8 +203,8 @@
         const punchOverlay = document.createElement('div');
         punchOverlay.id = 'punch-overlay';
         punchOverlay.innerHTML = `
-            <img src="/images/sprites/RHANA0.png" alt="Punch" class="punch-sprite" id="punch-sprite-left">
-            <img src="/images/sprites/RHANB0.png" alt="Kick" class="punch-sprite" id="punch-sprite-right">
+            <img src="/images/sprites/FISTA0.png" alt="Punch" class="punch-sprite" id="punch-sprite-left">
+            <img src="/images/sprites/FISTA0.png" alt="Punch" class="punch-sprite" id="punch-sprite-right">
         `;
         document.documentElement.appendChild(punchOverlay);
 
