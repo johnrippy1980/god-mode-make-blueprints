@@ -1,0 +1,343 @@
+{
+    "name": "God Mode Intel - Full B2B Pipeline",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": { "x": 0, "y": 0 },
+                "expect": [
+                    { "name": "industry", "type": "text", "label": "Target Industry" },
+                    { "name": "location", "type": "text", "label": "Target Location" }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": "",
+                "proxyKeychain": ""
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=120",
+                "method": "post",
+                "headers": [
+                    { "name": "Content-Type", "value": "application/json" },
+                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                ],
+                "contentType": "json",
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true,
+                "inputMethod": "jsonString",
+                "jsonStringBodyContent": "{\"tool\": \"find_prospects\", \"args\": {\"query\": \"{{1.industry}}\", \"location\": \"{{1.location}}\", \"maxResults\": 5, \"includeEmails\": true, \"includePhones\": true}}"
+            },
+            "metadata": {
+                "designer": { "x": 300, "y": 0 }
+            }
+        },
+        {
+            "id": 3,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": "",
+                "proxyKeychain": ""
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items",
+                "method": "get",
+                "headers": [
+                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                ],
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": { "x": 600, "y": 0 }
+            }
+        },
+        {
+            "id": 4,
+            "module": "builtin:BasicFeeder",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "array": "{{3.data[0].result.prospects}}"
+            },
+            "metadata": {
+                "designer": { "x": 900, "y": 0 }
+            }
+        },
+        {
+            "id": 5,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": "",
+                "proxyKeychain": ""
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=120",
+                "method": "post",
+                "headers": [
+                    { "name": "Content-Type", "value": "application/json" },
+                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                ],
+                "contentType": "json",
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true,
+                "inputMethod": "jsonString",
+                "jsonStringBodyContent": "{\"tool\": \"enrich_lead\", \"args\": {\"companyName\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"includeDecisionMakers\": true, \"includeTechStack\": true, \"includeReviews\": true}}"
+            },
+            "metadata": {
+                "designer": { "x": 1200, "y": 0 }
+            }
+        },
+        {
+            "id": 6,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": "",
+                "proxyKeychain": ""
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/actor-runs/{{5.data.id}}/dataset/items",
+                "method": "get",
+                "headers": [
+                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                ],
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": { "x": 1500, "y": 0 }
+            }
+        },
+        {
+            "id": 7,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": "",
+                "proxyKeychain": ""
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=60",
+                "method": "post",
+                "headers": [
+                    { "name": "Content-Type", "value": "application/json" },
+                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                ],
+                "contentType": "json",
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true,
+                "inputMethod": "jsonString",
+                "jsonStringBodyContent": "{\"tool\": \"score_and_prioritize\", \"args\": {\"companyName\": \"{{4.name}}\", \"industry\": \"{{6.data[0].result.industry}}\", \"employeeCount\": {{ifempty(6.data[0].result.employeeCount; 10)}}}}"
+            },
+            "metadata": {
+                "designer": { "x": 1800, "y": 0 }
+            }
+        },
+        {
+            "id": 8,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": "",
+                "proxyKeychain": ""
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/actor-runs/{{7.data.id}}/dataset/items",
+                "method": "get",
+                "headers": [
+                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                ],
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": { "x": 2100, "y": 0 }
+            }
+        },
+        {
+            "id": 9,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth",
+                "tlsType": "",
+                "proxyKeychain": ""
+            },
+            "mapper": {
+                "url": "{{YOUR_SUPABASE_URL}}/rest/v1/leads",
+                "method": "post",
+                "headers": [
+                    { "name": "apikey", "value": "{{YOUR_SUPABASE_ANON_KEY}}" },
+                    { "name": "Authorization", "value": "Bearer {{YOUR_SUPABASE_ANON_KEY}}" },
+                    { "name": "Content-Type", "value": "application/json" },
+                    { "name": "Prefer", "value": "return=representation" }
+                ],
+                "contentType": "json",
+                "parseResponse": true,
+                "stopOnHttpError": true,
+                "allowRedirects": true,
+                "shareCookies": false,
+                "requestCompressedContent": true,
+                "inputMethod": "jsonString",
+                "jsonStringBodyContent": "{\"company_name\": \"{{4.name}}\", \"website\": \"{{4.website}}\", \"phone\": \"{{4.phone}}\", \"email\": \"{{6.data[0].result.email}}\", \"industry\": \"{{6.data[0].result.industry}}\", \"employee_count\": {{ifempty(6.data[0].result.employeeCount; 0)}}, \"lead_score\": {{ifempty(8.data[0].result.score; 50)}}, \"status\": \"{{if(8.data[0].result.score >= 70; \\\"hot\\\"; \\\"nurture\\\")}}\", \"source_industry\": \"{{1.industry}}\", \"source_location\": \"{{1.location}}\"}"
+            },
+            "metadata": {
+                "designer": { "x": 2400, "y": 0 }
+            }
+        },
+        {
+            "id": 10,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "parameters": {},
+            "mapper": null,
+            "metadata": {
+                "designer": { "x": 2700, "y": 0 }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 11,
+                            "module": "http:MakeRequest",
+                            "version": 4,
+                            "parameters": {
+                                "authenticationType": "noAuth",
+                                "tlsType": "",
+                                "proxyKeychain": ""
+                            },
+                            "mapper": {
+                                "url": "https://api.apify.com/v2/acts/LF3BPd0DBfXIgI0uA/runs?waitForFinish=90",
+                                "method": "post",
+                                "headers": [
+                                    { "name": "Content-Type", "value": "application/json" },
+                                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                                ],
+                                "contentType": "json",
+                                "parseResponse": true,
+                                "stopOnHttpError": true,
+                                "allowRedirects": true,
+                                "shareCookies": false,
+                                "requestCompressedContent": true,
+                                "inputMethod": "jsonString",
+                                "jsonStringBodyContent": "{\"tool\": \"generate_outreach\", \"args\": {\"companyName\": \"{{4.name}}\", \"industry\": \"{{6.data[0].result.industry}}\", \"website\": \"{{4.website}}\", \"tone\": \"professional\", \"includePersonalization\": true, \"channels\": [\"email\", \"linkedin\"]}}"
+                            },
+                            "metadata": {
+                                "designer": { "x": 3000, "y": -150 }
+                            }
+                        },
+                        {
+                            "id": 12,
+                            "module": "http:MakeRequest",
+                            "version": 4,
+                            "parameters": {
+                                "authenticationType": "noAuth",
+                                "tlsType": "",
+                                "proxyKeychain": ""
+                            },
+                            "mapper": {
+                                "url": "https://api.apify.com/v2/actor-runs/{{11.data.id}}/dataset/items",
+                                "method": "get",
+                                "headers": [
+                                    { "name": "Authorization", "value": "Bearer {{YOUR_APIFY_TOKEN}}" }
+                                ],
+                                "parseResponse": true,
+                                "stopOnHttpError": true,
+                                "allowRedirects": true,
+                                "shareCookies": false,
+                                "requestCompressedContent": true
+                            },
+                            "metadata": {
+                                "designer": { "x": 3300, "y": -150 }
+                            }
+                        },
+                        {
+                            "id": 13,
+                            "module": "http:MakeRequest",
+                            "version": 4,
+                            "parameters": {
+                                "authenticationType": "noAuth",
+                                "tlsType": "",
+                                "proxyKeychain": ""
+                            },
+                            "mapper": {
+                                "url": "{{YOUR_SUPABASE_URL}}/rest/v1/leads?company_name=eq.{{urlEncode(4.name)}}",
+                                "method": "patch",
+                                "headers": [
+                                    { "name": "apikey", "value": "{{YOUR_SUPABASE_ANON_KEY}}" },
+                                    { "name": "Authorization", "value": "Bearer {{YOUR_SUPABASE_ANON_KEY}}" },
+                                    { "name": "Content-Type", "value": "application/json" }
+                                ],
+                                "contentType": "json",
+                                "parseResponse": true,
+                                "stopOnHttpError": true,
+                                "allowRedirects": true,
+                                "shareCookies": false,
+                                "requestCompressedContent": true,
+                                "inputMethod": "jsonString",
+                                "jsonStringBodyContent": "{\"email_draft\": \"{{12.data[0].result.emailDraft}}\", \"linkedin_draft\": \"{{12.data[0].result.linkedinDraft}}\", \"status\": \"hot\"}"
+                            },
+                            "metadata": {
+                                "designer": { "x": 3600, "y": -150 }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": "God Mode Intel - Full B2B Pipeline (HTTP V4)\n\n4 God Mode Tools:\n1. find_prospects - Discover businesses via Google Maps\n2. enrich_lead - Company data, tech stack, reviews\n3. score_and_prioritize - AI lead scoring\n4. generate_outreach - AI email & LinkedIn drafts\n\nReplace:\n- {{YOUR_APIFY_TOKEN}}\n- {{YOUR_SUPABASE_URL}}\n- {{YOUR_SUPABASE_ANON_KEY}}"
+    }
+}
