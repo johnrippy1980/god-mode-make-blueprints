@@ -4,19 +4,46 @@ Ready-to-import Make.com scenarios that demonstrate the power of God Mode Intel 
 
 ## 📦 Available Blueprints
 
-### Core Scenarios
+### Main Pipeline (RECOMMENDED)
 
-| Blueprint | Description | God Mode Tools |
-|-----------|-------------|----------------|
-| `lead-enrichment-pipeline.json` | Sheets → Enrich → Update → Slack | `research_company` |
-| `competitive-intel-monitor.json` | Daily competitor monitoring | `monitor_competitors` |
-| `full-prospect-pipeline.json` | End-to-end prospecting | 4 tools |
+| Blueprint | Description | Features |
+|-----------|-------------|----------|
+| `god-mode-intel-pipeline-PUBLIC.json` | **Full B2B lead gen pipeline** | Multi-region campaigns, enrichment, Supabase storage, cost tracking |
 
-### Database Variants (Full Pipeline)
+This is the production-ready pipeline that:
+- Receives webhook with query + regions
+- Runs `run_campaign` tool via Apify
+- Enriches leads with decision makers, tech stack, email drafts
+- Upserts to Supabase with deduplication
+- Tracks campaign costs
+
+### Quick Start Setup
+
+1. **Import the blueprint** into Make.com
+2. **Configure the webhook** - copy the webhook URL
+3. **Edit "API Keys" module** (Module 2) and replace these placeholders:
+
+| Placeholder | Where to Get It |
+|-------------|-----------------|
+| `YOUR_APIFY_TOKEN` | [Apify Console](https://console.apify.com/account/integrations) |
+| `YOUR_ANTHROPIC_API_KEY` | [Anthropic Console](https://console.anthropic.com/) |
+| `YOUR_FIRECRAWL_API_KEY` | [Firecrawl](https://firecrawl.dev/) |
+| `YOUR_APOLLO_API_KEY` | [Apollo.io](https://app.apollo.io/) |
+| `YOUR_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API |
+| `YOUR_SUPABASE_PROJECT_ID` | From your Supabase URL (e.g., `abcdefgh` from `abcdefgh.supabase.co`) |
+
+4. **Test with a webhook call:**
+```bash
+curl -X POST "YOUR_WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "plumbers", "regions": ["Austin, TX"], "maxLeadsPerRegion": 3}'
+```
+
+### Database Variants
 
 | Blueprint | Database | Notes |
 |-----------|----------|-------|
-| `full-prospect-pipeline.json` | Airtable | Original version |
+| `full-prospect-pipeline.json` | Airtable | Legacy version |
 | `full-prospect-pipeline-supabase.json` | Supabase | REST API, PostgreSQL backend |
 | `full-prospect-pipeline-postgres.json` | PostgreSQL | Direct connection |
 | `full-prospect-pipeline-notion.json` | Notion | Database pages |
@@ -182,7 +209,7 @@ CREATE TABLE leads (
   tech_stack JSONB,
   decision_makers JSONB,
   lead_score INTEGER,
-  status TEXT CHECK (status IN ('hot', 'nurture', 'contacted', 'converted')),
+  status TEXT CHECK (status IN ('new', 'warm', 'hot', 'cold', 'qualified', 'converted', 'lost', 'nurture')),
   email_draft TEXT,
   linkedin_draft TEXT,
   source_industry TEXT,

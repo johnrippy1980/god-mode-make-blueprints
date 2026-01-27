@@ -1,0 +1,1031 @@
+{
+    "name": "God Mode Intel - Enterprise Campaign v10 (run_campaign + Cost Tracking)",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": null,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "God Mode Hook"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "query",
+                        "type": "text"
+                    },
+                    {
+                        "name": "regions",
+                        "spec": {
+                            "type": "text"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "name": "maxLeadsPerRegion",
+                        "type": "number"
+                    },
+                    {
+                        "name": "maxDecisionMakers",
+                        "type": "number"
+                    },
+                    {
+                        "name": "budgetLimit",
+                        "type": "number"
+                    },
+                    {
+                        "name": "parallelRegions",
+                        "type": "number"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "firecrawlApiKey",
+                        "value": "YOUR_FIRECRAWL_API_KEY"
+                    },
+                    {
+                        "name": "anthropicApiKey",
+                        "value": "YOUR_ANTHROPIC_API_KEY"
+                    },
+                    {
+                        "name": "apolloApiKey",
+                        "value": "YOUR_APOLLO_API_KEY"
+                    },
+                    {
+                        "name": "supabaseApiKey",
+                        "value": "YOUR_SUPABASE_ANON_KEY"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0,
+                    "name": "API Keys - EDIT HERE"
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Variable name",
+                                "required": true
+                            },
+                            {
+                                "name": "value",
+                                "type": "any",
+                                "label": "Variable value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Variables"
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "firecrawlApiKey",
+                        "type": "any",
+                        "label": "firecrawlApiKey"
+                    },
+                    {
+                        "name": "anthropicApiKey",
+                        "type": "any",
+                        "label": "anthropicApiKey"
+                    },
+                    {
+                        "name": "apolloApiKey",
+                        "type": "any",
+                        "label": "apolloApiKey"
+                    },
+                    {
+                        "name": "supabaseApiKey",
+                        "type": "any",
+                        "label": "supabaseApiKey"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/acts/RZYvUKdgTvtDbIdp5/run-sync-get-dataset-items?token=YOUR_APIFY_TOKEN&timeout=300",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer YOUR_APIFY_TOKEN"
+                    }
+                ],
+                "timeout": "300",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": false,
+                "jsonStringBodyContent": "{\"tool\": \"run_campaign\", \"toolInput\": {\"query\": \"{{1.query}}\", \"regions\": [\"{{join(1.regions; '\", \"')}}\"], \"maxLeadsPerRegion\": {{ifempty(1.maxLeadsPerRegion; 5)}}, \"maxDecisionMakers\": {{ifempty(1.maxDecisionMakers; 2)}}, \"budgetLimit\": {{ifempty(1.budgetLimit; 10)}}, \"parallelRegions\": {{ifempty(1.parallelRegions; 3)}}, \"firecrawlApiKey\": \"{{2.firecrawlApiKey}}\", \"anthropicApiKey\": \"{{2.anthropicApiKey}}\", \"apolloApiKey\": \"{{2.apolloApiKey}}\"}}",
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0,
+                    "name": "Run Multi-Region Campaign"
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null
+                            ]
+                        },
+                        "contentType": {
+                            "label": "application/json"
+                        },
+                        "inputMethod": {
+                            "label": "JSON string"
+                        },
+                        "shareCookies": {
+                            "mode": "chose"
+                        },
+                        "parseResponse": {
+                            "mode": "chose"
+                        },
+                        "allowRedirects": {
+                            "mode": "chose"
+                        },
+                        "stopOnHttpError": {
+                            "mode": "chose"
+                        },
+                        "requestCompressedContent": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "tlsType": {
+                            "label": "Empty"
+                        },
+                        "proxyKeychain": {
+                            "label": "Choose a key"
+                        },
+                        "authenticationType": {
+                            "label": "No authentication"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "noAuth",
+                                "apiKey",
+                                "basicAuth",
+                                "oAuth"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tlsType",
+                        "type": "select",
+                        "label": "Transport layer security (TLS)",
+                        "validate": {
+                            "enum": [
+                                "mTls",
+                                "tls"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "proxyKeychain",
+                        "type": "keychain:proxy",
+                        "label": "Proxy"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "get",
+                                "head",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "options"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Header"
+                        },
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Body content type",
+                        "validate": {
+                            "enum": [
+                                "json",
+                                "multipart",
+                                "urlEncoded",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "parseResponse",
+                        "type": "boolean",
+                        "label": "Parse response",
+                        "required": true
+                    },
+                    {
+                        "name": "stopOnHttpError",
+                        "type": "boolean",
+                        "label": "Return error if HTTP request fails",
+                        "required": true
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout",
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "allowRedirects",
+                        "type": "boolean",
+                        "label": "Allow redirects",
+                        "required": true
+                    },
+                    {
+                        "name": "shareCookies",
+                        "type": "boolean",
+                        "label": "Share cookies",
+                        "required": true
+                    },
+                    {
+                        "name": "requestCompressedContent",
+                        "type": "boolean",
+                        "label": "Request compressed content",
+                        "required": true
+                    },
+                    {
+                        "name": "inputMethod",
+                        "type": "select",
+                        "label": "Body input method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "dataStructure",
+                                "jsonString"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "jsonStringBodyContent",
+                        "type": "text",
+                        "label": "Body content",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    },
+                    {
+                        "name": "headers",
+                        "type": "collection",
+                        "label": "Headers"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 5,
+            "module": "builtin:BasicFeeder",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "array": "{{3.data[1].results}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0,
+                    "name": "Iterate Enriched Leads"
+                },
+                "restore": {
+                    "expect": {
+                        "array": {
+                            "mode": "edit"
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "mode": "edit",
+                        "name": "array",
+                        "spec": [],
+                        "type": "array",
+                        "label": "Array"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://YOUR_SUPABASE_PROJECT_ID.supabase.co/rest/v1/leads?on_conflict=website",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "apikey",
+                        "value": "{{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer {{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "name": "Prefer",
+                        "value": "return=representation,resolution=merge-duplicates"
+                    }
+                ],
+                "timeout": "300",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": false,
+                "jsonStringBodyContent": "{\"company_name\": \"{{5.title}}\", \"website\": \"{{ifempty(5.website; null)}}\", \"phone\": \"{{5.phone}}\", \"email\": \"{{5.email}}\", \"industry\": \"{{5.industry}}\", \"employee_count\": {{ifempty(5.employeeCount; 0)}}, \"lead_score\": {{ifempty(5.leadScore; 50)}}, \"status\": \"{{ifempty(5.leadStatus; 'warm')}}\", \"priority\": \"{{ifempty(5.priority; 'medium')}}\", \"source_industry\": \"{{1.query}}\", \"source_location\": \"{{5.region}}\", \"tech_stack\": {{ifempty(5.technologiesJson; \"[]\")}}, \"decision_makers\": {{ifempty(5.decisionMakersJson; \"[]\")}}, \"gbp_url\": \"{{ifempty(5.gbpUrl; null)}}\", \"email_draft\": \"{{replace(ifempty(5.emailDraft; ''); newline; '\\\\n')}}\", \"linkedin_draft\": \"{{ifempty(5.linkedinDraft; null)}}\", \"campaign_id\": \"{{3.data[1].campaignId}}\", \"campaign_cost\": {{ifempty(3.data[1].costs.total; 0)}}}",
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1200,
+                    "y": 0,
+                    "name": "Upsert Lead to Supabase"
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        },
+                        "contentType": {
+                            "label": "application/json"
+                        },
+                        "inputMethod": {
+                            "label": "JSON string"
+                        },
+                        "shareCookies": {
+                            "mode": "chose"
+                        },
+                        "parseResponse": {
+                            "mode": "chose"
+                        },
+                        "allowRedirects": {
+                            "mode": "chose"
+                        },
+                        "stopOnHttpError": {
+                            "mode": "chose"
+                        },
+                        "requestCompressedContent": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "tlsType": {
+                            "label": "Empty"
+                        },
+                        "proxyKeychain": {
+                            "label": "Choose a key"
+                        },
+                        "authenticationType": {
+                            "label": "No authentication"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "noAuth",
+                                "apiKey",
+                                "basicAuth",
+                                "oAuth"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tlsType",
+                        "type": "select",
+                        "label": "Transport layer security (TLS)",
+                        "validate": {
+                            "enum": [
+                                "mTls",
+                                "tls"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "proxyKeychain",
+                        "type": "keychain:proxy",
+                        "label": "Proxy"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "get",
+                                "head",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "options"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Header"
+                        },
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Body content type",
+                        "validate": {
+                            "enum": [
+                                "json",
+                                "multipart",
+                                "urlEncoded",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "parseResponse",
+                        "type": "boolean",
+                        "label": "Parse response",
+                        "required": true
+                    },
+                    {
+                        "name": "stopOnHttpError",
+                        "type": "boolean",
+                        "label": "Return error if HTTP request fails",
+                        "required": true
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout",
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "allowRedirects",
+                        "type": "boolean",
+                        "label": "Allow redirects",
+                        "required": true
+                    },
+                    {
+                        "name": "shareCookies",
+                        "type": "boolean",
+                        "label": "Share cookies",
+                        "required": true
+                    },
+                    {
+                        "name": "requestCompressedContent",
+                        "type": "boolean",
+                        "label": "Request compressed content",
+                        "required": true
+                    },
+                    {
+                        "name": "inputMethod",
+                        "type": "select",
+                        "label": "Body input method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "dataStructure",
+                                "jsonString"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "jsonStringBodyContent",
+                        "type": "text",
+                        "label": "Body content",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    },
+                    {
+                        "name": "headers",
+                        "type": "collection",
+                        "label": "Headers"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "module": "builtin:BasicAggregator",
+            "version": 1,
+            "parameters": {
+                "feeder": 5
+            },
+            "mapper": {
+                "status": "{{3.data[1].status}}",
+                "totalCost": "{{3.data[1].costs.total}}",
+                "campaignId": "{{3.data[1].campaignId}}",
+                "leadsProcessed": "{{5.__IMTINDEX__}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1500,
+                    "y": 0,
+                    "name": "Aggregate Campaign Stats"
+                },
+                "restore": {
+                    "extra": {
+                        "feeder": {
+                            "label": "Iterate Enriched Leads [5]"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "id": 8,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://YOUR_SUPABASE_PROJECT_ID.supabase.co/rest/v1/campaign_runs",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "apikey",
+                        "value": "{{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer {{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "timeout": "300",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": false,
+                "jsonStringBodyContent": "{\"campaign_id\": \"v10_test\", \"query\": \"{{1.query}}\", \"regions\": [\"{{join(1.regions; '\", \"')}}\"], \"leads_found\": 0, \"leads_enriched\": 0, \"leads_failed\": 0, \"total_cost\": 0, \"status\": \"completed\", \"duration_ms\": 0, \"budget_limit\": 0, \"completed_at\": \"{{now}}\"}",
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1800,
+                    "y": 0,
+                    "name": "Log Campaign Run"
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null,
+                                null
+                            ]
+                        },
+                        "contentType": {
+                            "label": "application/json"
+                        },
+                        "inputMethod": {
+                            "label": "JSON string"
+                        },
+                        "shareCookies": {
+                            "mode": "chose"
+                        },
+                        "parseResponse": {
+                            "mode": "chose"
+                        },
+                        "allowRedirects": {
+                            "mode": "chose"
+                        },
+                        "stopOnHttpError": {
+                            "mode": "chose"
+                        },
+                        "requestCompressedContent": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "tlsType": {
+                            "label": "Empty"
+                        },
+                        "proxyKeychain": {
+                            "label": "Choose a key"
+                        },
+                        "authenticationType": {
+                            "label": "No authentication"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "noAuth",
+                                "apiKey",
+                                "basicAuth",
+                                "oAuth"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tlsType",
+                        "type": "select",
+                        "label": "Transport layer security (TLS)",
+                        "validate": {
+                            "enum": [
+                                "mTls",
+                                "tls"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "proxyKeychain",
+                        "type": "keychain:proxy",
+                        "label": "Proxy"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "get",
+                                "head",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "options"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Header"
+                        },
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Body content type",
+                        "validate": {
+                            "enum": [
+                                "json",
+                                "multipart",
+                                "urlEncoded",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "parseResponse",
+                        "type": "boolean",
+                        "label": "Parse response",
+                        "required": true
+                    },
+                    {
+                        "name": "stopOnHttpError",
+                        "type": "boolean",
+                        "label": "Return error if HTTP request fails",
+                        "required": true
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout",
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "allowRedirects",
+                        "type": "boolean",
+                        "label": "Allow redirects",
+                        "required": true
+                    },
+                    {
+                        "name": "shareCookies",
+                        "type": "boolean",
+                        "label": "Share cookies",
+                        "required": true
+                    },
+                    {
+                        "name": "requestCompressedContent",
+                        "type": "boolean",
+                        "label": "Request compressed content",
+                        "required": true
+                    },
+                    {
+                        "name": "inputMethod",
+                        "type": "select",
+                        "label": "Body input method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "dataStructure",
+                                "jsonString"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "jsonStringBodyContent",
+                        "type": "text",
+                        "label": "Body content",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    },
+                    {
+                        "name": "headers",
+                        "type": "collection",
+                        "label": "Headers"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": []
+    }
+}
