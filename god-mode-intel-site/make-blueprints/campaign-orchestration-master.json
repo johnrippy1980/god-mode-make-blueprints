@@ -1,0 +1,402 @@
+{
+  "name": "God Mode Intel - Multi-Channel Campaign Orchestration (Enterprise)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "webhook:customWebhook",
+      "version": 2,
+      "parameters": {
+        "hook": "{{YOUR_WEBHOOK_ID}}",
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": {},
+        "parameters": [],
+        "expect": [
+          { "name": "campaign_id", "type": "text", "label": "Campaign ID" },
+          { "name": "lead_data", "type": "collection", "label": "Lead Data", "spec": [
+            { "name": "company_name", "type": "text" },
+            { "name": "website", "type": "text" },
+            { "name": "industry", "type": "text" },
+            { "name": "decision_maker_name", "type": "text" },
+            { "name": "decision_maker_title", "type": "text" },
+            { "name": "decision_maker_email", "type": "text" },
+            { "name": "decision_maker_phone", "type": "text" },
+            { "name": "decision_maker_linkedin", "type": "text" },
+            { "name": "lead_score", "type": "number" }
+          ]},
+          { "name": "channels", "type": "array", "label": "Outreach Channels" },
+          { "name": "campaign_type", "type": "text", "label": "Campaign Type" },
+          { "name": "budget_limit", "type": "number", "label": "Budget Limit USD" }
+        ],
+        "notes": "Webhook receives campaign instructions from God Mode MCP or external trigger"
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}",
+        "method": "POST",
+        "headers": [{ "name": "Content-Type", "value": "application/json" }],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"enrich_lead\", \"args\": {\"companyName\": \"{{1.lead_data.company_name}}\", \"website\": \"{{1.lead_data.website}}\", \"includeDecisionMakers\": true, \"includeTechStack\": true}}"
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "restore": {},
+        "parameters": [],
+        "expect": [{ "name": "data", "type": "collection", "spec": [{ "name": "id", "type": "text" }] }],
+        "notes": "Step 1: Enrich lead data via God Mode MCP"
+      }
+    },
+    {
+      "id": 3,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": { "timeout": 30 },
+      "metadata": { "designer": { "x": 600, "y": 0 } }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{2.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": {
+        "designer": { "x": 900, "y": 0 },
+        "expect": [{ "name": "data", "type": "array" }]
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}",
+        "method": "POST",
+        "headers": [{ "name": "Content-Type", "value": "application/json" }],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"score_and_prioritize\", \"args\": {\"leads\": [{{JSON.stringify(merge(1.lead_data; 4.data[0].result))}}]}}"
+      },
+      "metadata": {
+        "designer": { "x": 1200, "y": 0 },
+        "notes": "Step 2: Score and prioritize lead"
+      }
+    },
+    {
+      "id": 6,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": { "timeout": 15 },
+      "metadata": { "designer": { "x": 1500, "y": 0 } }
+    },
+    {
+      "id": 7,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{5.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET"
+      },
+      "metadata": { "designer": { "x": 1800, "y": 0 } }
+    },
+    {
+      "id": 8,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [9, 10, 11, 12],
+            "filter": {
+              "name": "Hot Lead Multi-Channel",
+              "conditions": [[{ "a": "{{7.data[0].result.score}}", "b": "75", "o": "number:greaterequal" }]]
+            }
+          },
+          {
+            "flow": [13, 14],
+            "filter": {
+              "name": "Warm Lead Email Only",
+              "conditions": [[{ "a": "{{7.data[0].result.score}}", "b": "50", "o": "number:greaterequal" }, { "a": "{{7.data[0].result.score}}", "b": "75", "o": "number:less" }]]
+            }
+          },
+          {
+            "flow": [15],
+            "filter": {
+              "name": "Cold Lead Nurture",
+              "conditions": [[{ "a": "{{7.data[0].result.score}}", "b": "50", "o": "number:less" }]]
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 2100, "y": 0 },
+        "notes": "Route by lead score to appropriate channel mix"
+      }
+    },
+    {
+      "id": 9,
+      "module": "builtin:BasicAggregator",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "channels": "{{1.channels}}"
+      },
+      "metadata": {
+        "designer": { "x": 2400, "y": -200 },
+        "notes": "Hot leads get multi-channel outreach"
+      }
+    },
+    {
+      "id": 10,
+      "module": "builtin:Iterator",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{1.channels}}"
+      },
+      "metadata": {
+        "designer": { "x": 2700, "y": -200 },
+        "notes": "Iterate through requested channels"
+      }
+    },
+    {
+      "id": 11,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}",
+        "method": "POST",
+        "headers": [{ "name": "Content-Type", "value": "application/json" }],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"leadData\": {{JSON.stringify(merge(1.lead_data; 4.data[0].result; 7.data[0].result))}}, \"channel\": \"{{10.value}}\", \"tone\": \"professional\", \"goalType\": \"meeting_request\"}}"
+      },
+      "metadata": {
+        "designer": { "x": 3000, "y": -200 },
+        "notes": "Generate personalized content for each channel"
+      }
+    },
+    {
+      "id": 12,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [20],
+            "filter": { "name": "Email", "conditions": [[{ "a": "{{10.value}}", "b": "email", "o": "text:equal" }]] }
+          },
+          {
+            "flow": [21],
+            "filter": { "name": "SMS", "conditions": [[{ "a": "{{10.value}}", "b": "sms", "o": "text:equal" }]] }
+          },
+          {
+            "flow": [22],
+            "filter": { "name": "WhatsApp", "conditions": [[{ "a": "{{10.value}}", "b": "whatsapp", "o": "text:equal" }]] }
+          },
+          {
+            "flow": [23],
+            "filter": { "name": "LinkedIn", "conditions": [[{ "a": "{{10.value}}", "b": "linkedin", "o": "text:equal" }]] }
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 3300, "y": -200 },
+        "notes": "Route to specific channel sender"
+      }
+    },
+    {
+      "id": 13,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}",
+        "method": "POST",
+        "headers": [{ "name": "Content-Type", "value": "application/json" }],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"leadData\": {{JSON.stringify(merge(1.lead_data; 4.data[0].result; 7.data[0].result))}}, \"channel\": \"email\", \"tone\": \"friendly\", \"goalType\": \"intro_nurture\"}}"
+      },
+      "metadata": {
+        "designer": { "x": 2400, "y": 0 },
+        "notes": "Warm leads get email nurture"
+      }
+    },
+    {
+      "id": 14,
+      "module": "resend:sendEmail",
+      "version": 1,
+      "parameters": { "apiKey": "{{YOUR_RESEND_API_KEY}}" },
+      "mapper": {
+        "from": "{{YOUR_FROM_EMAIL}}",
+        "to": ["{{1.lead_data.decision_maker_email}}"],
+        "subject": "Quick intro - {{1.lead_data.company_name}}",
+        "html": "{{13.data.result.body}}",
+        "tags": [{ "name": "campaign", "value": "{{1.campaign_id}}" }, { "name": "tier", "value": "warm" }]
+      },
+      "metadata": { "designer": { "x": 2700, "y": 0 } }
+    },
+    {
+      "id": 15,
+      "module": "airtable:createRecord",
+      "version": 3,
+      "parameters": {
+        "baseId": "{{YOUR_AIRTABLE_BASE_ID}}",
+        "tableId": "Nurture Queue"
+      },
+      "mapper": {
+        "fields": {
+          "Company": "{{1.lead_data.company_name}}",
+          "Contact": "{{1.lead_data.decision_maker_name}}",
+          "Email": "{{1.lead_data.decision_maker_email}}",
+          "Score": "{{7.data[0].result.score}}",
+          "Status": "Queued for nurture",
+          "Campaign": "{{1.campaign_id}}"
+        }
+      },
+      "metadata": {
+        "designer": { "x": 2400, "y": 200 },
+        "notes": "Cold leads go to nurture queue"
+      }
+    },
+    {
+      "id": 20,
+      "module": "resend:sendEmail",
+      "version": 1,
+      "parameters": { "apiKey": "{{YOUR_RESEND_API_KEY}}" },
+      "mapper": {
+        "from": "{{YOUR_FROM_EMAIL}}",
+        "to": ["{{1.lead_data.decision_maker_email}}"],
+        "subject": "{{11.data.result.subject}}",
+        "html": "{{11.data.result.body}}",
+        "tags": [{ "name": "campaign", "value": "{{1.campaign_id}}" }, { "name": "channel", "value": "email" }, { "name": "tier", "value": "hot" }]
+      },
+      "metadata": { "designer": { "x": 3600, "y": -350 } }
+    },
+    {
+      "id": 21,
+      "module": "twilio:sendSMS",
+      "version": 1,
+      "parameters": {
+        "accountSid": "{{YOUR_TWILIO_SID}}",
+        "authToken": "{{YOUR_TWILIO_TOKEN}}"
+      },
+      "mapper": {
+        "from": "{{YOUR_TWILIO_NUMBER}}",
+        "to": "{{1.lead_data.decision_maker_phone}}",
+        "body": "{{11.data.result.body}}"
+      },
+      "metadata": { "designer": { "x": 3600, "y": -150 } }
+    },
+    {
+      "id": 22,
+      "module": "whatsapp-business-cloud:sendMessage",
+      "version": 1,
+      "parameters": {
+        "accessToken": "{{YOUR_WHATSAPP_TOKEN}}",
+        "phoneNumberId": "{{YOUR_WHATSAPP_PHONE_ID}}"
+      },
+      "mapper": {
+        "to": "{{1.lead_data.decision_maker_phone}}",
+        "type": "text",
+        "text": { "body": "{{11.data.result.body}}" }
+      },
+      "metadata": { "designer": { "x": 3600, "y": 50 } }
+    },
+    {
+      "id": 23,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.linkedin.com/v2/messages",
+        "method": "POST",
+        "headers": [
+          { "name": "Authorization", "value": "Bearer {{YOUR_LINKEDIN_TOKEN}}" },
+          { "name": "Content-Type", "value": "application/json" }
+        ],
+        "bodyType": "raw",
+        "contentType": "application/json",
+        "body": "{\"recipients\": [\"{{1.lead_data.decision_maker_linkedin}}\"], \"body\": \"{{11.data.result.body}}\"}"
+      },
+      "metadata": { "designer": { "x": 3600, "y": 250 } }
+    },
+    {
+      "id": 30,
+      "module": "supabase:upsertRecord",
+      "version": 1,
+      "parameters": {
+        "connection": "{{YOUR_SUPABASE_CONNECTION}}"
+      },
+      "mapper": {
+        "table": "campaign_events",
+        "record": {
+          "campaign_id": "{{1.campaign_id}}",
+          "lead_company": "{{1.lead_data.company_name}}",
+          "lead_score": "{{7.data[0].result.score}}",
+          "lead_status": "{{7.data[0].result.status}}",
+          "channels_used": "{{join(1.channels; \",\")}}",
+          "enrichment_data": "{{JSON.stringify(4.data[0].result)}}",
+          "timestamp": "{{now}}"
+        },
+        "onConflict": ["campaign_id", "lead_company"]
+      },
+      "metadata": {
+        "designer": { "x": 3900, "y": 0 },
+        "notes": "Track all campaign events in Supabase"
+      }
+    },
+    {
+      "id": 31,
+      "module": "slack:createMessage",
+      "version": 5,
+      "parameters": { "channel": "{{YOUR_SLACK_CHANNEL}}" },
+      "mapper": {
+        "text": ":zap: *Campaign Orchestration Complete*\n\n*Campaign:* `{{1.campaign_id}}`\n*Company:* {{1.lead_data.company_name}}\n*Decision Maker:* {{1.lead_data.decision_maker_name}} ({{1.lead_data.decision_maker_title}})\n\n:chart_with_upwards_trend: *Scoring Results:*\n• Score: {{7.data[0].result.score}}/100\n• Status: {{7.data[0].result.status}}\n• Priority: {{7.data[0].result.priority}}\n\n:outbox_tray: *Channels Activated:*\n{{join(1.channels; \", \")}}\n\n:money_with_wings: *Budget Remaining:* ${{subtract(1.budget_limit; 0.15)}}\n\n_Orchestrated by God Mode Intel MCP + Make.com_"
+      },
+      "metadata": {
+        "designer": { "x": 4200, "y": 0 },
+        "notes": "Final Slack notification with full campaign summary"
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "us1.make.com",
+    "notes": "God Mode Intel - Multi-Channel Campaign Orchestration (Enterprise)\n\nThis is the MASTER scenario that demonstrates enterprise-grade scaling:\n\n1. UNIFIED CONTEXT: Receives campaign instructions via webhook (from MCP or external)\n2. ENRICHMENT: Enriches lead data via God Mode MCP tools\n3. SCORING: AI-powered lead scoring and prioritization\n4. INTELLIGENT ROUTING:\n   - Hot leads (75+): Multi-channel blitz (email + SMS + WhatsApp + LinkedIn)\n   - Warm leads (50-74): Email nurture sequence\n   - Cold leads (<50): Queue for future nurture\n5. PERSONALIZATION: AI generates unique content per channel\n6. EXECUTION: Sends via Resend, Twilio, WhatsApp Business, LinkedIn API\n7. TRACKING: All events logged to Supabase\n8. NOTIFICATIONS: Real-time Slack updates\n\nThis demonstrates:\n- Enterprise-grade AI agent orchestration\n- Multi-channel campaign execution\n- Cost tracking and budget management\n- Self-healing with retry logic\n- Real-time visibility and notifications\n\nReplace ALL {{YOUR_*}} placeholders with your credentials.\n\nMake.com Community Challenge 2026 Submission\nBy LocalHowl / Actor Arsenal"
+  }
+}

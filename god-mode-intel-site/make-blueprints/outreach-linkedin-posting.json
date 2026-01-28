@@ -1,0 +1,273 @@
+{
+  "name": "God Mode Intel - LinkedIn Content & Engagement Campaign",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:watchRows",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "LinkedIn Content Queue",
+        "includeHeaders": "yes",
+        "valueRenderOption": "FORMATTED_VALUE",
+        "limit": 5
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": {},
+        "parameters": [
+          { "name": "spreadsheetId", "type": "text", "label": "Spreadsheet ID" },
+          { "name": "sheetId", "type": "text", "label": "Sheet Name" }
+        ],
+        "expect": [
+          { "name": "content_type", "type": "text", "label": "Content Type (post/comment/article)" },
+          { "name": "topic", "type": "text", "label": "Topic/Theme" },
+          { "name": "industry", "type": "text", "label": "Target Industry" },
+          { "name": "tone", "type": "text", "label": "Tone (professional/thought_leader/casual)" },
+          { "name": "cta_type", "type": "text", "label": "CTA Type (engagement/link/demo)" },
+          { "name": "target_post_url", "type": "text", "label": "Target Post URL (for comments)" },
+          { "name": "row_number", "type": "number", "label": "Row Number" }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "routes": [
+          {
+            "flow": [3, 4, 5, 6],
+            "filter": {
+              "name": "Create Post",
+              "conditions": [[{ "a": "{{1.content_type}}", "b": "post", "o": "text:equal" }]]
+            }
+          },
+          {
+            "flow": [7, 8, 9, 10],
+            "filter": {
+              "name": "Comment on Post",
+              "conditions": [[{ "a": "{{1.content_type}}", "b": "comment", "o": "text:equal" }]]
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "restore": {},
+        "parameters": [],
+        "expect": []
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}",
+        "method": "POST",
+        "headers": [{ "name": "Content-Type", "value": "application/json" }],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"leadData\": {\"industry\": \"{{1.industry}}\", \"topic\": \"{{1.topic}}\"}, \"channel\": \"linkedin_post\", \"tone\": \"{{1.tone}}\", \"goalType\": \"{{1.cta_type}}\", \"contentType\": \"thought_leadership\"}}"
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": -150 },
+        "restore": {},
+        "parameters": [],
+        "expect": [{ "name": "data", "type": "collection", "spec": [{ "name": "id", "type": "text", "label": "Run ID" }] }]
+      }
+    },
+    {
+      "id": 4,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": { "timeout": 20 },
+      "metadata": { "designer": { "x": 900, "y": -150 }, "restore": {}, "parameters": [], "expect": [] }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{3.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET",
+        "headers": [],
+        "qs": []
+      },
+      "metadata": {
+        "designer": { "x": 1200, "y": -150 },
+        "restore": {},
+        "parameters": [],
+        "expect": [{ "name": "data", "type": "array", "label": "Generated Content" }]
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.linkedin.com/v2/ugcPosts",
+        "method": "POST",
+        "headers": [
+          { "name": "Authorization", "value": "Bearer {{YOUR_LINKEDIN_ACCESS_TOKEN}}" },
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "X-Restli-Protocol-Version", "value": "2.0.0" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"author\": \"urn:li:person:{{YOUR_LINKEDIN_PERSON_URN}}\", \"lifecycleState\": \"PUBLISHED\", \"specificContent\": {\"com.linkedin.ugc.ShareContent\": {\"shareCommentary\": {\"text\": \"{{5.data[0].result.body}}\"}, \"shareMediaCategory\": \"NONE\"}}, \"visibility\": {\"com.linkedin.ugc.MemberNetworkVisibility\": \"PUBLIC\"}}"
+      },
+      "metadata": {
+        "designer": { "x": 1500, "y": -150 },
+        "restore": {},
+        "parameters": [],
+        "expect": [{ "name": "id", "type": "text", "label": "Post URN" }],
+        "notes": "LinkedIn API v2 - Create UGC Post"
+      }
+    },
+    {
+      "id": 7,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/acts/alizarin_refrigerator-owner~god-mode---marketing-intelligence-mcp/runs?token={{YOUR_APIFY_TOKEN}}",
+        "method": "POST",
+        "headers": [{ "name": "Content-Type", "value": "application/json" }],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"tool\": \"generate_outreach\", \"args\": {\"leadData\": {\"industry\": \"{{1.industry}}\", \"topic\": \"{{1.topic}}\", \"originalPostUrl\": \"{{1.target_post_url}}\"}, \"channel\": \"linkedin_comment\", \"tone\": \"{{1.tone}}\", \"goalType\": \"engagement\", \"contentType\": \"insightful_comment\"}}"
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": 150 },
+        "restore": {},
+        "parameters": [],
+        "expect": [{ "name": "data", "type": "collection", "spec": [{ "name": "id", "type": "text", "label": "Run ID" }] }]
+      }
+    },
+    {
+      "id": 8,
+      "module": "builtin:Sleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": { "timeout": 20 },
+      "metadata": { "designer": { "x": 900, "y": 150 }, "restore": {}, "parameters": [], "expect": [] }
+    },
+    {
+      "id": 9,
+      "module": "http:ActionGetFile",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.apify.com/v2/actor-runs/{{7.data.id}}/dataset/items?token={{YOUR_APIFY_TOKEN}}&format=json",
+        "method": "GET",
+        "headers": [],
+        "qs": []
+      },
+      "metadata": {
+        "designer": { "x": 1200, "y": 150 },
+        "restore": {},
+        "parameters": [],
+        "expect": [{ "name": "data", "type": "array", "label": "Generated Content" }]
+      }
+    },
+    {
+      "id": 10,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.linkedin.com/v2/socialActions/{{extractUrnFromUrl(1.target_post_url)}}/comments",
+        "method": "POST",
+        "headers": [
+          { "name": "Authorization", "value": "Bearer {{YOUR_LINKEDIN_ACCESS_TOKEN}}" },
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "X-Restli-Protocol-Version", "value": "2.0.0" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "contentType": "application/json",
+        "body": "{\"actor\": \"urn:li:person:{{YOUR_LINKEDIN_PERSON_URN}}\", \"message\": {\"text\": \"{{9.data[0].result.body}}\"}}"
+      },
+      "metadata": {
+        "designer": { "x": 1500, "y": 150 },
+        "restore": {},
+        "parameters": [],
+        "expect": [{ "name": "id", "type": "text", "label": "Comment URN" }],
+        "notes": "LinkedIn API v2 - Create Comment"
+      }
+    },
+    {
+      "id": 11,
+      "module": "google-sheets:updateRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{YOUR_SPREADSHEET_ID}}",
+        "sheetId": "LinkedIn Content Queue",
+        "includeHeaders": "yes",
+        "valueInputOption": "USER_ENTERED"
+      },
+      "mapper": {
+        "row_number": "{{1.row_number}}",
+        "values": {
+          "status": "published",
+          "published_at": "{{formatDate(now; \"YYYY-MM-DD HH:mm:ss\")}}",
+          "linkedin_urn": "{{ifempty(6.id; 10.id)}}"
+        }
+      },
+      "metadata": {
+        "designer": { "x": 1800, "y": 0 },
+        "restore": {},
+        "parameters": [],
+        "expect": []
+      }
+    },
+    {
+      "id": 12,
+      "module": "slack:createMessage",
+      "version": 5,
+      "parameters": {
+        "channel": "{{YOUR_SLACK_CHANNEL}}"
+      },
+      "mapper": {
+        "text": ":linkedin: *LinkedIn Content Published via God Mode Intel*\n\n*Type:* {{1.content_type}}\n*Topic:* {{1.topic}}\n*Industry:* {{1.industry}}\n*Tone:* {{1.tone}}\n*URN:* `{{ifempty(6.id; 10.id)}}`\n\n*Content Preview:*\n> {{substring(ifempty(5.data[0].result.body; 9.data[0].result.body); 0; 200)}}...\n\n_Published at {{formatDate(now; \"MMM DD, YYYY HH:mm\")}}_"
+      },
+      "metadata": {
+        "designer": { "x": 2100, "y": 0 },
+        "restore": {},
+        "parameters": [],
+        "expect": []
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "us1.make.com",
+    "notes": "God Mode Intel - LinkedIn Content & Engagement Campaign\n\nThis scenario automates LinkedIn content creation and engagement:\n1. Watches content queue in Google Sheets\n2. Routes by content type (post vs comment)\n3. Generates AI thought leadership content via God Mode MCP\n4. Posts to LinkedIn via REST API or comments on existing posts\n5. Updates sheet with publish status\n6. Notifies Slack channel\n\nReplace placeholders:\n- YOUR_SPREADSHEET_ID\n- YOUR_APIFY_TOKEN\n- YOUR_LINKEDIN_ACCESS_TOKEN (OAuth 2.0 with w_member_social scope)\n- YOUR_LINKEDIN_PERSON_URN (your LinkedIn member ID)\n- YOUR_SLACK_CHANNEL\n\nNote: Requires LinkedIn OAuth app with posting permissions.\n\nPart of God Mode Intel Make.com Challenge Submission"
+  }
+}
