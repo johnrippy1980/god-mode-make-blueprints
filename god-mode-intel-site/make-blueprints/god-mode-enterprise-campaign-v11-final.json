@@ -1,0 +1,739 @@
+{
+    "name": "God Mode Intel - Enterprise Campaign v11 (Multi-Channel Outreach + Slack)",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 1808770,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0,
+                    "name": "Campaign Webhook"
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "God Mode Hook"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "query",
+                        "type": "text"
+                    },
+                    {
+                        "name": "regions",
+                        "spec": {
+                            "type": "text"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "name": "maxLeadsPerRegion",
+                        "type": "number"
+                    },
+                    {
+                        "name": "maxDecisionMakers",
+                        "type": "number"
+                    },
+                    {
+                        "name": "budgetLimit",
+                        "type": "number"
+                    },
+                    {
+                        "name": "enableOutreach",
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "outreachChannel",
+                        "type": "text"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "firecrawlApiKey",
+                        "value": "{{YOUR_FIRECRAWL_API_KEY}}"
+                    },
+                    {
+                        "name": "anthropicApiKey",
+                        "value": "{{YOUR_ANTHROPIC_API_KEY}}"
+                    },
+                    {
+                        "name": "apolloApiKey",
+                        "value": "{{YOUR_APOLLO_API_KEY}}"
+                    },
+                    {
+                        "name": "supabaseApiKey",
+                        "value": "{{YOUR_SUPABASE_API_KEY}}"
+                    },
+                    {
+                        "name": "mandrillApiKey",
+                        "value": "{{YOUR_MANDRILL_API_KEY}}"
+                    },
+                    {
+                        "name": "fromEmail",
+                        "value": "{{YOUR_FROM_EMAIL}}"
+                    },
+                    {
+                        "name": "fromName",
+                        "value": "{{YOUR_FROM_NAME}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0,
+                    "name": "API Keys - EDIT HERE"
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Variable name",
+                                "required": true
+                            },
+                            {
+                                "name": "value",
+                                "type": "any",
+                                "label": "Variable value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Variables"
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "firecrawlApiKey",
+                        "type": "any",
+                        "label": "firecrawlApiKey"
+                    },
+                    {
+                        "name": "anthropicApiKey",
+                        "type": "any",
+                        "label": "anthropicApiKey"
+                    },
+                    {
+                        "name": "apolloApiKey",
+                        "type": "any",
+                        "label": "apolloApiKey"
+                    },
+                    {
+                        "name": "supabaseApiKey",
+                        "type": "any",
+                        "label": "supabaseApiKey"
+                    },
+                    {
+                        "name": "mandrillApiKey",
+                        "type": "any",
+                        "label": "mandrillApiKey"
+                    },
+                    {
+                        "name": "fromEmail",
+                        "type": "any",
+                        "label": "fromEmail"
+                    },
+                    {
+                        "name": "fromName",
+                        "type": "any",
+                        "label": "fromName"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 9,
+            "module": "slack:createMessage",
+            "version": 5,
+            "parameters": {
+                "channel": "{{YOUR_SLACK_CHANNEL_ID}}"
+            },
+            "mapper": {
+                "text": ":rocket: *God Mode Intel Campaign Started*\n\n*Query:* {{1.query}}\n*Regions:* {{join(1.regions; \", \")}}\n*Max Leads/Region:* {{ifempty(1.maxLeadsPerRegion; 5)}}\n*Budget Limit:* ${{ifempty(1.budgetLimit; 10)}}\n*Outreach Enabled:* {{if(1.enableOutreach; \"Yes - \" + ifempty(1.outreachChannel; \"email\"); \"No\")}}\n\n_Campaign starting now..._"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": -150,
+                    "name": "Slack: Campaign Started"
+                },
+                "restore": {},
+                "parameters": [
+                    {
+                        "name": "channel",
+                        "type": "text",
+                        "label": "Channel ID"
+                    }
+                ],
+                "expect": []
+            }
+        },
+        {
+            "id": 3,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://api.apify.com/v2/acts/RZYvUKdgTvtDbIdp5/run-sync-get-dataset-items?token={{YOUR_APIFY_TOKEN}}&timeout=300",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer {{YOUR_APIFY_TOKEN}}"
+                    }
+                ],
+                "timeout": "300",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": false,
+                "jsonStringBodyContent": "{\"tool\": \"run_campaign\", \"toolInput\": {\"query\": \"{{1.query}}\", \"regions\": [\"{{join(1.regions; '\", \"')}}\"], \"maxLeadsPerRegion\": {{ifempty(1.maxLeadsPerRegion; 5)}}, \"maxDecisionMakers\": {{ifempty(1.maxDecisionMakers; 2)}}, \"budgetLimit\": {{ifempty(1.budgetLimit; 10)}}, \"parallelRegions\": {{ifempty(1.parallelRegions; 3)}}, \"firecrawlApiKey\": \"{{2.firecrawlApiKey}}\", \"anthropicApiKey\": \"{{2.anthropicApiKey}}\", \"apolloApiKey\": \"{{2.apolloApiKey}}\"}}",
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0,
+                    "name": "Run Multi-Region Campaign"
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null
+                            ]
+                        },
+                        "contentType": {
+                            "label": "application/json"
+                        },
+                        "inputMethod": {
+                            "label": "JSON string"
+                        }
+                    },
+                    "parameters": {
+                        "authenticationType": {
+                            "label": "No authentication"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "module": "builtin:BasicFeeder",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "array": "{{3.data[1].results}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1200,
+                    "y": 0,
+                    "name": "Iterate Enriched Leads"
+                },
+                "restore": {
+                    "expect": {
+                        "array": {
+                            "mode": "edit"
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "mode": "edit",
+                        "name": "array",
+                        "spec": [],
+                        "type": "array",
+                        "label": "Array"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://vmdcbavshmfpborruypa.supabase.co/rest/v1/leads?on_conflict=website",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "apikey",
+                        "value": "{{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer {{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "name": "Prefer",
+                        "value": "return=representation,resolution=merge-duplicates"
+                    }
+                ],
+                "timeout": "300",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": false,
+                "jsonStringBodyContent": "{\"company_name\": \"{{5.title}}\", \"website\": \"{{ifempty(5.website; null)}}\", \"phone\": \"{{5.phone}}\", \"email\": \"{{5.email}}\", \"industry\": \"{{5.industry}}\", \"employee_count\": {{ifempty(5.employeeCount; 0)}}, \"lead_score\": {{ifempty(5.leadScore; 50)}}, \"status\": \"{{ifempty(5.leadStatus; 'warm')}}\", \"priority\": \"{{ifempty(5.priority; 'medium')}}\", \"source_industry\": \"{{1.query}}\", \"source_location\": \"{{5.region}}\", \"tech_stack\": {{ifempty(5.technologiesJson; \"[]\")}}, \"decision_makers\": {{ifempty(5.decisionMakersJson; \"[]\")}}, \"gbp_url\": \"{{ifempty(5.gbpUrl; null)}}\", \"email_draft\": \"{{replace(ifempty(5.emailDraft; ''); newline; '\\\\n')}}\", \"linkedin_draft\": \"{{ifempty(5.linkedinDraft; null)}}\", \"campaign_id\": \"{{3.data[1].campaignId}}\", \"campaign_cost\": {{ifempty(3.data[1].costs.total; 0)}}}",
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1500,
+                    "y": 0,
+                    "name": "Upsert Lead to Supabase"
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        },
+                        "contentType": {
+                            "label": "application/json"
+                        },
+                        "inputMethod": {
+                            "label": "JSON string"
+                        }
+                    },
+                    "parameters": {
+                        "authenticationType": {
+                            "label": "No authentication"
+                        }
+                    }
+                },
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 10,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "routes": [
+                    {
+                        "flow": [11, 12, 13],
+                        "filter": {
+                            "name": "Hot Lead + Outreach Enabled + Has Email",
+                            "conditions": [
+                                [
+                                    {
+                                        "a": "{{5.leadScore}}",
+                                        "b": "70",
+                                        "o": "number:greaterequal"
+                                    },
+                                    {
+                                        "a": "{{1.enableOutreach}}",
+                                        "b": "true",
+                                        "o": "boolean:equal"
+                                    },
+                                    {
+                                        "a": "{{5.decisionMakers[1].email}}",
+                                        "b": "",
+                                        "o": "text:notequal"
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "flow": [14],
+                        "filter": {
+                            "name": "All Leads (Slack Notification)",
+                            "conditions": []
+                        }
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1800,
+                    "y": 0,
+                    "name": "Route: Hot Lead Outreach"
+                },
+                "restore": {},
+                "parameters": [],
+                "expect": [],
+                "notes": "Route hot leads (score >= 70) to Mandrill email outreach"
+            }
+        },
+        {
+            "id": 11,
+            "module": "mandrill:sendMessage",
+            "version": 1,
+            "parameters": {
+                "apiKey": "{{2.mandrillApiKey}}"
+            },
+            "mapper": {
+                "html": "{{5.emailDraft}}",
+                "text": "{{replace(5.emailDraft; '<[^>]*>'; '')}}",
+                "subject": "Quick question for {{5.decisionMakers[1].name}} at {{5.title}}",
+                "from_email": "{{2.fromEmail}}",
+                "from_name": "{{2.fromName}}",
+                "to": [
+                    {
+                        "email": "{{5.decisionMakers[1].email}}",
+                        "name": "{{5.decisionMakers[1].name}}",
+                        "type": "to"
+                    }
+                ],
+                "track_opens": true,
+                "track_clicks": true,
+                "tags": [
+                    "god-mode-campaign",
+                    "lead-score-{{5.leadScore}}",
+                    "{{1.query}}"
+                ],
+                "metadata": {
+                    "campaign_id": "{{3.data[1].campaignId}}",
+                    "lead_company": "{{5.title}}",
+                    "lead_score": "{{5.leadScore}}"
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2100,
+                    "y": -150,
+                    "name": "Mandrill: Send Outreach Email"
+                },
+                "restore": {},
+                "parameters": [
+                    {
+                        "name": "apiKey",
+                        "type": "text",
+                        "label": "Mandrill API Key"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "_id",
+                        "type": "text",
+                        "label": "Message ID"
+                    },
+                    {
+                        "name": "status",
+                        "type": "text",
+                        "label": "Status"
+                    }
+                ],
+                "notes": "Send personalized outreach email to hot lead decision makers"
+            }
+        },
+        {
+            "id": 12,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://vmdcbavshmfpborruypa.supabase.co/rest/v1/outreach_log",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "apikey",
+                        "value": "{{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer {{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "parseResponse": true,
+                "jsonStringBodyContent": "{\"campaign_id\": \"{{3.data[1].campaignId}}\", \"company_name\": \"{{5.title}}\", \"recipient_email\": \"{{5.decisionMakers[1].email}}\", \"recipient_name\": \"{{5.decisionMakers[1].name}}\", \"channel\": \"email\", \"provider\": \"mandrill\", \"message_id\": \"{{11._id}}\", \"status\": \"{{11.status}}\", \"lead_score\": {{5.leadScore}}, \"sent_at\": \"{{now}}\"}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2400,
+                    "y": -150,
+                    "name": "Log Outreach to Supabase"
+                },
+                "notes": "Track all outreach attempts for analytics"
+            }
+        },
+        {
+            "id": 13,
+            "module": "slack:createMessage",
+            "version": 5,
+            "parameters": {
+                "channel": "{{YOUR_SLACK_CHANNEL_ID}}"
+            },
+            "mapper": {
+                "text": ":email: *Outreach Email Sent*\n\n*Company:* {{5.title}}\n*To:* {{5.decisionMakers[1].name}} ({{5.decisionMakers[1].title}})\n*Email:* {{5.decisionMakers[1].email}}\n*Lead Score:* {{5.leadScore}}/100 :fire:\n*Status:* {{11.status}}\n*Message ID:* `{{11._id}}`\n\n_Sent via Mandrill_"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2700,
+                    "y": -150,
+                    "name": "Slack: Outreach Sent"
+                },
+                "notes": "Notify team when outreach email is sent"
+            }
+        },
+        {
+            "id": 14,
+            "module": "slack:createMessage",
+            "version": 5,
+            "parameters": {
+                "channel": "{{YOUR_SLACK_CHANNEL_ID}}"
+            },
+            "mapper": {
+                "text": ":white_check_mark: *Lead Processed*\n\n*Company:* {{5.title}}\n*Region:* {{5.region}}\n*Score:* {{5.leadScore}}/100 {{if(5.leadScore >= 70; \":fire:\"; if(5.leadScore >= 50; \":yellow_heart:\"; \":snowflake:\"))}}\n*Status:* {{5.leadStatus}}\n*Decision Makers:* {{length(5.decisionMakers)}}\n{{if(5.decisionMakers[1].email; \"*Primary Contact:* \" + 5.decisionMakers[1].name + \" (\" + 5.decisionMakers[1].title + \")\"; \"_No decision makers found_\")}}\n\n_Lead #{{5.__IMTINDEX__}} of campaign_"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2100,
+                    "y": 150,
+                    "name": "Slack: Lead Processed"
+                },
+                "notes": "Notify for each lead processed (can be disabled if too noisy)"
+            }
+        },
+        {
+            "id": 7,
+            "module": "builtin:BasicAggregator",
+            "version": 1,
+            "parameters": {
+                "feeder": 5
+            },
+            "mapper": {
+                "status": "{{3.data[1].status}}",
+                "totalCost": "{{3.data[1].costs.total}}",
+                "campaignId": "{{3.data[1].campaignId}}",
+                "leadsProcessed": "{{5.__IMTLENGTH__}}",
+                "hotLeads": "{{length(filter(3.data[1].results; 'leadScore'; '>='; 70))}}",
+                "warmLeads": "{{length(filter(3.data[1].results; 'leadScore'; '>='; 50; '<'; 70))}}",
+                "coldLeads": "{{length(filter(3.data[1].results; 'leadScore'; '<'; 50))}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2700,
+                    "y": 0,
+                    "name": "Aggregate Campaign Stats"
+                },
+                "restore": {
+                    "extra": {
+                        "feeder": {
+                            "label": "Iterate Enriched Leads [5]"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "id": 8,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://vmdcbavshmfpborruypa.supabase.co/rest/v1/campaign_runs",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "apikey",
+                        "value": "{{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Authorization",
+                        "value": "Bearer {{2.supabaseApiKey}}"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "parseResponse": true,
+                "jsonStringBodyContent": "{\"campaign_id\": \"{{7.campaignId}}\", \"query\": \"{{1.query}}\", \"regions\": [\"{{join(1.regions; '\", \"')}}\"], \"leads_found\": {{3.data[1].progress.leadsFound}}, \"leads_enriched\": {{3.data[1].progress.leadsEnriched}}, \"leads_failed\": {{3.data[1].progress.leadsFailed}}, \"hot_leads\": {{ifempty(7.hotLeads; 0)}}, \"warm_leads\": {{ifempty(7.warmLeads; 0)}}, \"cold_leads\": {{ifempty(7.coldLeads; 0)}}, \"total_cost\": {{ifempty(7.totalCost; 0)}}, \"status\": \"{{7.status}}\", \"outreach_enabled\": {{1.enableOutreach}}, \"budget_limit\": {{ifempty(1.budgetLimit; 10)}}, \"completed_at\": \"{{now}}\"}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 3000,
+                    "y": 0,
+                    "name": "Log Campaign Run"
+                }
+            }
+        },
+        {
+            "id": 15,
+            "module": "slack:createMessage",
+            "version": 5,
+            "parameters": {
+                "channel": "{{YOUR_SLACK_CHANNEL_ID}}"
+            },
+            "mapper": {
+                "text": ":trophy: *God Mode Intel Campaign Complete!*\n\n*Campaign ID:* `{{7.campaignId}}`\n*Query:* {{1.query}}\n*Regions:* {{join(1.regions; \", \")}}\n\n:bar_chart: *Results:*\n• Total Leads: {{7.leadsProcessed}}\n• :fire: Hot Leads (70+): {{ifempty(7.hotLeads; 0)}}\n• :yellow_heart: Warm Leads (50-69): {{ifempty(7.warmLeads; 0)}}\n• :snowflake: Cold Leads (<50): {{ifempty(7.coldLeads; 0)}}\n\n:moneybag: *Costs:*\n• Firecrawl: ${{ifempty(3.data[1].costs.firecrawl; 0)}}\n• Apollo: ${{ifempty(3.data[1].costs.apollo; 0)}}\n• Anthropic: ${{ifempty(3.data[1].costs.anthropic; 0)}}\n• *Total: ${{ifempty(7.totalCost; 0)}}*\n• Budget: ${{ifempty(1.budgetLimit; 10)}} ({{multiply(divide(ifempty(7.totalCost; 0); ifempty(1.budgetLimit; 10)); 100)}}% used)\n\n{{if(1.enableOutreach; \":email: *Outreach:* Enabled - emails sent to hot leads\"; \":no_entry_sign: *Outreach:* Disabled\")}}\n\n_Powered by God Mode Intel MCP + Make.com_\n_Make.com Community Challenge 2026 Submission_"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 3300,
+                    "y": 0,
+                    "name": "Slack: Campaign Summary"
+                },
+                "notes": "Final campaign summary with all stats and costs"
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": "God Mode Intel - Enterprise Campaign v11 (Multi-Channel Outreach + Slack)\n\nThis is the Make.com Community Challenge 2026 submission.\n\nFEATURES:\n1. Webhook trigger with full campaign parameters\n2. Multi-region parallel lead discovery via God Mode MCP\n3. AI-powered lead enrichment with decision maker discovery\n4. Intelligent lead scoring (Hot/Warm/Cold)\n5. Mandrill email outreach to hot leads (score >= 70)\n6. Real-time Slack notifications:\n   - Campaign started\n   - Each lead processed\n   - Outreach emails sent\n   - Campaign summary with full stats\n7. Supabase data persistence:\n   - All leads upserted\n   - Outreach log tracking\n   - Campaign run history\n8. Full cost tracking by API\n\nDEMONSTRATES ENTERPRISE-GRADE SCALING:\n- Unified AI context layer via MCP\n- Multi-channel orchestration\n- Real-time visibility and notifications\n- Cost management and budget tracking\n- Self-healing with retry logic (in MCP)\n- Data persistence for analytics\n\nREPLACE PLACEHOLDERS:\n- YOUR_MANDRILL_API_KEY\n- YOUR_FROM_EMAIL\n- YOUR_FROM_NAME\n- YOUR_SLACK_CHANNEL_ID\n\nBy LocalHowl / Actor Arsenal"
+    }
+}
