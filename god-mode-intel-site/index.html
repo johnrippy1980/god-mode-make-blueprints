@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOD MODE INTEL | 48 B2B Intelligence Tools - The Terror Mask of Sales Automation</title>
-    <meta name="description" content="Unleash GOD MODE INTEL - 48 devastating B2B intelligence tools for lead generation, company research, competitive intel, and AI-powered outreach. 7 standalone tools. Zero friction. Built for Make.com MCP Challenge 2026.">
+    <title>GOD MODE INTEL | 56+ B2B Intelligence Tools - The Terror Mask of Sales Automation</title>
+    <meta name="description" content="Unleash GOD MODE INTEL - 56+ devastating B2B intelligence tools for lead generation, company research, competitive intel, and AI-powered outreach. 7 standalone tools. Zero friction. Built for Make.com MCP Challenge 2026.">
     <meta name="keywords" content="MCP server, Make.com, B2B intelligence, lead generation, web scraping, sales automation, competitive intelligence, Apify, John Rippy, Zapier Zappy">
     <meta name="author" content="John Rippy - Zapier Zappy 2025 Automation Hero of the Year">
     <meta name="robots" content="index, follow">
@@ -16,15 +16,15 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://god-mode-intel-site.vercel.app/">
-    <meta property="og:title" content="GOD MODE INTEL | 48 B2B Intelligence Tools">
-    <meta property="og:description" content="48 devastating B2B intelligence tools. 7 standalone. Zero friction. The Terror Mask of sales automation.">
+    <meta property="og:title" content="GOD MODE INTEL | 56+ B2B Intelligence Tools">
+    <meta property="og:description" content="56+ devastating B2B intelligence tools. 7 standalone. Zero friction. The Terror Mask of sales automation.">
     <meta property="og:image" content="https://god-mode-intel-site.vercel.app/images/og-image.png">
     <meta property="og:site_name" content="GOD MODE INTEL">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="GOD MODE INTEL | 48 B2B Intelligence Tools">
-    <meta name="twitter:description" content="48 tools. 7 standalone. The Terror Mask of B2B intelligence.">
+    <meta name="twitter:title" content="GOD MODE INTEL | 56+ B2B Intelligence Tools">
+    <meta name="twitter:description" content="56+ tools. 7 standalone. The Terror Mask of B2B intelligence.">
     <meta name="twitter:image" content="https://god-mode-intel-site.vercel.app/images/og-image.png">
 
     <!-- Schema.org SoftwareApplication -->
@@ -33,7 +33,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "GOD MODE INTEL",
-        "description": "48 B2B intelligence tools for lead generation, company research, competitive intel, and AI-powered outreach. MCP server for Make.com and Claude Desktop.",
+        "description": "56+ B2B intelligence tools for lead generation, company research, competitive intel, and AI-powered outreach. MCP server for Make.com and Claude Desktop.",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web, Make.com, Claude Desktop",
         "offers": {
@@ -49,7 +49,7 @@
         },
         "url": "https://god-mode-intel-mcp.vercel.app",
         "featureList": [
-            "48 B2B Intelligence Tools",
+            "56+ B2B Intelligence Tools",
             "7 Standalone Tools (No API Keys)",
             "MCP Protocol Support",
             "Make.com Integration",
@@ -1230,6 +1230,106 @@
         }
 
         /* ===== RESPONSIVE ===== */
+        /* ===== SPLASH DIFFICULTY SELECTOR ===== */
+        .splash-difficulty {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin: 2rem 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .splash-diff-title {
+            font-family: 'Butcherman', cursive;
+            font-size: 1.5rem;
+            color: var(--blood-drip);
+            text-shadow:
+                0 2px 0 #000,
+                0 0 20px rgba(153, 0, 0, 0.8);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .splash-diff-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .splash-diff-btn {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--diff-color, var(--blood-red));
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 130px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .splash-diff-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--diff-color, var(--blood-red));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .splash-diff-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        .splash-diff-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 20px var(--diff-color, rgba(153, 0, 0, 0.5));
+            background: rgba(20, 10, 10, 0.9);
+        }
+
+        .splash-diff-btn .diff-num {
+            display: block;
+            font-family: 'Eater', cursive;
+            font-size: 2rem;
+            color: var(--diff-color, var(--blood-drip));
+            text-shadow: 0 0 15px var(--diff-color, rgba(153, 0, 0, 0.8));
+            line-height: 1;
+        }
+
+        .splash-diff-btn .diff-name {
+            display: block;
+            font-family: 'Metal Mania', cursive;
+            font-size: 0.8rem;
+            color: var(--bone-white);
+            margin-top: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .splash-diff-btn .diff-desc {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Hide the "CLICK TO ENTER" when difficulty selector is visible */
+        .splash-difficulty-active .splash-press {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .splash-title { font-size: 3rem; }
             .splash-stats { gap: 1.5rem; }
@@ -1242,6 +1342,11 @@
             nav { display: none; }
             .hud { display: none; }
             .standalone-highlight::before { font-size: 0.5rem; }
+            .splash-diff-buttons { gap: 0.5rem; }
+            .splash-diff-btn { min-width: 100px; padding: 0.75rem; }
+            .splash-diff-btn .diff-num { font-size: 1.5rem; }
+            .splash-diff-btn .diff-name { font-size: 0.7rem; }
+            .splash-diff-title { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -1258,7 +1363,7 @@
 
         <div class="splash-stats">
             <div class="splash-stat">
-                <div class="splash-stat-value">48</div>
+                <div class="splash-stat-value">56+</div>
                 <div class="splash-stat-label">TOOLS</div>
             </div>
             <div class="splash-stat">
@@ -1271,7 +1376,39 @@
             </div>
         </div>
 
-        <div class="splash-press">CLICK TO ENTER GOD MODE</div>
+        <!-- Difficulty Selection (only shows if no difficulty set) -->
+        <div class="splash-difficulty" id="splashDifficulty" style="display: none;">
+            <div class="splash-diff-title">SELECT DIFFICULTY</div>
+            <div class="splash-diff-buttons">
+                <button class="splash-diff-btn" data-diff="1" style="--diff-color: #88ff88;">
+                    <span class="diff-num">1</span>
+                    <span class="diff-name">BABY MODE</span>
+                    <span class="diff-desc">For tiny babies</span>
+                </button>
+                <button class="splash-diff-btn" data-diff="2" style="--diff-color: #ffff66;">
+                    <span class="diff-num">2</span>
+                    <span class="diff-name">WIMP</span>
+                    <span class="diff-desc">Still scared of the dark</span>
+                </button>
+                <button class="splash-diff-btn" data-diff="3" style="--diff-color: #ffaa00;">
+                    <span class="diff-num">3</span>
+                    <span class="diff-name">NORMAL</span>
+                    <span class="diff-desc">Average mortal</span>
+                </button>
+                <button class="splash-diff-btn" data-diff="4" style="--diff-color: #ff6600;">
+                    <span class="diff-num">4</span>
+                    <span class="diff-name">BRUTAL</span>
+                    <span class="diff-desc">You might survive</span>
+                </button>
+                <button class="splash-diff-btn" data-diff="5" style="--diff-color: #ff0000;">
+                    <span class="diff-num">5</span>
+                    <span class="diff-name">NIGHTMARE</span>
+                    <span class="diff-desc">PREPARE TO DIE</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="splash-press" id="splashPress">CLICK TO ENTER GOD MODE</div>
 
         <div class="splash-badge">MAKE.COM MCP CHALLENGE 2026</div>
     </div>
@@ -1284,7 +1421,7 @@
         <div class="hud-title">// STATUS</div>
         <div class="hud-row">
             <span>TOOLS</span>
-            <span class="hud-value">48</span>
+            <span class="hud-value">56+</span>
         </div>
         <div class="hud-row">
             <span>STANDALONE</span>
@@ -1331,14 +1468,14 @@
             <h2>THE ULTIMATE B2B INTELLIGENCE MCP SERVER</h2>
 
             <p class="hero-tagline">
-                <strong>48 devastating tools</strong> for lead generation, company research, competitive intelligence, and AI-powered outreach.
+                <strong>56+ devastating tools</strong> for lead generation, company research, competitive intelligence, and AI-powered outreach.
                 <strong>7 standalone tools</strong> work without ANY API keys.
                 <strong>One endpoint.</strong> Unlimited scale.
             </p>
 
             <div class="hero-stats">
                 <div class="stat">
-                    <div class="stat-value">48</div>
+                    <div class="stat-value">56+</div>
                     <div class="stat-label">Total Tools</div>
                 </div>
                 <div class="stat stat-standalone">
@@ -1421,7 +1558,7 @@
         <img src="images/sprites/WORMA0.png" alt="" class="monster-sprite monster-worm monster-hover" style="bottom: 10%; right: 5%; animation-delay: 1s;">
 
         <h2 class="section-title">THE ARSENAL</h2>
-        <p class="section-subtitle">48 tools of destruction for B2B intelligence warfare</p>
+        <p class="section-subtitle">56+ tools of destruction for B2B intelligence warfare</p>
 
         <div class="tools-grid">
             <div class="tool-category">
@@ -1645,7 +1782,7 @@
             </div>
 
             <div class="cta-buttons">
-                <a href="/weapons.html" class="btn btn-primary">VIEW ALL 48 TOOLS</a>
+                <a href="/weapons.html" class="btn btn-primary">VIEW ALL 56+ TOOLS</a>
                 <a href="arsenal.html" class="btn btn-secondary">FULL DOCUMENTATION</a>
             </div>
         </div>
@@ -1671,28 +1808,76 @@
 
     <!-- Splash Screen Logic -->
     <script>
-        const splash = document.getElementById('splash');
-        splash.addEventListener('click', () => {
-            splash.classList.add('hidden');
-            // Try to play audio on user interaction
-            const audioPlayer = document.querySelector('#terror-audio-player .play-btn');
-            if (audioPlayer) audioPlayer.click();
-        });
+        (function() {
+            const splash = document.getElementById('splash');
+            const splashDifficulty = document.getElementById('splashDifficulty');
+            const splashPress = document.getElementById('splashPress');
+            const difficultyKey = 'godmode_difficulty';
 
-        // Auto-dismiss after 5 seconds
-        setTimeout(() => {
-            splash.classList.add('hidden');
-        }, 5000);
+            // Check if difficulty has been selected before
+            const storedDifficulty = localStorage.getItem(difficultyKey);
 
-        // Smooth scroll for nav links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+            if (!storedDifficulty) {
+                // No difficulty set - show the difficulty selector
+                splashDifficulty.style.display = 'block';
+                splash.classList.add('splash-difficulty-active');
+                splashPress.style.display = 'none';
+
+                // Prevent click-anywhere-to-dismiss when difficulty needs selection
+                splash.style.cursor = 'default';
+
+                // Add click handlers to difficulty buttons
+                document.querySelectorAll('.splash-diff-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent splash click
+                        const diff = btn.getAttribute('data-diff');
+
+                        // Save to localStorage
+                        localStorage.setItem(difficultyKey, diff);
+
+                        // Set difficulty if insanity.js has loaded
+                        if (window.setDifficulty) {
+                            window.setDifficulty(parseInt(diff, 10));
+                        }
+
+                        // Visual feedback
+                        btn.style.transform = 'scale(1.2)';
+                        btn.style.boxShadow = '0 0 40px var(--diff-color)';
+
+                        // Dismiss splash after brief delay
+                        setTimeout(() => {
+                            splash.classList.add('hidden');
+                            // Try to play audio on user interaction
+                            const audioPlayer = document.querySelector('#terror-audio-player .play-btn');
+                            if (audioPlayer) audioPlayer.click();
+                        }, 300);
+                    });
+                });
+            } else {
+                // Difficulty already set - normal splash behavior
+                splash.addEventListener('click', () => {
+                    splash.classList.add('hidden');
+                    // Try to play audio on user interaction
+                    const audioPlayer = document.querySelector('#terror-audio-player .play-btn');
+                    if (audioPlayer) audioPlayer.click();
+                });
+
+                // Auto-dismiss after 5 seconds only if difficulty is already set
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                }, 5000);
+            }
+
+            // Smooth scroll for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 });
             });
-        });
+        })();
     </script>
 </body>
 </html>
