@@ -2175,19 +2175,30 @@
         const fightArena = document.getElementById('fight-arena');
         const escapeButtons = document.getElementById('escape-buttons');
 
-        // Show difficulty selector, hide fight arena
-        if (diffSelect) diffSelect.style.display = 'flex';
-        if (fightArena) fightArena.style.display = 'none';
-        if (escapeButtons) escapeButtons.style.display = 'none';
-
         // Reset for new fight
         maskHP = DIFFICULTY[currentDifficulty].hp;
         fightBackClicks = 0;
-        difficultySelected = false;
         updateMaskHP();
 
-        // Clear difficulty button selection visual
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+        // Check if difficulty was already selected (stored in localStorage)
+        const storedDifficulty = localStorage.getItem(CONFIG.difficultyKey);
+
+        if (storedDifficulty && !difficultySelected) {
+            // User already has a difficulty set - skip selector, go straight to fight
+            difficultySelected = true;
+            fightInProgress = true;
+            if (diffSelect) diffSelect.style.display = 'none';
+            if (fightArena) fightArena.style.display = 'flex';
+            if (escapeButtons) escapeButtons.style.display = 'flex';
+        } else if (!difficultySelected) {
+            // First time - show difficulty selector
+            if (diffSelect) diffSelect.style.display = 'flex';
+            if (fightArena) fightArena.style.display = 'none';
+            if (escapeButtons) escapeButtons.style.display = 'none';
+            // Clear difficulty button selection visual
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+        }
+        // If difficultySelected is already true, don't change anything (fight in progress)
 
         if (prompt) {
             prompt.classList.add('visible');
@@ -2805,6 +2816,22 @@
             startInsanityTimer();
         }, GRACE_PERIOD);
     }
+
+    // Expose setDifficulty globally for nav dropdown
+    window.setDifficulty = function(level) {
+        const newDiff = parseInt(level, 10);
+        if (newDiff >= 1 && newDiff <= 5 && DIFFICULTY[newDiff]) {
+            currentDifficulty = newDiff;
+            localStorage.setItem(CONFIG.difficultyKey, currentDifficulty.toString());
+            maskHP = DIFFICULTY[currentDifficulty].hp;
+            console.log('%c Difficulty changed to: ' + DIFFICULTY[newDiff].name, 'color: ' + DIFFICULTY[newDiff].color);
+        }
+    };
+
+    // Expose currentDifficulty getter
+    Object.defineProperty(window, 'currentDifficulty', {
+        get: function() { return currentDifficulty; }
+    });
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
     else init();

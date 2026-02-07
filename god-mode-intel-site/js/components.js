@@ -14,7 +14,7 @@
             <div class="announcement-content">
                 <img src="${basePath}images/sprites/STFGOD0.png" alt="" class="announcement-sprite">
                 <span class="announcement-text">
-                    <strong>GOD MODE INTEL IS LIVE!</strong> 48 B2B intelligence tools unleashed.
+                    <strong>GOD MODE INTEL IS LIVE!</strong> 56+ B2B intelligence tools unleashed.
                     <a href="${basePath}blood-scrolls/launch-announcement">Read the blood-soaked launch post</a>
                 </span>
                 <button class="announcement-close" onclick="closeAnnouncement()" aria-label="Close announcement">X</button>
@@ -39,6 +39,19 @@
                     <a href="${basePath}faq" data-page="faq">FAQ</a>
                     <a href="${basePath}executive" data-page="executive">EXECUTIVE</a>
                     <a href="https://god-mode-intel-mcp.vercel.app" target="_blank" class="nav-cta">LIVE API</a>
+                    <div class="difficulty-dropdown" id="difficultyDropdown">
+                        <button class="diff-trigger" id="diffTrigger">
+                            <span class="diff-label">DIFFICULTY:</span>
+                            <span class="diff-current" id="diffCurrent">NORMAL</span>
+                        </button>
+                        <div class="diff-menu" id="diffMenu">
+                            <button class="diff-option" data-diff="1">1 - BABY MODE</button>
+                            <button class="diff-option" data-diff="2">2 - WIMP</button>
+                            <button class="diff-option" data-diff="3">3 - NORMAL</button>
+                            <button class="diff-option" data-diff="4">4 - BRUTAL</button>
+                            <button class="diff-option" data-diff="5">5 - NIGHTMARE</button>
+                        </div>
+                    </div>
                 </nav>
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
                     <span></span>
@@ -511,6 +524,113 @@
                 font-size: 1rem;
             }
         }
+
+        /* ===== DIFFICULTY DROPDOWN ===== */
+        .difficulty-dropdown {
+            position: relative;
+            margin-left: 0.5rem;
+        }
+
+        .diff-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(180deg, #2a1010 0%, #1a0505 100%);
+            border: 2px solid #8B0000;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            transition: all 0.3s;
+        }
+
+        .diff-trigger:hover {
+            border-color: #cc0000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.4);
+        }
+
+        .diff-label {
+            color: #888;
+        }
+
+        .diff-current {
+            color: #00ff66;
+            text-shadow: 0 0 5px rgba(0, 255, 102, 0.5);
+        }
+
+        .diff-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #1a0505;
+            border: 2px solid #8B0000;
+            min-width: 180px;
+            z-index: 1100;
+            margin-top: 0.25rem;
+        }
+
+        .diff-menu.open {
+            display: block;
+        }
+
+        .diff-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            border-bottom: 1px solid #331111;
+            padding: 0.75rem 1rem;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            color: #e8e0d0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .diff-option:last-child {
+            border-bottom: none;
+        }
+
+        .diff-option:hover {
+            background: rgba(204, 0, 0, 0.2);
+            color: #00ff66;
+        }
+
+        .diff-option.active {
+            background: rgba(0, 255, 102, 0.1);
+            color: #00ff66;
+        }
+
+        /* Difficulty colors */
+        .diff-option[data-diff="1"]:hover,
+        .diff-option[data-diff="1"].active { color: #88ff88; }
+        .diff-option[data-diff="2"]:hover,
+        .diff-option[data-diff="2"].active { color: #ffff66; }
+        .diff-option[data-diff="3"]:hover,
+        .diff-option[data-diff="3"].active { color: #ffaa00; }
+        .diff-option[data-diff="4"]:hover,
+        .diff-option[data-diff="4"].active { color: #ff6600; }
+        .diff-option[data-diff="5"]:hover,
+        .diff-option[data-diff="5"].active { color: #ff0000; text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+
+        @media (max-width: 768px) {
+            .difficulty-dropdown {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+
+            .diff-trigger {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .diff-menu {
+                left: 0;
+                right: 0;
+            }
+        }
     `;
 
     // ===== INJECT COMPONENTS =====
@@ -556,6 +676,9 @@
 
         // Setup mobile menu
         setupMobileMenu();
+
+        // Setup difficulty dropdown
+        setupDifficultyDropdown();
     }
 
     // ===== SET ACTIVE NAV LINK =====
@@ -583,6 +706,83 @@
                 nav.classList.toggle('active');
             });
         }
+    }
+
+    // ===== DIFFICULTY DROPDOWN =====
+    // Difficulty names map (must match insanity.js)
+    const DIFFICULTY_NAMES = {
+        1: 'BABY MODE',
+        2: 'WIMP',
+        3: 'NORMAL',
+        4: 'BRUTAL',
+        5: 'NIGHTMARE'
+    };
+
+    function setupDifficultyDropdown() {
+        const trigger = document.getElementById('diffTrigger');
+        const menu = document.getElementById('diffMenu');
+        const currentDisplay = document.getElementById('diffCurrent');
+        const options = document.querySelectorAll('.diff-option');
+
+        if (!trigger || !menu) return;
+
+        // Load current difficulty from localStorage
+        const storedDiff = localStorage.getItem('godmode_difficulty');
+        const currentDiff = storedDiff ? parseInt(storedDiff, 10) : 3; // Default to NORMAL
+
+        // Update display
+        if (currentDisplay) {
+            currentDisplay.textContent = DIFFICULTY_NAMES[currentDiff] || 'NORMAL';
+        }
+
+        // Mark active option
+        options.forEach(opt => {
+            const diff = parseInt(opt.getAttribute('data-diff'), 10);
+            if (diff === currentDiff) {
+                opt.classList.add('active');
+            }
+        });
+
+        // Toggle dropdown
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('open');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', () => {
+            menu.classList.remove('open');
+        });
+
+        // Handle option selection
+        options.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newDiff = parseInt(opt.getAttribute('data-diff'), 10);
+
+                // Update localStorage
+                localStorage.setItem('godmode_difficulty', newDiff.toString());
+
+                // Update display
+                if (currentDisplay) {
+                    currentDisplay.textContent = DIFFICULTY_NAMES[newDiff] || 'NORMAL';
+                }
+
+                // Update active state
+                options.forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+
+                // Close menu
+                menu.classList.remove('open');
+
+                // If insanity.js is loaded, update the global difficulty
+                if (typeof window.setDifficulty === 'function') {
+                    window.setDifficulty(newDiff);
+                } else if (typeof window.currentDifficulty !== 'undefined') {
+                    window.currentDifficulty = newDiff;
+                }
+            });
+        });
     }
 
     // ===== CLOSE ANNOUNCEMENT =====
