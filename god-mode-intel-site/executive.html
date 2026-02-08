@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EXECUTIVE BRIEFING | GOD MODE INTEL - Make.com MCP Challenge 2026</title>
-    <meta name="description" content="Make.com MCP Community Challenge 2026 submission. GOD MODE INTEL: Enterprise B2B intelligence at scale with 48 tools, 7 standalone, and seamless Make.com integration.">
+    <meta name="description" content="Make.com MCP Community Challenge 2026 submission. GOD MODE INTEL: Enterprise B2B intelligence at scale with 79+ tools, 7 standalone, and seamless Make.com integration.">
     <meta name="keywords" content="Make.com MCP Challenge, Model Context Protocol, B2B intelligence, automation, John Rippy, Zappy 2025">
     <meta name="author" content="John Rippy - Zapier Zappy 2025 Automation Hero of the Year">
     <meta name="robots" content="index, follow">
@@ -30,7 +30,7 @@
         "@context": "https://schema.org",
         "@type": "Article",
         "headline": "GOD MODE INTEL Executive Overview - Make.com MCP Challenge 2026",
-        "description": "Enterprise B2B intelligence at scale with 48 tools, 7 standalone, and seamless Make.com integration. Make.com MCP Community Challenge 2026 submission.",
+        "description": "Enterprise B2B intelligence at scale with 79+ tools, 7 standalone, and seamless Make.com integration. Make.com MCP Community Challenge 2026 submission.",
         "author": {
             "@type": "Person",
             "name": "John Rippy",
@@ -47,13 +47,13 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://god-mode-intel-site.vercel.app/executive.html">
     <meta property="og:title" content="EXECUTIVE BRIEFING | GOD MODE INTEL - Make.com Challenge">
-    <meta property="og:description" content="Make.com MCP Challenge 2026 submission. 48 tools. 7 standalone. Enterprise-grade B2B intelligence.">
+    <meta property="og:description" content="Make.com MCP Challenge 2026 submission. 79+ tools. 7 standalone. Enterprise-grade B2B intelligence.">
     <meta property="og:image" content="https://god-mode-intel-site.vercel.app/images/og-executive.png">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="EXECUTIVE BRIEFING | GOD MODE INTEL">
-    <meta name="twitter:description" content="Make.com MCP Challenge 2026 submission. 48 tools. Enterprise B2B intelligence.">
+    <meta name="twitter:description" content="Make.com MCP Challenge 2026 submission. 79+ tools. Enterprise B2B intelligence.">
     <meta name="twitter:image" content="https://god-mode-intel-site.vercel.app/images/og-executive.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -665,7 +665,7 @@
             <p class="hero-subtitle">ENTERPRISE B2B INTELLIGENCE AT SCALE WITH MCP</p>
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <div class="hero-stat-value">48</div>
+                    <div class="hero-stat-value">79+</div>
                     <div class="hero-stat-label">TOTAL TOOLS</div>
                 </div>
                 <div class="hero-stat">
@@ -720,11 +720,11 @@
             </div>
             <div class="section-content">
                 <p><strong>ONE MCP SERVER TO RULE THEM ALL</strong></p>
-                <p>GOD MODE INTEL consolidates the entire B2B sales intelligence stack into a single MCP endpoint. One connection. 48+ tools. Unified data format. Seamless Make.com integration.</p>
+                <p>GOD MODE INTEL consolidates the entire B2B sales intelligence stack into a single MCP endpoint. One connection. 79+ tools. Unified data format. Seamless Make.com integration.</p>
             </div>
 
             <div class="solution-box">
-                <h3 class="solution-title">48 Tools. 7 Standalone. Zero Friction.</h3>
+                <h3 class="solution-title">79+ Tools. 7 Standalone. Zero Friction.</h3>
                 <table class="comparison-table">
                     <thead>
                         <tr>
@@ -840,11 +840,268 @@
             </div>
         </section>
 
-        <!-- Make.com Scenarios -->
+        <!-- Make.com Two-Scenario Architecture -->
         <section>
             <div class="section-header">
                 <img src="/images/sprites/BR7BC0.png" class="section-sprite" alt="">
-                <h2 class="section-title">MAKE.COM SCENARIOS</h2>
+                <h2 class="section-title">MAKE.COM + MCP INTEGRATION</h2>
+            </div>
+            <div class="section-content">
+                <p><strong>Async, Webhook-Driven Architecture for Unlimited Scale</strong></p>
+                <p>Traditional workflows hit timeout walls. Our two-scenario design solves this with async webhooks - campaigns can run for 30 seconds or 30 minutes without blocking.</p>
+            </div>
+
+            <div class="architecture">
+                <pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     SCENARIO 1: "1.21 Gigawatts Campaign Trigger"           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   [Webhook]  →  [Set Config]  →  [Slack: Starting]  →  [Apify MCP]  →  [Slack: Running]
+│   Campaign       API Keys         Notify team          Start async         Run ID logged
+│   Request        & Webhooks                            campaign                          │
+│                                        │                                    │
+│                                        ↓                                    │
+│                              Passes callback URL                            │
+│                              to Apify actor                                 │
+└────────────────────────────────────────│────────────────────────────────────┘
+                                         │
+                    ════════════════════════════════════════
+                    ║  APIFY: God Mode Intel MCP V2 runs   ║
+                    ║  - Discovers leads via Google Maps   ║
+                    ║  - Enriches with Firecrawl           ║
+                    ║  - Finds contacts via Apollo         ║
+                    ║  - Scores with AI (Claude)           ║
+                    ║  - Sends webhook when complete       ║
+                    ════════════════════════════════════════
+                                         │
+                                         ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 SCENARIO 2: "No Roads - DB + Slack + Config"                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   [Webhook]  →  [Set Config]  →  [Slack: Complete]  →  [Iterator]  →  [Supabase]  →  [Slack]
+│   Results        DB Keys          Campaign done         Loop leads     Save each      Rich card
+│   Callback                                                             lead           per lead │
+└─────────────────────────────────────────────────────────────────────────────┘
+                </pre>
+            </div>
+
+            <div class="scenario-grid">
+                <div class="scenario-card">
+                    <h3 class="scenario-title">Scenario 1: "1.21 Gigawatts" Campaign Trigger</h3>
+                    <div class="scenario-flow">
+[Webhook] → [API Keys + Config] → [Slack: Campaign Starting] →
+[Apify: Run God Mode Intel MCP] → [Slack: Run ID Logged]
+
+Passes callback webhook URL to Apify for async completion
+                    </div>
+                </div>
+                <div class="scenario-card">
+                    <h3 class="scenario-title">Scenario 2: "No Roads" Results Handler</h3>
+                    <div class="scenario-flow">
+[Webhook: Results Callback] → [API Keys + Config] → [Slack: Campaign Complete] →
+[Iterator: Loop Leads] → [Supabase: Insert Lead] → [Slack: Rich Lead Card]
+
+Receives enriched leads when MCP actor completes (30s to 30min later)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MCP Server Details -->
+        <section>
+            <div class="section-header">
+                <img src="/images/sprites/MSBDB0.png" class="section-sprite" alt="">
+                <h2 class="section-title">MCP SERVER: GOD MODE INTEL V2</h2>
+            </div>
+            <div class="section-content">
+                <p><strong>Built with Official MCP SDK - Not Just API Calls</strong></p>
+                <p>True Model Context Protocol implementation with stdio transport (Claude Desktop) and HTTP/SSE transport (Make.com).</p>
+            </div>
+
+            <div class="solution-box">
+                <h3 class="solution-title">Server Details</h3>
+                <div class="scenario-flow">
+Actor ID: RZYvUKdgTvtDbIdp5
+Apify Store: alizarin_refrigerator-owner/god-mode-intel-mcp-v2
+
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+                </div>
+            </div>
+
+            <div class="problem-box">
+                <h3 style="font-family: 'Creepster', cursive; font-size: 1.3rem; color: var(--blood-bright); margin-bottom: 1rem;">79+ MCP Tools Available</h3>
+                <div class="problem-grid">
+                    <div class="problem-item">
+                        <div class="problem-value">Lead Discovery</div>
+                        <div class="problem-label">find_prospects, enrich_lead, enrich_company_contacts, scan_tech_stack</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-value">LinkedIn Intel</div>
+                        <div class="problem-label">scrape_linkedin_profile, scrape_linkedin_posts, analyze_linkedin_voice, export_sales_nav_leads</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-value">Review & Reputation</div>
+                        <div class="problem-label">aggregate_reviews, scrape_yelp, scrape_g2, scrape_trustpilot, analyze_sentiment</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-value">Competitive Intel</div>
+                        <div class="problem-label">monitor_competitors, scrape_facebook_ads, compare_tech_stacks, competitive_gap_analysis</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-value">Local SEO</div>
+                        <div class="problem-label">scrape_gbp, track_local_serp, audit_citations</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-value">AI Sales</div>
+                        <div class="problem-label">score_and_prioritize, generate_outreach, analyze_buying_signals, predict_deal_probability</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-value">Campaigns</div>
+                        <div class="problem-label">run_campaign, get_campaign_status, cancel_campaign</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-value">LinkedIn Advanced</div>
+                        <div class="problem-label">scrape_post_engagers, scrape_event_attendees, scrape_company_followers</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Keys Configuration -->
+        <section>
+            <div class="section-header">
+                <img src="/images/sprites/XSKIC0.png" class="section-sprite" alt="">
+                <h2 class="section-title">API KEYS CONFIGURATION</h2>
+            </div>
+            <div class="section-content">
+                <p>Configure these variables in your Make.com scenario modules:</p>
+            </div>
+
+            <div class="scenario-grid">
+                <div class="scenario-card">
+                    <h3 class="scenario-title">Scenario 1: Campaign Trigger Config</h3>
+                    <table class="comparison-table" style="margin: 1rem 0;">
+                        <thead>
+                            <tr>
+                                <th>VARIABLE</th>
+                                <th>SOURCE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>apifyToken</td><td>Apify Console → Settings → Integrations</td></tr>
+                            <tr><td>slackWebhook</td><td>Slack App → Incoming Webhooks</td></tr>
+                            <tr><td>callbackWebhook</td><td>Copy from Scenario 2's trigger module</td></tr>
+                            <tr><td>firecrawlApiKey</td><td>firecrawl.dev → API Keys</td></tr>
+                            <tr><td>anthropicApiKey</td><td>console.anthropic.com → API Keys</td></tr>
+                            <tr><td>apolloApiKey</td><td>apollo.io → Settings → API</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="scenario-card">
+                    <h3 class="scenario-title">Scenario 2: Results Handler Config</h3>
+                    <table class="comparison-table" style="margin: 1rem 0;">
+                        <thead>
+                            <tr>
+                                <th>VARIABLE</th>
+                                <th>SOURCE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>supabaseUrl</td><td>Supabase Dashboard → Settings → API</td></tr>
+                            <tr><td>supabaseKey</td><td>Supabase Dashboard → Settings → API (service role)</td></tr>
+                            <tr><td>slackWebhook</td><td>Same as Scenario 1</td></tr>
+                            <tr><td>apifyToken</td><td>Apify Console → Settings → Integrations</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Supabase Schema -->
+        <section>
+            <div class="section-header">
+                <img src="/images/sprites/BSBDB0.png" class="section-sprite" alt="">
+                <h2 class="section-title">SUPABASE SCHEMA</h2>
+            </div>
+            <div class="section-content">
+                <p>Create a <code style="background: #0a0505; padding: 2px 6px; color: var(--terror-green);">leads</code> table with this structure:</p>
+            </div>
+
+            <div class="architecture">
+                <pre>
+CREATE TABLE leads (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  company_name TEXT,
+  category TEXT,
+  website TEXT,
+  phone TEXT,
+  email TEXT,
+  lead_score INTEGER,
+  status TEXT DEFAULT 'warm',
+  source_industry TEXT,
+  source_location TEXT,
+  campaign_id TEXT,
+  tech_stack TEXT,
+  description TEXT,
+  decision_makers TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+                </pre>
+            </div>
+        </section>
+
+        <!-- Enterprise Features -->
+        <section>
+            <div class="section-header">
+                <img src="/images/sprites/GUTSC0.png" class="section-sprite" alt="">
+                <h2 class="section-title">ENTERPRISE FEATURES</h2>
+            </div>
+
+            <div class="scenario-grid">
+                <div class="scenario-card">
+                    <h3 class="scenario-title">Self-Healing with Exponential Backoff</h3>
+                    <div class="scenario-flow">
+async function withRetry&lt;T&gt;(fn: () =&gt; Promise&lt;T&gt;, options = {}) {
+  const { maxAttempts = 3, baseDelayMs = 1000 } = options;
+  for (let attempt = 1; attempt &lt;= maxAttempts; attempt++) {
+    try { return await fn(); }
+    catch (error) {
+      const delay = baseDelayMs * Math.pow(2, attempt - 1);
+      await sleep(delay);
+    }
+  }
+}
+                    </div>
+                </div>
+                <div class="scenario-card">
+                    <h3 class="scenario-title">Real-Time Cost Tracking</h3>
+                    <div class="scenario-flow">
+const API_COSTS = {
+  firecrawl_scrape: 0.001,
+  apollo_contact_reveal: 0.05,
+  anthropic_haiku: 0.00025,
+  google_maps_place: 0.002,
+};
+
+// Tracks progress across regions
+// Budget limits with automatic stopping
+// Error collection for debugging
+// Webhook delivery for real-time updates
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Make.com Scenarios (Additional) -->
+        <section>
+            <div class="section-header">
+                <img src="/images/sprites/BR7BD0.png" class="section-sprite" alt="">
+                <h2 class="section-title">ADDITIONAL MAKE.COM SCENARIOS</h2>
             </div>
             <div class="section-content">
                 <p>Ready-to-import blueprints that demonstrate enterprise-grade workflow scaling.</p>
@@ -852,28 +1109,28 @@
 
             <div class="scenario-grid">
                 <div class="scenario-card">
-                    <h3 class="scenario-title">Scenario 1: AI-Powered Lead Generation Pipeline</h3>
+                    <h3 class="scenario-title">AI-Powered Lead Generation Pipeline</h3>
                     <div class="scenario-flow">
 Schedule → find_prospects → Iterator → enrich_lead → score_and_prioritize →
 Router (Score>70: generate_outreach → CRM + Slack | Score<70: Nurture list)
                     </div>
                 </div>
                 <div class="scenario-card">
-                    <h3 class="scenario-title">Scenario 2: Competitive Intelligence Monitor</h3>
+                    <h3 class="scenario-title">Competitive Intelligence Monitor</h3>
                     <div class="scenario-flow">
 Schedule (Weekly) → monitor_competitors → scrape_facebook_ads → get_crunchbase_data →
 scrape_g2 → compare_tech_stacks → Summarize → Google Docs → Slack
                     </div>
                 </div>
                 <div class="scenario-card">
-                    <h3 class="scenario-title">Scenario 3: Inbound Lead Enrichment & Routing</h3>
+                    <h3 class="scenario-title">Inbound Lead Enrichment & Routing</h3>
                     <div class="scenario-flow">
 Webhook → enrich_lead → research_company → scan_tech_stack → analyze_buying_signals →
 Router (Size>500: Salesforce | Size 50-500: HubSpot | Size<50: Airtable)
                     </div>
                 </div>
                 <div class="scenario-card">
-                    <h3 class="scenario-title">Scenario 4: Social-Powered Prospecting Engine</h3>
+                    <h3 class="scenario-title">Social-Powered Prospecting Engine</h3>
                     <div class="scenario-flow">
 Schedule → scrape_reddit + scrape_quora → Filter engagement → enrich_from_url →
 analyze_linkedin_voice → generate_outreach → Notion pipeline
@@ -953,7 +1210,7 @@ At $50/hour fully loaded cost = $6,250/day
                     <div class="win-number">1</div>
                     <div class="win-content">
                         <h4>TRUE ENTERPRISE SCALING</h4>
-                        <p>48 tools covering the ENTIRE B2B intelligence stack. Parallel processing. Unified data format. Dynamic tool selection.</p>
+                        <p>79+ tools covering the ENTIRE B2B intelligence stack. Parallel processing. Unified data format. Dynamic tool selection.</p>
                     </div>
                 </div>
                 <div class="win-reason">
@@ -981,7 +1238,7 @@ At $50/hour fully loaded cost = $6,250/day
                     <div class="win-number">5</div>
                     <div class="win-content">
                         <h4>IMMEDIATE VALUE</h4>
-                        <p>7 standalone tools work WITHOUT any API keys. Demo mode lets judges test all 48+ tools instantly. No setup required.</p>
+                        <p>7 standalone tools work WITHOUT any API keys. Demo mode lets judges test all 79+ tools instantly. No setup required.</p>
                     </div>
                 </div>
                 <div class="win-reason">
@@ -1041,7 +1298,7 @@ At $50/hour fully loaded cost = $6,250/day
                     <img src="/images/sprites/GUTSB0.png" class="link-sprite" alt="">
                     <div>
                         <div class="link-text">WEAPONS</div>
-                        <div class="link-url">All 48 tools explained</div>
+                        <div class="link-url">All 79+ tools explained</div>
                     </div>
                 </a>
                 <a href="https://apify.com/alizarin_refrigerator-owner/god-mode-intel-mcp" target="_blank" class="link-card">
